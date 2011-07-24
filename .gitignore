@@ -1,0 +1,9 @@
+target/
+*.project
+*.classpath
+*.settings
+*.iml
+*.ipr
+*.iws
+.scala_dependencies
+*.scssc
