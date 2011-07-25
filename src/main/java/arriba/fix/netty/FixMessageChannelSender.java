@@ -1,5 +1,7 @@
 package arriba.fix.netty;
 
+import java.io.IOException;
+
 import org.jboss.netty.channel.Channel;
 
 import arriba.common.Sender;
@@ -13,13 +15,14 @@ public final class FixMessageChannelSender implements Sender<FixMessage> {
         this.channelRepository = channelRepository;
     }
 
-    public void send(final FixMessage message) {
-        final Channel channel = this.channelRepository.find(message.getSenderCompId());
-        if (null != channel) {
-            channel.write(message)
-        } else {
-            // TODO Log error
-            System.out.println("received unknown channel ID: " + message.getSenderCompId());
+    public void send(final FixMessage message) throws IOException {
+        final Channel channel;
+        try {
+            channel = this.channelRepository.find(message.getSenderCompId());
+        } catch (final UnknownChannelIdException e) {
+            throw new IOException(e);
         }
+
+        // TODO Finish implementation.
     }
 }

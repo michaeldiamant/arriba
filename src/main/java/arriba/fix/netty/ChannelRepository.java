@@ -11,5 +11,5 @@ public interface ChannelRepository<ID> {
 
     void remove(ID id);
 
-    Channel find(ID id);
+    Channel find(ID id) throws UnknownChannelIdException;
 }

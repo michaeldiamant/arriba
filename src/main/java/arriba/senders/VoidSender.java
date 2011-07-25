@@ -1,5 +1,7 @@
 package arriba.senders;
 
+import java.io.IOException;
+
 import arriba.common.Sender;
 
 /**
@@ -9,7 +11,7 @@ import arriba.common.Sender;
  */
 public final class VoidSender<M> implements Sender<M> {
 
-    public void send(final M message) {
+    public void send(final M message) throws IOException {
         System.out.println(message);
     }
 }

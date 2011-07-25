@@ -1,5 +1,7 @@
 package arriba.senders;
 
+import java.io.IOException;
+
 import arriba.common.MessageToRingBufferEntryAdapter;
 import arriba.common.Sender;
 
@@ -17,7 +19,7 @@ public final class RingBufferSender<M, E extends AbstractEntry> implements Sende
         this.messageToRingBufferEntryAdapter = messageToRingBufferEntryAdapter;
     }
 
-    public void send(final M message) {
+    public void send(final M message) throws IOException {
         final E nextEntry = this.producerBarrier.nextEntry();
 
         this.messageToRingBufferEntryAdapter.adapt(message, nextEntry);

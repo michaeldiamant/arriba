@@ -43,7 +43,12 @@ public final class InMemoryChannelRepository<ID> implements ChannelRepository<ID
         this.idToChannel.remove(id);
     }
 
-    public Channel find(final ID id) {
-        return this.idToChannel.get(id);
+    public Channel find(final ID id) throws UnknownChannelIdException {
+        final Channel channel = this.idToChannel.get(id);
+        if (null == channel) {
+            throw new UnknownChannelIdException("Received unknown channel ID: " + id + ".");
+        }
+
+        return channel;
     }
 }
