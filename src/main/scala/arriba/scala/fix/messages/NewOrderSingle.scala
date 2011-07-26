@@ -16,7 +16,7 @@ final class NewOrderSingle(fixFieldCollection: FixFieldCollection) extends FixMe
     this.getValue(38)
   }
 
-  def toString: String = {
+  override def toString: String = {
     "NewOrderSingle -> 55=" + this.getSymbol + " 40=" + this.getOrderType + " 38=" + this.getOrderQuantity
   }
 }

@@ -7,11 +7,11 @@ import arriba.scala.fix.session.{AlwaysResolvingSessionResolver, SessionResolver
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
 import arriba.scala.fix.netty.{FixMessageFrameDecoder, SerializedFieldHandler}
 import org.jboss.netty.channel._
-import arriba.scala.fix.disruptor.{FixMessageEntry, SerializedFieldsToRingBufferEntryAdapter, SessionNotifyingFixMessageEntryBatchHandler}
 import com.lmax.disruptor._
 import arriba.scala.fix.SerializedField
 import arriba.scala.senders.RingBufferSender
 import arriba.scala.common.Sender
+import arriba.scala.fix.disruptor.{FixMessageEntryFactory, FixMessageEntry, SerializedFieldsToRingBufferEntryAdapter, SessionNotifyingFixMessageEntryBatchHandler}
 
 class FixServer {
   def start() {

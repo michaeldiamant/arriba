@@ -1,17 +1,17 @@
 package arriba.scala.fix.session
 
 trait SessionId {
-  def getBeginString: String
+  def beginString: String
 
-  def getSenderCompId: String
+  def senderCompId: String
 
-  def getSenderSubId: String
+  def senderSubId: String
 
-  def getSenderLocationId: String
+  def senderLocationId: String
 
-  def getTargetCompId: String
+  def targetCompId: String
 
-  def getTargetSubId: String
+  def targetSubId: String
 
-  def getTargetLocationId: String
+  def targetLocationId: String
 }

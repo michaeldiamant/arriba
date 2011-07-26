@@ -1,6 +1,5 @@
 package arriba.scala.fix
 
-import arriba.scala.fix.Tags
 import java.util.{Arrays}
 import collection.mutable.LinkedList
 import java.io.{IOException, ByteArrayOutputStream}
@@ -19,13 +18,13 @@ object FixFieldCollection {
       new FixFieldCollection(this.fields)
     }
 
-    private var fields: LinkedList[Field[String]] = new LinkedList[Field[String]]
+    private var fields = new LinkedList[Field[String]]
   }
 
 }
 
 class FixFieldCollection {
-  private def this(fields: List[Field[String]]) {
+  private def this(fields: LinkedList[Field[String]]) {
     this ()
     val sortedFields = fields.sortBy(f => f.tag)
     this.tagArray = new Array[Int](sortedFields.size)
@@ -44,10 +43,10 @@ class FixFieldCollection {
     try {
       var tag: Int = 0
       var value: String = null
-      val messageBytes: ByteArrayOutputStream = new ByteArrayOutputStream
+      lazy val messageBytes: ByteArrayOutputStream = new ByteArrayOutputStream
       {
         var tagIndex: Int = 0
-        while (tagIndex < tagArray.length) {
+        while (tagIndex < tagArray.length)
           {
             tag = tagArray(tagIndex)
             value = valueArray(tagIndex)
@@ -56,11 +55,8 @@ class FixFieldCollection {
             messageBytes.write(tagBytes)
             messageBytes.write(Fields.EQUAL_SIGN)
             messageBytes.write(valueBytes)
+            tagIndex += 1
           }
-          ({
-            tagIndex += 1; tagIndex
-          })
-        }
       }
       messageBytes.write(Fields.DELIMITER)
       messageBytes.toByteArray
