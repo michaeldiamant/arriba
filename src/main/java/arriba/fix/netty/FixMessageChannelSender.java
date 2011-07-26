@@ -2,6 +2,8 @@ package arriba.fix.netty;
 
 import java.io.IOException;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 
 import arriba.common.Sender;
@@ -23,6 +25,7 @@ public final class FixMessageChannelSender implements Sender<FixMessage> {
             throw new IOException(e);
         }
 
-        // TODO Finish implementation.
+        final ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(message.toByteArray());
+        channel.write(messageBuffer);
     }
 }

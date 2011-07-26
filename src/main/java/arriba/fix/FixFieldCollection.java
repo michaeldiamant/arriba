@@ -1,5 +1,7 @@
 package arriba.fix;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -25,16 +27,39 @@ public class FixFieldCollection {
         }
     }
 
+    public byte[] toByteArray() {
+        // TODO Performance test ByteArrayOutputStream vs building LinkedList of all bytes to be written
+        // and performing one allocation / write.
+        try {
+            int tag;
+            String value;
+            final ByteArrayOutputStream messageBytes = new ByteArrayOutputStream();
+            for (int tagIndex = 0; tagIndex < this.tagArray.length; tagIndex++) {
+                tag = this.tagArray[tagIndex];
+                value = this.valueArray[tagIndex];
+
+                final byte[] tagBytes = Tags.toByteArray(tag);
+                final byte[] valueBytes = value.getBytes();
+
+                messageBytes.write(tagBytes);
+                messageBytes.write(Fields.EQUAL_SIGN);
+                messageBytes.write(valueBytes);
+
+            }
+            messageBytes.write(Fields.DELIMITER);
+
+            return messageBytes.toByteArray();
+        } catch (final IOException e) {
+            // FIXME What should happen here?  This is an unrecoverable error.
+            return new byte[0];
+        }
+    }
+
     public String getValue(final int tag) {
         final int valueIndex = Arrays.binarySearch(this.tagArray, tag);
 
         // TODO Handle not finding a tag.
         return valueIndex < 0 ? "" : this.valueArray[valueIndex];
-        //        for (int valueIndex = 0; valueIndex < this.tagArray.length; valueIndex++) {
-        //            if (this.tagArray[valueIndex] == tag) {
-        //                return this.valueArray[valueIndex];
-        //            }
-        //        }
     }
 
     public static class Builder {
