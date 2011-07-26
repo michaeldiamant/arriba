@@ -1,13 +1,11 @@
 package arriba.scala.fix
 
-/**
- * Created by IntelliJ IDEA.
- * User: ncornwell
- * Date: 7/25/11
- * Time: 9:56 PM
- * To change this template use File | Settings | File Templates.
- */
+import arriba.fix.Tags
+import java.util.{Arrays, Collections}
+import java.io.{IOException, ByteArrayOutputStream}
+import collection.mutable.LinkedList
 
-class FixFieldCollection {
+object FixFieldCollection {
 
 }
+
