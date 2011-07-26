@@ -1,7 +1,7 @@
 package arriba.scala.senders
 
-import arriba.common.{Sender, MessageToRingBufferEntryAdapter}
 import com.lmax.disruptor.{AbstractEntry, ProducerBarrier}
+import arriba.scala.common.{MessageToRingBufferEntryAdapter, Sender}
 
 final class RingBufferSender[M, E <: AbstractEntry] extends Sender[M] {
 

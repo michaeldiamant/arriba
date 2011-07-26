@@ -1,6 +1,6 @@
 package arriba.scala.senders
 
-import arriba.common.Sender
+import arriba.scala.common.Sender
 
 /**
  * A sender that only prints the message to be sent.

@@ -1,26 +1,29 @@
 package arriba.fix.netty;
 
+import java.util.List;
+
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
-import arriba.common.Sender;
-import arriba.fix.messages.FixMessage;
+import arriba.scala.common.Sender;
+import arriba.fix.SerializedField;
 
-public final class FixMessageHandler extends SimpleChannelHandler {
+public final class SerializedFieldHandler extends SimpleChannelHandler {
 
-    private final Sender<FixMessage> ringBufferSender;
+    private final Sender<List<SerializedField>> ringBufferSender;
 
-    public FixMessageHandler(final Sender<FixMessage> ringBufferSender) {
+    public SerializedFieldHandler(final Sender<List<SerializedField>> ringBufferSender) {
         this.ringBufferSender = ringBufferSender;
     }
 
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-        final FixMessage fixMessage = (FixMessage) e.getMessage();
+        @SuppressWarnings("unchecked")
+        final List<SerializedField> fieldsAndValues = (List<SerializedField>) e.getMessage();
 
-        this.ringBufferSender.send(fixMessage);
+        this.ringBufferSender.send(fieldsAndValues);
     }
 
     @Override
