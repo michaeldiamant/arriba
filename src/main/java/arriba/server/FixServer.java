@@ -1,6 +1,7 @@
 package arriba.server;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,13 +14,13 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import arriba.common.Sender;
-import arriba.fix.disruptor.ReceivingFixMessageEntryBatchHandler;
+import arriba.fix.SerializedField;
 import arriba.fix.disruptor.FixMessageEntry;
 import arriba.fix.disruptor.FixMessageEntryFactory;
-import arriba.fix.disruptor.FixMessageToRingBufferEntryAdapter;
-import arriba.fix.messages.FixMessage;
-import arriba.fix.netty.FixMessageHandler;
+import arriba.fix.disruptor.SerializedFieldsToRingBufferEntryAdapter;
+import arriba.fix.disruptor.SessionNotifyingFixMessageEntryBatchHandler;
 import arriba.fix.netty.FixMessageFrameDecoder;
+import arriba.fix.netty.SerializedFieldHandler;
 import arriba.fix.session.AlwaysResolvingSessionResolver;
 import arriba.fix.session.SessionResolver;
 import arriba.senders.RingBufferSender;
@@ -42,7 +43,9 @@ public class FixServer {
 
         final ConsumerBarrier<FixMessageEntry> consumerBarrier = ringBuffer.createConsumerBarrier();
         final Consumer consumer = new BatchConsumer<FixMessageEntry>(consumerBarrier,
-                new ReceivingFixMessageEntryBatchHandler(this.sessionResolver()));
+                new SessionNotifyingFixMessageEntryBatchHandler(this.sessionResolver()));
+
+        // FIXME Modify consumers to reflect introduction of deserializing consumer handler.
 
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(consumer);
@@ -66,7 +69,7 @@ public class FixServer {
 
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        final ChannelHandler deserializedFixMessageHandler = new FixMessageHandler(this.ringBufferSender(producerBarrier));
+        final ChannelHandler deserializedFixMessageHandler = new SerializedFieldHandler(this.ringBufferSender(producerBarrier));
 
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             public ChannelPipeline getPipeline() {
@@ -81,8 +84,8 @@ public class FixServer {
         return bootstrap;
     }
 
-    private Sender<FixMessage> ringBufferSender(final ProducerBarrier<FixMessageEntry> producerBarrier) {
-        return new RingBufferSender<FixMessage, FixMessageEntry>(producerBarrier,
-                new FixMessageToRingBufferEntryAdapter());
+    private Sender<List<SerializedField>> ringBufferSender(final ProducerBarrier<FixMessageEntry> producerBarrier) {
+        return new RingBufferSender<List<SerializedField>, FixMessageEntry>(producerBarrier,
+                new SerializedFieldsToRingBufferEntryAdapter());
     }
 }

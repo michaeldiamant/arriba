@@ -9,8 +9,8 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
-import arriba.common.Tuple;
 import arriba.fix.Fields;
+import arriba.fix.SerializedField;
 import arriba.fix.Tags;
 
 import com.google.common.collect.Lists;
@@ -24,7 +24,7 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
     private byte[] tag;
     private byte[] value;
     private boolean hasFoundFinalDelimiter;
-    private List<Tuple<byte[], byte[]>> tagsAndValues;
+    private List<SerializedField> serializedFields;
 
     public FixMessageFrameDecoder() {
         this.reset();
@@ -49,12 +49,12 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
                 this.nextFlagByte = Fields.EQUAL_SIGN;
 
-                this.tagsAndValues.add(new Tuple<byte[], byte[]>(this.tag, this.value));
+                this.serializedFields.add(new SerializedField(this.tag, this.value));
 
                 if (this.hasFoundFinalDelimiter) {
                     this.hasFoundFinalDelimiter = false;
 
-                    final List<Tuple<byte[], byte[]>> tagsAndValuesCopy = new ArrayList<Tuple<byte[], byte[]>>(this.tagsAndValues);
+                    final List<SerializedField> tagsAndValuesCopy = new ArrayList<SerializedField>(this.serializedFields);
 
                     this.reset();
 
@@ -87,6 +87,6 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
         this.nextFlagByte = Fields.EQUAL_SIGN;
         this.hasFoundFinalDelimiter = false;
         // TODO Should the list be cleared first?
-        this.tagsAndValues = Lists.newLinkedList();
+        this.serializedFields = Lists.newLinkedList();
     }
 }
