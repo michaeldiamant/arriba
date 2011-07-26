@@ -1,13 +1,9 @@
 package arriba.scala.fix.messages
 
-import arriba.fix.session.SessionId
+import arriba.scala.fix.session.SessionId
 import arriba.scala.fix.FixFieldCollection
 
-abstract class FixMessage {
-  protected def this(fixFieldCollection: Nothing) {
-    this ()
-    this.fixFieldCollection = fixFieldCollection
-  }
+abstract class FixMessage(fixFieldCollection: FixFieldCollection) {
 
   def getSessionId: SessionId = {
     null
@@ -32,7 +28,5 @@ abstract class FixMessage {
   def toByteArray: Array[Byte] = {
     this.fixFieldCollection.toByteArray
   }
-
-  private var fixFieldCollection: FixFieldCollection = null
 }
 
