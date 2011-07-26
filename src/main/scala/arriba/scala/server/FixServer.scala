@@ -11,7 +11,7 @@ import com.lmax.disruptor._
 import org.jboss.netty.channel._
 import arriba.common.Sender
 import arriba.fix.messages.FixMessage
-import arriba.senders.RingBufferSender
+import arriba.scala.senders.RingBufferSender
 
 class FixServer {
   def start() {

@@ -7,7 +7,7 @@ import arriba.fix.netty.{FixMessageHandler, FixMessageFrameDecoder}
 import java.net.InetSocketAddress
 import org.jboss.netty.channel.{ChannelPipelineFactory, Channels, ChannelPipeline, ChannelFactory}
 import arriba.fix.messages.FixMessage
-import arriba.senders.VoidSender
+import arriba.scala.senders.VoidSender
 import arriba.common.Sender
 
 object NettyAcceptor {
