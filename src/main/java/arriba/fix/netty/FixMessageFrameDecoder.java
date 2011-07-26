@@ -1,36 +1,30 @@
 package arriba.fix.netty;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
-import arriba.fix.FixFieldCollection;
+import arriba.common.Tuple;
+import arriba.fix.Fields;
 import arriba.fix.Tags;
-import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.FixMessageFactory;
+
+import com.google.common.collect.Lists;
 
 public final class FixMessageFrameDecoder extends FrameDecoder {
-    private static final byte FIELD_DELIMITER = "\001".getBytes()[0];
-    private static final byte EQUAL_SIGN = "=".getBytes()[0];
-    //    private static final byte[] HEADER_PATTERN = "8=FIXt.4.0\0019=".getBytes();
 
-
-    // 56, 61, 70, 73, 88, 116, 46, 52, 46, 48, 1, 57, 61 above
-    // 56, 61, 70, 73, 88, 116, 46, 63, 46, 63, 1, 57, 61 w/ ?
-
-    //    int count = 0;
+    private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
 
     private byte nextFlagByte;
     private int nextFlagIndex;
-
-    private int tag;
-    private String value;
+    private byte[] tag;
+    private byte[] value;
     private boolean hasFoundFinalDelimiter;
-    private boolean hasFoundMessageType;
-    private String messageType;
-    private FixFieldCollection.Builder builder;
+    private List<Tuple<byte[], byte[]>> tagsAndValues;
 
     public FixMessageFrameDecoder() {
         this.reset();
@@ -42,39 +36,29 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
             final ChannelBuffer nextValueBuffer = buffer.readBytes(this.nextFlagIndex);
             buffer.readerIndex(buffer.readerIndex() + 1);
 
-            if (EQUAL_SIGN == this.nextFlagByte) {
-                this.tag = Integer.parseInt(new String(nextValueBuffer.array()));
+            if (Fields.EQUAL_SIGN == this.nextFlagByte) {
+                this.tag = nextValueBuffer.array();
 
-                this.nextFlagByte = FIELD_DELIMITER;
+                this.nextFlagByte = Fields.DELIMITER;
 
-                switch (this.tag) {
-                case Tags.CHECKSUM:
+                if (CHECKSUM_BYTES == this.tag) {
                     this.hasFoundFinalDelimiter = true;
-
-                    break;
-                case Tags.MESSAGE_TYPE:
-                    this.hasFoundMessageType = true;
-
-                    break;
                 }
-            } else if (FIELD_DELIMITER == this.nextFlagByte) {
-                this.value = new String(nextValueBuffer.array());
+            } else if (Fields.DELIMITER == this.nextFlagByte) {
+                this.value = nextValueBuffer.array();
 
-                this.nextFlagByte = EQUAL_SIGN;
-                this.builder.addField(this.tag, this.value);
+                this.nextFlagByte = Fields.EQUAL_SIGN;
 
-                if (this.hasFoundMessageType) {
-                    this.hasFoundMessageType = false;
-                    this.messageType = this.value;
-                }
+                this.tagsAndValues.add(new Tuple<byte[], byte[]>(this.tag, this.value));
 
                 if (this.hasFoundFinalDelimiter) {
-                    final FixFieldCollection fixFieldCollection = this.builder.build();
-                    final FixMessage fixMessage = FixMessageFactory.create(fixFieldCollection, this.messageType);
+                    this.hasFoundFinalDelimiter = false;
+
+                    final List<Tuple<byte[], byte[]>> tagsAndValuesCopy = new ArrayList<Tuple<byte[], byte[]>>(this.tagsAndValues);
 
                     this.reset();
 
-                    return fixMessage;
+                    return tagsAndValuesCopy;
                 }
 
             }
@@ -96,13 +80,13 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
     }
 
     private void reset() {
-        this.builder = new FixFieldCollection.Builder();
         this.hasFoundFinalDelimiter = false;
-        this.tag = 0;
-        this.value = "";
+        this.tag = null;
+        this.value = null;
         this.nextFlagIndex = -1;
-        this.nextFlagByte = EQUAL_SIGN;
-        this.hasFoundMessageType = false;
-        this.messageType = "";
+        this.nextFlagByte = Fields.EQUAL_SIGN;
+        this.hasFoundFinalDelimiter = false;
+        // TODO Should the list be cleared first?
+        this.tagsAndValues = Lists.newLinkedList();
     }
 }
