@@ -1,6 +1,6 @@
 package arriba.scala.fix
 
-import arriba.fix.Tags
+import arriba.scala.fix.Tags
 import java.util.{Arrays}
 import collection.mutable.LinkedList
 import java.io.{IOException, ByteArrayOutputStream}
@@ -8,9 +8,6 @@ import java.io.{IOException, ByteArrayOutputStream}
 object FixFieldCollection {
 
   class Builder {
-    def this() {
-      this ()
-    }
 
     def addField(tag: Int, value: String): FixFieldCollection.Builder = {
       //TODO need to make this list stuff work

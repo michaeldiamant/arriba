@@ -3,13 +3,13 @@ package arriba.scala.server
 import java.util.concurrent.{Executors}
 import org.jboss.netty.bootstrap.ServerBootstrap
 import java.net.InetSocketAddress
-import arriba.fix.session.{AlwaysResolvingSessionResolver, SessionResolver}
+import arriba.scala.fix.session.{AlwaysResolvingSessionResolver, SessionResolver}
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
-import arriba.fix.netty.{FixMessageFrameDecoder, SerializedFieldHandler}
+import arriba.scala.fix.netty.{FixMessageFrameDecoder, SerializedFieldHandler}
 import org.jboss.netty.channel._
-import arriba.fix.disruptor.{FixMessageEntry, SerializedFieldsToRingBufferEntryAdapter, SessionNotifyingFixMessageEntryBatchHandler, FixMessageEntryFactory}
+import arriba.scala.fix.disruptor.{FixMessageEntry, SerializedFieldsToRingBufferEntryAdapter, SessionNotifyingFixMessageEntryBatchHandler}
 import com.lmax.disruptor._
-import arriba.fix.SerializedField
+import arriba.scala.fix.SerializedField
 import arriba.scala.senders.RingBufferSender
 import arriba.scala.common.Sender
 

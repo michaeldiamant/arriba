@@ -1,6 +1,6 @@
 package arriba.scala.senders
 
-import arriba.fix.messages.FixMessage
+import arriba.scala.fix.messages.FixMessage
 import arriba.scala.common.Sender
 
 import java.lang.Long

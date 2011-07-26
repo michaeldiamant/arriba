@@ -2,11 +2,7 @@ package arriba.scala.fix.messages
 
 import arriba.scala.fix.FixFieldCollection
 
-final class NewOrderSingle extends FixMessage {
-  protected def this(fixFieldCollection: FixFieldCollection) {
-    this ()
-    super(fixFieldCollection)
-  }
+final class NewOrderSingle(fixFieldCollection: FixFieldCollection) extends FixMessage(fixFieldCollection: FixFieldCollection) {
 
   def getSymbol: String = {
     this.getValue(55)
