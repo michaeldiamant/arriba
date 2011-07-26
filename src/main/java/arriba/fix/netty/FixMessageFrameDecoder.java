@@ -7,6 +7,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 import arriba.fix.FixFieldCollection;
+import arriba.fix.Tags;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.FixMessageFactory;
 
@@ -14,8 +15,7 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
     private static final byte FIELD_DELIMITER = "\001".getBytes()[0];
     private static final byte EQUAL_SIGN = "=".getBytes()[0];
     //    private static final byte[] HEADER_PATTERN = "8=FIXt.4.0\0019=".getBytes();
-    private static final int CHECKSUM_TAG = 10;
-    private static final int MESSAGE_TYPE_TAG = 35;
+
 
     // 56, 61, 70, 73, 88, 116, 46, 52, 46, 48, 1, 57, 61 above
     // 56, 61, 70, 73, 88, 116, 46, 63, 46, 63, 1, 57, 61 w/ ?
@@ -38,9 +38,6 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     @Override
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer) throws Exception {
-        //        ++this.count;
-        //        System.out.println("count = " + this.count);
-
         while ((this.nextFlagIndex = buffer.bytesBefore(this.nextFlagByte)) != -1) {
             final ChannelBuffer nextValueBuffer = buffer.readBytes(this.nextFlagIndex);
             buffer.readerIndex(buffer.readerIndex() + 1);
@@ -51,11 +48,11 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
                 this.nextFlagByte = FIELD_DELIMITER;
 
                 switch (this.tag) {
-                case CHECKSUM_TAG:
+                case Tags.CHECKSUM:
                     this.hasFoundFinalDelimiter = true;
 
                     break;
-                case MESSAGE_TYPE_TAG:
+                case Tags.MESSAGE_TYPE:
                     this.hasFoundMessageType = true;
 
                     break;
@@ -64,7 +61,6 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
                 this.value = new String(nextValueBuffer.array());
 
                 this.nextFlagByte = EQUAL_SIGN;
-                //                System.out.println(this.tag + " = " + this.value);
                 this.builder.addField(this.tag, this.value);
 
                 if (this.hasFoundMessageType) {
