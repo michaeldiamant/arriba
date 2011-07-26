@@ -1,34 +1,6 @@
 package arriba.scala.fix.session
 
-final class SimpleSessionId(targetCompId: String) extends SessionId {
-
-  def getBeginString: String = {
-    throw new UnsupportedOperationException
-  }
-
-  def getSenderCompId: String = {
-    throw new UnsupportedOperationException
-  }
-
-  def getSenderSubId: String = {
-    throw new UnsupportedOperationException
-  }
-
-  def getSenderLocationId: String = {
-    throw new UnsupportedOperationException
-  }
-
-  def getTargetCompId: String = {
-    this.targetCompId
-  }
-
-  def getTargetSubId: String = {
-    throw new UnsupportedOperationException
-  }
-
-  def getTargetLocationId: String = {
-    throw new UnsupportedOperationException
-  }
+final class SimpleSessionId(val targetCompId: String) extends SessionId {
 
   override def hashCode: Int = {
     val prime: Int = 31
@@ -37,27 +9,21 @@ final class SimpleSessionId(targetCompId: String) extends SessionId {
     result
   }
 
-  override def equals(obj: AnyRef): Boolean = {
-    if (this eq obj) {
-      true
-    }
-    if (obj == null) {
-      false
-    }
-    if (this.getClass ne obj.getClass) {
-      false
-    }
-    val other: SimpleSessionId = obj.asInstanceOf[SimpleSessionId]
-    if (this.targetCompId == null) {
-      if (other.targetCompId != null) {
-        false
-      }
-    }
-    else if (!(this.targetCompId == other.targetCompId)) {
-      false
-    }
-    true
+  override def equals(that: Any) = that match {
+    case other: SimpleSessionId => other.targetCompId == targetCompId
+    case _ => false
   }
 
+  def beginString = null
+
+  def senderSubId = null
+
+  def senderLocationId = null
+
+  def targetSubId = null
+
+  def targetLocationId = null
+
+  def senderCompId = null
 }
 

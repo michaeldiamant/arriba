@@ -58,7 +58,7 @@ final class FixMessageFrameDecoder extends FrameDecoder {
     nextFlagIndex = -1
     nextFlagByte = Fields.EQUAL_SIGN
     hasFoundFinalDelimiter = false
-    serializedFields = Lists.newLinkedList
+    //serializedFields = Lists.newLinkedList
   }
 
   private var nextFlagByte: Byte = Fields.EQUAL_SIGN

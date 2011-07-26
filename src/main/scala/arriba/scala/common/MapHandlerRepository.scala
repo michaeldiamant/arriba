@@ -1,10 +1,8 @@
 package arriba.scala.common
 
-final class MapHandlerRepository[ID, M] extends HandlerRepository[ID, M] {
-  def this(messageIdentifierToHandler: Map[ID, Handler[M]]) {
-    this ()
-    this.messageIdentifierToHandler = messageIdentifierToHandler
-  }
+import collection.mutable.HashMap
+
+final class MapHandlerRepository[ID, M](messageIdentifierToHandler: HashMap[ID, Handler[M]]) extends HandlerRepository[ID, M] {
 
   def registerHandler(messageIdentifier: ID, handler: Handler[M]) {
     messageIdentifierToHandler += (messageIdentifier -> handler)
@@ -17,7 +15,5 @@ final class MapHandlerRepository[ID, M] extends HandlerRepository[ID, M] {
       case _ =>  throw new Exception("Provided identifier " + messageIdentifier + " does not map to a known handler.")
     }
   }
-
-  private var messageIdentifierToHandler: Map[ID, Handler[M]] = null
 }
 
