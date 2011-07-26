@@ -30,4 +30,8 @@ public abstract class FixMessage {
     public String getValue(final int tag) {
         return this.fixFieldCollection.getValue(tag);
     }
+
+    public byte[] toByteArray() {
+        return this.fixFieldCollection.toByteArray();
+    }
 }
