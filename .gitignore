@@ -7,3 +7,8 @@ target/
 *.iws
 .scala_dependencies
 *.scssc
+*.db.trace.db
+*.idea
+lift_proto.db.*
+*.DS_Store
+*.DS_STORE
