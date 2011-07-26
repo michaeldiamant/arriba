@@ -6,11 +6,11 @@ import arriba.fix.session.SessionResolver;
 
 import com.lmax.disruptor.BatchHandler;
 
-public final class ReceivingFixMessageEntryBatchHandler implements BatchHandler<FixMessageEntry> {
+public final class SessionNotifyingFixMessageEntryBatchHandler implements BatchHandler<FixMessageEntry> {
 
     private final SessionResolver sessionResolver;
 
-    public ReceivingFixMessageEntryBatchHandler(final SessionResolver sessionResolver) {
+    public SessionNotifyingFixMessageEntryBatchHandler(final SessionResolver sessionResolver) {
         this.sessionResolver = sessionResolver;
     }
 
