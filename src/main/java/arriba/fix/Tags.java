@@ -5,6 +5,9 @@ public final class Tags {
     private static final int MAXIMUM_TAG = 1000;
     private static final byte[][] BYTE_ARRAY_TAGS = new byte[MAXIMUM_TAG][];
 
+    public static final int CHECKSUM = 10;
+    public static final int MESSAGE_TYPE = 35;
+
     static {
         final int fieldDelimiterLength = 1;
         for (int tagIndex = 0; tagIndex < MAXIMUM_TAG; tagIndex++) {
