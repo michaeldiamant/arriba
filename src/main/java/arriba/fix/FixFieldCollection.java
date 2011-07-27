@@ -38,7 +38,7 @@ public class FixFieldCollection {
                 tag = this.tagArray[tagIndex];
                 value = this.valueArray[tagIndex];
 
-                final byte[] tagBytes = Tags.toByteArray(tag);
+                final byte[] tagBytes = Tags.toDelimitedByteArray(tag);
                 final byte[] valueBytes = value.getBytes();
 
                 messageBytes.write(tagBytes);
