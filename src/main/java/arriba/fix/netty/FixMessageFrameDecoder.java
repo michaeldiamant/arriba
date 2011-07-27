@@ -46,7 +46,6 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
                     return buffer.array();
                 }
-
             }
         }
 
@@ -58,7 +57,7 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
         // TODO Should probably be doing something here.
         System.out.println("decodelast called");
         return null;
-    };
+    }
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
