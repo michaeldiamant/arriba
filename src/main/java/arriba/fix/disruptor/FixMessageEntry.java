@@ -1,15 +1,12 @@
 package arriba.fix.disruptor;
 
-import java.util.List;
-
-import arriba.fix.SerializedField;
 import arriba.fix.messages.FixMessage;
 
 import com.lmax.disruptor.AbstractEntry;
 
 public final class FixMessageEntry extends AbstractEntry  {
 
-    private List<SerializedField> serializedFields;
+    private byte[] serializedFixMessage;
     private FixMessage fixMessage;
 
     public FixMessageEntry() {}
@@ -22,11 +19,11 @@ public final class FixMessageEntry extends AbstractEntry  {
         return this.fixMessage;
     }
 
-    public void setSerializedFields(final List<SerializedField> serializedFields) {
-        this.serializedFields = serializedFields;
+    public byte[] getSerializedFixMessage() {
+        return this.serializedFixMessage;
     }
 
-    public List<SerializedField> getSerializedFields() {
-        return this.serializedFields;
+    public void setSerializedFixMessage(final byte[] serializedFixMessage) {
+        this.serializedFixMessage = serializedFixMessage;
     }
 }
