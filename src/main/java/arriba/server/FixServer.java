@@ -1,7 +1,6 @@
 package arriba.server;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -14,13 +13,12 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 import arriba.common.Sender;
-import arriba.fix.SerializedField;
 import arriba.fix.disruptor.FixMessageEntry;
 import arriba.fix.disruptor.FixMessageEntryFactory;
-import arriba.fix.disruptor.SerializedFieldsToRingBufferEntryAdapter;
+import arriba.fix.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.fix.disruptor.SessionNotifyingFixMessageEntryBatchHandler;
 import arriba.fix.netty.FixMessageFrameDecoder;
-import arriba.fix.netty.SerializedFieldHandler;
+import arriba.fix.netty.SerializedFixMessageHandler;
 import arriba.fix.session.AlwaysResolvingSessionResolver;
 import arriba.fix.session.SessionResolver;
 import arriba.senders.RingBufferSender;
@@ -69,7 +67,7 @@ public class FixServer {
 
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
-        final ChannelHandler deserializedFixMessageHandler = new SerializedFieldHandler(this.ringBufferSender(producerBarrier));
+        final ChannelHandler deserializedFixMessageHandler = new SerializedFixMessageHandler(this.ringBufferSender(producerBarrier));
 
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
             public ChannelPipeline getPipeline() {
@@ -84,8 +82,8 @@ public class FixServer {
         return bootstrap;
     }
 
-    private Sender<List<SerializedField>> ringBufferSender(final ProducerBarrier<FixMessageEntry> producerBarrier) {
-        return new RingBufferSender<List<SerializedField>, FixMessageEntry>(producerBarrier,
-                new SerializedFieldsToRingBufferEntryAdapter());
+    private Sender<byte[]> ringBufferSender(final ProducerBarrier<FixMessageEntry> producerBarrier) {
+        return new RingBufferSender<byte[], FixMessageEntry>(producerBarrier,
+                new SerializedFixMessageToRingBufferEntryAdapter());
     }
 }

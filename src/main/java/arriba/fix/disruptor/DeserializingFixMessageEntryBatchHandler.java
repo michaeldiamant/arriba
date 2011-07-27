@@ -5,7 +5,7 @@ import com.lmax.disruptor.BatchHandler;
 public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<FixMessageEntry> {
 
     public void onAvailable(final FixMessageEntry entry) throws Exception {
-        entry.getSerializedFields();
+        entry.getSerializedFixMessage();
 
         // TODO Deserialize fields into FixMessage.
 
