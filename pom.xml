@@ -13,6 +13,12 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<repositories>
+	  <repository>
+          <id>disruptor</id>
+          <url>https://repository-helios.forge.cloudbees.com/release/</url>
+	  </repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -35,7 +41,7 @@
         <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2-RELEASE</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/disruptor-1.2.1.jar</systemPath>
         </dependency>		
