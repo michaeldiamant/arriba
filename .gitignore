@@ -1,7 +1,6 @@
 target/
 *.project
 project/boot
-project/Build
 project/target
 *.classpath
 *.settings
