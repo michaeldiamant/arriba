@@ -1,7 +1,6 @@
 package arriba.fix.netty;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -10,10 +9,7 @@ import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 import arriba.fix.Fields;
-import arriba.fix.SerializedField;
 import arriba.fix.Tags;
-
-import com.google.common.collect.Lists;
 
 public final class FixMessageFrameDecoder extends FrameDecoder {
 
@@ -21,10 +17,7 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     private byte nextFlagByte;
     private int nextFlagIndex;
-    private byte[] tag;
-    private byte[] value;
     private boolean hasFoundFinalDelimiter;
-    private List<SerializedField> serializedFields;
 
     public FixMessageFrameDecoder() {
         this.reset();
@@ -37,28 +30,21 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
             buffer.readerIndex(buffer.readerIndex() + 1);
 
             if (Fields.EQUAL_SIGN == this.nextFlagByte) {
-                this.tag = nextValueBuffer.array();
-
                 this.nextFlagByte = Fields.DELIMITER;
 
-                if (CHECKSUM_BYTES == this.tag) {
+                final byte[] tag = nextValueBuffer.array();
+                if (Arrays.equals(CHECKSUM_BYTES, tag)) {
                     this.hasFoundFinalDelimiter = true;
                 }
             } else if (Fields.DELIMITER == this.nextFlagByte) {
-                this.value = nextValueBuffer.array();
-
                 this.nextFlagByte = Fields.EQUAL_SIGN;
-
-                this.serializedFields.add(new SerializedField(this.tag, this.value));
 
                 if (this.hasFoundFinalDelimiter) {
                     this.hasFoundFinalDelimiter = false;
 
-                    final List<SerializedField> tagsAndValuesCopy = new ArrayList<SerializedField>(this.serializedFields);
-
                     this.reset();
 
-                    return tagsAndValuesCopy;
+                    return buffer.array();
                 }
 
             }
@@ -81,12 +67,8 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     private void reset() {
         this.hasFoundFinalDelimiter = false;
-        this.tag = null;
-        this.value = null;
         this.nextFlagIndex = -1;
-        this.nextFlagByte = Fields.EQUAL_SIGN;
+        this.nextFlagByte = Fields.DELIMITER;
         this.hasFoundFinalDelimiter = false;
-        // TODO Should the list be cleared first?
-        this.serializedFields = Lists.newLinkedList();
     }
 }

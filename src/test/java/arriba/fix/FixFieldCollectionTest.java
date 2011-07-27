@@ -52,7 +52,7 @@ public class FixFieldCollectionTest {
         final ByteArrayOutputStream messageBytes = new ByteArrayOutputStream();
 
         for (final Field<String> field : this.fields) {
-            final byte[] tagBytes = Tags.toByteArray(field.getTag());
+            final byte[] tagBytes = Tags.toDelimitedByteArray(field.getTag());
             final byte[] valueBytes = field.getValue().getBytes();
 
             messageBytes.write(tagBytes);
