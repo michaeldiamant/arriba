@@ -2,47 +2,33 @@ package arriba.server;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
-import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.ChannelHandler;
 import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 public class NettyInitiator {
 
     public NettyInitiator() {
-        final ChannelFactory factory = new NioClientSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
+        final ChannelHandler writeOnConnectHandler = new SimpleChannelHandler() {
 
-        final ClientBootstrap bootstrap = new ClientBootstrap(factory);
+            @Override
+            public void channelConnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
+                final Channel channel = e.getChannel();
 
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                return Channels.pipeline(new SimpleChannelHandler() {
+                writeMsgAtOnce(channel);
+                //                        writeMsgWithSplit(channel);
 
-                    @Override
-                    public void channelConnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
-                        final Channel channel = e.getChannel();
-
-                        writeMsgAtOnce(channel);
-                        //                        writeMsgWithSplit(channel);
-
-                        //                        writeContinuouslyForMs(channel, 1000);
-                    }
-                });
+                //                        writeContinuouslyForMs(channel, 1000);
             }
-        });
+        };
 
-        bootstrap.setOption("tcpNoDelay", true);
-        bootstrap.setOption("keepAlive", true);
+        final ClientBootstrap bootstrap = FixClientBootstrap.create(writeOnConnectHandler);
 
         bootstrap.connect(new InetSocketAddress("localhost", 8080));
     }
