@@ -65,7 +65,6 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
     }
 
     private void reset() {
-        this.hasFoundFinalDelimiter = false;
         this.nextFlagIndex = -1;
         this.nextFlagByte = Fields.DELIMITER;
         this.hasFoundFinalDelimiter = false;
