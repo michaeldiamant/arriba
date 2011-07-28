@@ -1,5 +1,7 @@
 target/
 *.project
+project/boot
+project/target
 *.classpath
 *.settings
 *.iml
