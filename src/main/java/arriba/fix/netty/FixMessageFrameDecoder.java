@@ -3,6 +3,7 @@ package arriba.fix.netty;
 import java.util.Arrays;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -25,7 +26,12 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     @Override
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer) throws Exception {
+
+        // TODO Should verify that tags are being received in correct order (e.g. checksume is last tag).
+        // It is currently being assumed that tags are in the proper order.
+
         while ((this.nextFlagIndex = buffer.bytesBefore(this.nextFlagByte)) != -1) {
+            // TODO Avoid reading unless looking for tag.
             final ChannelBuffer nextValueBuffer = buffer.readBytes(this.nextFlagIndex);
             buffer.readerIndex(buffer.readerIndex() + 1);
 
@@ -44,7 +50,12 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
                     this.reset();
 
-                    return buffer.array();
+                    final byte[] bufferBytes = buffer.array();
+                    final byte[] fixMessageBytes = new byte[buffer.readerIndex()];
+                    System.arraycopy(bufferBytes, 0, fixMessageBytes, 0, fixMessageBytes.length);
+
+                    buffer.discardReadBytes();
+                    return ChannelBuffers.copiedBuffer(fixMessageBytes);
                 }
             }
         }
@@ -66,7 +77,7 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     private void reset() {
         this.nextFlagIndex = -1;
-        this.nextFlagByte = Fields.DELIMITER;
+        this.nextFlagByte = Fields.EQUAL_SIGN;
         this.hasFoundFinalDelimiter = false;
     }
 }
