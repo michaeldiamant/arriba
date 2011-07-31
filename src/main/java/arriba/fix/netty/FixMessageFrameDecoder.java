@@ -15,6 +15,7 @@ import arriba.fix.Tags;
 public final class FixMessageFrameDecoder extends FrameDecoder {
 
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
+    private static final int DELIMITER_LENGTH = 1;
 
     private byte nextFlagByte;
     private int nextFlagIndex;
@@ -27,38 +28,45 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
     @Override
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer) throws Exception {
 
-        // TODO Should verify that tags are being received in correct order (e.g. checksume is last tag).
+        // TODO Should verify that tags are being received in correct order (e.g. checksum is last tag).
         // It is currently being assumed that tags are in the proper order.
 
+        // Maintain the original buffer reader index to calculate the byte[] size when a complete FIX message is found.
+        final int bufferStartReadIndex = buffer.readerIndex();
+
+        buffer.markReaderIndex();
+
         while ((this.nextFlagIndex = buffer.bytesBefore(this.nextFlagByte)) != -1) {
-            // TODO Avoid reading unless looking for tag.
-            final ChannelBuffer nextValueBuffer = buffer.readBytes(this.nextFlagIndex);
-            buffer.readerIndex(buffer.readerIndex() + 1);
 
             if (Fields.EQUAL_SIGN == this.nextFlagByte) {
                 this.nextFlagByte = Fields.DELIMITER;
 
-                final byte[] tag = nextValueBuffer.array();
+                final byte[] tag = buffer.readBytes(this.nextFlagIndex).array();
+                buffer.skipBytes(DELIMITER_LENGTH);
+
                 if (Arrays.equals(CHECKSUM_BYTES, tag)) {
                     this.hasFoundFinalDelimiter = true;
                 }
             } else if (Fields.DELIMITER == this.nextFlagByte) {
                 this.nextFlagByte = Fields.EQUAL_SIGN;
 
+                buffer.skipBytes(this.nextFlagIndex + DELIMITER_LENGTH);
+
                 if (this.hasFoundFinalDelimiter) {
                     this.hasFoundFinalDelimiter = false;
 
+                    final byte[] fixMessageBytes = new byte[buffer.readerIndex() - bufferStartReadIndex];
+                    System.arraycopy(buffer.array(), bufferStartReadIndex, fixMessageBytes, 0, fixMessageBytes.length);
+
                     this.reset();
 
-                    final byte[] bufferBytes = buffer.array();
-                    final byte[] fixMessageBytes = new byte[buffer.readerIndex()];
-                    System.arraycopy(bufferBytes, 0, fixMessageBytes, 0, fixMessageBytes.length);
-
-                    buffer.discardReadBytes();
                     return ChannelBuffers.copiedBuffer(fixMessageBytes);
                 }
             }
         }
+
+        // Reset reader index so Netty will add new bytes to existing buffer until complete FIX message is received.
+        buffer.resetReaderIndex();
 
         return null;
     }
@@ -72,6 +80,8 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     @Override
     public void exceptionCaught(final ChannelHandlerContext ctx, final ExceptionEvent e) throws Exception {
+        super.exceptionCaught(ctx, e);
+
         e.getCause().printStackTrace();
     }
 
