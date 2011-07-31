@@ -3,7 +3,6 @@ package arriba.fix.disruptor;
 import java.util.Arrays;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 
 import arriba.fix.Fields;
 import arriba.fix.FixFieldCollection;
@@ -31,15 +30,12 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
     }
 
     public void onAvailable(final FixMessageEntry entry) throws Exception {
-        final byte[] serializedFixMessage = entry.getSerializedFixMessage();
-        final ChannelBuffer fixMessageBuffer = ChannelBuffers.copiedBuffer(serializedFixMessage);
+        final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
-        final FixMessage fixMessage = this.deserializeFixMessage(fixMessageBuffer);
+        final FixMessage fixMessage = this.deserializeFixMessage(serializedFixMessage);
 
         entry.setFixMessage(fixMessage);
     }
-
-
 
     private FixMessage deserializeFixMessage(final ChannelBuffer fixMessageBuffer) throws DeserializationException {
 
