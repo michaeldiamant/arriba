@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Sender;
@@ -61,8 +62,8 @@ public class FixServer {
         return FixServerBootstrap.create(new FixMessageFrameDecoder(), deserializedFixMessageHandler);
     }
 
-    private Sender<byte[]> ringBufferSender(final ProducerBarrier<FixMessageEntry> producerBarrier) {
-        return new RingBufferSender<byte[], FixMessageEntry>(producerBarrier,
+    private Sender<ChannelBuffer> ringBufferSender(final ProducerBarrier<FixMessageEntry> producerBarrier) {
+        return new RingBufferSender<ChannelBuffer, FixMessageEntry>(producerBarrier,
                 new SerializedFixMessageToRingBufferEntryAdapter());
     }
 }

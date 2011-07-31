@@ -1,12 +1,14 @@
 package arriba.fix.disruptor;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 import arriba.fix.messages.FixMessage;
 
 import com.lmax.disruptor.AbstractEntry;
 
 public final class FixMessageEntry extends AbstractEntry  {
 
-    private byte[] serializedFixMessage;
+    private ChannelBuffer serializedFixMessage;
     private FixMessage fixMessage;
 
     public FixMessageEntry() {}
@@ -19,11 +21,11 @@ public final class FixMessageEntry extends AbstractEntry  {
         return this.fixMessage;
     }
 
-    public byte[] getSerializedFixMessage() {
+    public ChannelBuffer getSerializedFixMessage() {
         return this.serializedFixMessage;
     }
 
-    public void setSerializedFixMessage(final byte[] serializedFixMessage) {
+    public void setSerializedFixMessage(final ChannelBuffer serializedFixMessage) {
         this.serializedFixMessage = serializedFixMessage;
     }
 }
