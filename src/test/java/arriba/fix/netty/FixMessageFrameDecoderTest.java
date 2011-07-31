@@ -55,16 +55,13 @@ public class FixMessageFrameDecoderTest {
         final ChannelBuffer singleFixMessageBuffer = FixMessageFrameDecoderTest.writeFixMessage(this.exampleFixMessage);
         final List<ChannelBuffer> channelBuffers = Lists.newArrayList();
         for (final String fixMessageFragment : splitOnTag("21", this.exampleFixMessage)) {
-            System.out.println("frag: " + fixMessageFragment);
             channelBuffers.add(FixMessageFrameDecoderTest.writeFixMessage(fixMessageFragment));
         }
 
         this.decoderEmbedder.offer(channelBuffers.get(0));
-        //        System.out.println("offering " + new String(channelBuffers.get(0).array()));
         final ChannelBuffer nullBuffer = this.decoderEmbedder.poll();
         assertNull(nullBuffer);
 
-        System.out.println("offering " + new String(channelBuffers.get(1).array()));
         this.decoderEmbedder.offer(channelBuffers.get(1));
         final ChannelBuffer fixMessageBuffer = this.decoderEmbedder.poll();
         FixMessageFrameDecoderTest.assertThatByteArraysAreEqual(fixMessageBuffer, singleFixMessageBuffer);
