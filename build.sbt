@@ -1,6 +1,5 @@
 scalaVersion := "2.9.0-1"
 
-
 libraryDependencies ++= Seq(
   "org.jboss.netty" % "netty" % "3.2.4.Final",
   "com.google.collections" % "google-collections" % "1.0",
