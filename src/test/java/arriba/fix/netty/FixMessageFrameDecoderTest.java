@@ -73,7 +73,7 @@ public class FixMessageFrameDecoderTest {
             fixMessageBuilder.append(rawFixMessage);
         }
 
-        return ChannelBuffers.copiedBuffer(fixMessageBuilder, Charset.defaultCharset());
+      return ChannelBuffers.copiedBuffer(fixMessageBuilder.toString().getBytes());
     }
 
     private static List<String> splitOnTag(final String tag, final String fixMessage) {
