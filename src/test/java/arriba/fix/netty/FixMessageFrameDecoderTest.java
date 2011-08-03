@@ -4,7 +4,6 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-import java.nio.charset.Charset;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -73,7 +72,7 @@ public class FixMessageFrameDecoderTest {
             fixMessageBuilder.append(rawFixMessage);
         }
 
-      return ChannelBuffers.copiedBuffer(fixMessageBuilder.toString().getBytes());
+        return ChannelBuffers.copiedBuffer(fixMessageBuilder.toString().getBytes());
     }
 
     private static List<String> splitOnTag(final String tag, final String fixMessage) {
