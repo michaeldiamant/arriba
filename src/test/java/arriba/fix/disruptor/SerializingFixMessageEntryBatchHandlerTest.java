@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import arriba.fix.Field;
@@ -35,6 +36,7 @@ public class SerializingFixMessageEntryBatchHandlerTest {
 		assertNotNull(fixMessageEntry.getSerializedFixMessage());
 	}
 	
+	@Ignore
 	@Test
 	public void testFixMessageSerialization() throws Exception {
 		final FixMessageEntry fixMessageEntry = createPreloadedFixMessageEntry();
@@ -42,6 +44,7 @@ public class SerializingFixMessageEntryBatchHandlerTest {
 		this.handler.onAvailable(fixMessageEntry);
 		
 		final ChannelBuffer expectedSerializedFixMessage = FixMessages.toChannelBuffer(FixMessages.EXAMPLE_NEW_ORDER_SINGLE);
+		
 		assertThatByteArraysAreEqual(fixMessageEntry.getSerializedFixMessage(), expectedSerializedFixMessage);
 	}
 	
