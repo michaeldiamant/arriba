@@ -7,10 +7,11 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
+
+import arriba.fix.netty.util.FixMessages;
 
 import com.google.common.collect.Lists;
 
@@ -28,7 +29,7 @@ public class FixMessageFrameDecoderTest {
 
     @Test
     public void testDecodeOfSingleFixMessageSentInOneWrite() throws Exception {
-        final ChannelBuffer fixMessageBuffer = FixMessageFrameDecoderTest.writeFixMessage(this.exampleFixMessage);
+        final ChannelBuffer fixMessageBuffer = FixMessages.toChannelBuffer(this.exampleFixMessage);
 
         this.decoderEmbedder.offer(fixMessageBuffer);
         final ChannelBuffer decodedBuffer = this.decoderEmbedder.poll();
@@ -38,8 +39,8 @@ public class FixMessageFrameDecoderTest {
 
     @Test
     public void testDecodeOfMultipleFixMessagesSentInOneWrite() throws Exception {
-        final ChannelBuffer singleFixMessageBuffer = FixMessageFrameDecoderTest.writeFixMessage(this.exampleFixMessage);
-        final ChannelBuffer twoFixMessagesBuffer = FixMessageFrameDecoderTest.writeFixMessage(this.exampleFixMessage, 2);
+        final ChannelBuffer singleFixMessageBuffer = FixMessages.toChannelBuffer(this.exampleFixMessage);
+        final ChannelBuffer twoFixMessagesBuffer = FixMessages.toChannelBuffer(this.exampleFixMessage, 2);
 
         this.decoderEmbedder.offer(twoFixMessagesBuffer);
         final ChannelBuffer firstFixMessageBuffer = this.decoderEmbedder.poll();
@@ -51,10 +52,10 @@ public class FixMessageFrameDecoderTest {
 
     @Test
     public void testDecodeOfSingleFixMessageSentInTwoWrites() throws Exception {
-        final ChannelBuffer singleFixMessageBuffer = FixMessageFrameDecoderTest.writeFixMessage(this.exampleFixMessage);
+        final ChannelBuffer singleFixMessageBuffer = FixMessages.toChannelBuffer(this.exampleFixMessage);
         final List<ChannelBuffer> channelBuffers = Lists.newArrayList();
-        for (final String fixMessageFragment : splitOnTag("21", this.exampleFixMessage)) {
-            channelBuffers.add(FixMessageFrameDecoderTest.writeFixMessage(fixMessageFragment));
+        for (final String fixMessageFragment : FixMessages.splitOnTag("21", this.exampleFixMessage)) {
+            channelBuffers.add(FixMessages.toChannelBuffer(fixMessageFragment));
         }
 
         this.decoderEmbedder.offer(channelBuffers.get(0));
@@ -63,29 +64,7 @@ public class FixMessageFrameDecoderTest {
 
         this.decoderEmbedder.offer(channelBuffers.get(1));
         final ChannelBuffer fixMessageBuffer = this.decoderEmbedder.poll();
-        FixMessageFrameDecoderTest.assertThatByteArraysAreEqual(fixMessageBuffer, singleFixMessageBuffer);
-    }
-
-    private static ChannelBuffer writeFixMessage(final String rawFixMessage, final int times) {
-        final StringBuilder fixMessageBuilder = new StringBuilder();
-        for (int time = 0; time < times; time++) {
-            fixMessageBuilder.append(rawFixMessage);
-        }
-
-        return ChannelBuffers.copiedBuffer(fixMessageBuilder.toString().getBytes());
-    }
-
-    private static List<String> splitOnTag(final String tag, final String fixMessage) {
-        final String delimitedTag = tag + "=";
-        final int delimitedTagIndex = fixMessage.indexOf(delimitedTag);
-        return Lists.newArrayList(
-                fixMessage.substring(0, delimitedTagIndex),
-                fixMessage.substring(delimitedTagIndex, fixMessage.length())
-        );
-    }
-
-    private static ChannelBuffer writeFixMessage(final String rawFixMessage) {
-        return writeFixMessage(rawFixMessage, 1);
+        assertThatByteArraysAreEqual(fixMessageBuffer, singleFixMessageBuffer);
     }
 
     private static void assertThatByteArraysAreEqual(final ChannelBuffer actualBuffer, final ChannelBuffer expectedBuffer) {

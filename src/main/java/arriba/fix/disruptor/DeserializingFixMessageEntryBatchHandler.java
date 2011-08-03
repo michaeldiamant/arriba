@@ -38,7 +38,6 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
     }
 
     private FixMessage deserializeFixMessage(final ChannelBuffer fixMessageBuffer) throws DeserializationException {
-
         while ((this.nextFlagIndex = fixMessageBuffer.bytesBefore(this.nextFlagByte)) != -1) {
             final ChannelBuffer nextValueBuffer = fixMessageBuffer.readBytes(this.nextFlagIndex);
             fixMessageBuffer.readerIndex(fixMessageBuffer.readerIndex() + 1);
@@ -64,13 +63,13 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
                     this.hasFoundMessageType = false;
 
                     this.messageType = value;
-                }
-                if (this.hasFoundFinalDelimiter) {
+                } else if (this.hasFoundFinalDelimiter) {
                     this.hasFoundFinalDelimiter = false;
 
+                    final FixMessage fixMessage = FixMessageFactory.create(this.fixFieldCollectionBuilder.build(), this.messageType);
                     this.reset();
 
-                    return FixMessageFactory.create(this.fixFieldCollectionBuilder.build(), this.messageType);
+                    return fixMessage;
                 }
             }
         }
@@ -81,7 +80,7 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
 
     private void reset() {
         this.nextFlagIndex = -1;
-        this.nextFlagByte = Fields.DELIMITER;
+        this.nextFlagByte = Fields.EQUAL_SIGN;
         this.hasFoundFinalDelimiter = false;
         this.hasFoundMessageType = false;
         this.messageType = "";
