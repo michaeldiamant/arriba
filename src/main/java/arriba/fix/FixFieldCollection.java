@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 // TODO Implement Map<K, V>.
 public class FixFieldCollection {
@@ -17,6 +20,7 @@ public class FixFieldCollection {
     private final String[] bodyValueArray;
     private final int[] trailerTagArray;
     private final String[] trailerValueArray;
+    private final Map<Integer, FixFieldCollection> groupCountTagToGroupFields;
 
     private FixFieldCollection(final List<Field<String>> headerFields, final List<Field<String>> bodyFields,
             final List<Field<String>> trailerFields) {
@@ -35,6 +39,8 @@ public class FixFieldCollection {
         this.trailerTagArray = new int[trailerFields.size()];
         this.trailerValueArray = new String[trailerFields.size()];
         populate(this.trailerTagArray, this.trailerValueArray, trailerFields);
+
+        this.groupCountTagToGroupFields = Maps.newHashMap();
     }
 
     private static void populate(final int[] tagArray, final String[] valueArray, final List<Field<String>> fields) {
