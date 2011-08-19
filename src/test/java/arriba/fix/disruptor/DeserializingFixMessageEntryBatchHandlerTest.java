@@ -15,7 +15,6 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.FixMessageFactory;
 import arriba.fix.netty.util.FixMessages;
 
 import com.lmax.disruptor.BatchHandler;
@@ -29,7 +28,7 @@ public class DeserializingFixMessageEntryBatchHandlerTest {
     public void before() {
         final FixMessageBuilder<FixChunk> fixMessageBuilder =
             new FixMessageBuilder<FixChunk>(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
-                    mock(FixChunkBuilder.class), new FixMessageFactory());
+                    mock(FixChunkBuilder.class));
         this.handler =
             new DeserializingFixMessageEntryBatchHandler(fixMessageBuilder);
     }
