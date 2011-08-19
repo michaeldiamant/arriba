@@ -28,19 +28,19 @@ public abstract class FixMessage {
     }
 
     public String getMessageType() {
-        return this.getValue(Tags.MESSAGE_TYPE);
+        return this.getHeaderValue(Tags.MESSAGE_TYPE);
     }
 
     public String getSendingTime() {
-        return this.getValue(Tags.SENDING_TIME);
+        return this.getHeaderValue(Tags.SENDING_TIME);
     }
 
     public String getSenderCompId() {
-        return this.getValue(Tags.SENDER_COMP_ID);
+        return this.getHeaderValue(Tags.SENDER_COMP_ID);
     }
 
     public String getTargetCompId() {
-        return this.getValue(Tags.TARGET_COMP_ID);
+        return this.getHeaderValue(Tags.TARGET_COMP_ID);
     }
 
     public String getHeaderValue(final int tag) {
