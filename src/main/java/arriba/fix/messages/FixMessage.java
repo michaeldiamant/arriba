@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
+import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.session.SessionId;
 
@@ -27,15 +28,19 @@ public abstract class FixMessage {
     }
 
     public String getMessageType() {
-        return this.getValue(35);
+        return this.getValue(Tags.MESSAGE_TYPE);
     }
 
     public String getSendingTime() {
-        return this.getValue(52);
+        return this.getValue(Tags.SENDING_TIME);
     }
 
     public String getSenderCompId() {
-        return this.getValue(49);
+        return this.getValue(Tags.SENDER_COMP_ID);
+    }
+
+    public String getTargetCompId() {
+        return this.getValue(Tags.TARGET_COMP_ID);
     }
 
     public String getHeaderValue(final int tag) {
@@ -59,6 +64,8 @@ public abstract class FixMessage {
     public byte[] toByteArray() {
         final ByteArrayOutputStream messageBytes = new ByteArrayOutputStream();
         try {
+            // TODO Write out the BeginStrng and the BodyLength fields.
+
             this.headerChunk.write(messageBytes);
             this.bodyChunk.write(messageBytes);
             for (final FixChunk repeatingGroupChunk : this.groupCountToGroupChunk.values()) {
