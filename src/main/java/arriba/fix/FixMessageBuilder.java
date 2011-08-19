@@ -20,7 +20,7 @@ public final class FixMessageBuilder<C extends FixChunk> {
     private String messageType = "";
 
     public FixMessageBuilder(final FixChunkBuilder<C> headerChunkBuilder, final FixChunkBuilder<C> bodyChunkBuilder,
-            final FixChunkBuilder<C> trailerChunkBuilder, final FixMessageFactory fixMessageFactory) {
+            final FixChunkBuilder<C> trailerChunkBuilder) {
         this.headerChunkBuilder = headerChunkBuilder;
         this.bodyChunkBuilder = bodyChunkBuilder;
         this.trailerChunkBuilder = trailerChunkBuilder;
