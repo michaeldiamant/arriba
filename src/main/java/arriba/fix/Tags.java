@@ -3,7 +3,7 @@ package arriba.fix;
 public final class Tags {
 
     private static final int MAXIMUM_TAG = 1000;
-    private static final int HEADER_COUNT = 6;
+    private static final int HEADER_COUNT = 7;
     private static final int TRAILER_COUNT = 1;
     private static final byte[][] DELIMITED_BYTE_ARRAY_TAGS = new byte[MAXIMUM_TAG][];
     private static final byte[][] BYTE_ARRAY_TAGS = new byte[MAXIMUM_TAG][];
@@ -16,6 +16,7 @@ public final class Tags {
     public static final int MESSAGE_SEQUENCE_NUMBER = 34;
     public static final int MESSAGE_TYPE = 35;
     public static final int SENDER_COMP_ID = 49;
+    public static final int SENDING_TIME = 52;
     public static final int TARGET_COMP_ID = 56;
 
     static {
@@ -34,7 +35,8 @@ public final class Tags {
         HEADERS[2] = MESSAGE_SEQUENCE_NUMBER;
         HEADERS[3] = MESSAGE_TYPE;
         HEADERS[4] = SENDER_COMP_ID;
-        HEADERS[5] = TARGET_COMP_ID;
+        HEADERS[5] = SENDING_TIME;
+        HEADERS[6] = TARGET_COMP_ID;
     }
 
     private static void buildByteArrayTags() {
