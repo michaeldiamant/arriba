@@ -37,8 +37,6 @@ public final class ExampleMarketDataHandler implements Handler<MarketDataSnapsho
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
         if (this.messageCount.getAndIncrement() % 2 == 0) {
-
-            this.fixMessageBuilder.addField(Tags.BODY_LENGTH, "34"); // TODO Compute body length.
             this.fixMessageBuilder.addField(Tags.MESSAGE_TYPE, "D");
             this.fixMessageBuilder.addField(Tags.SENDER_COMP_ID, message.getTargetCompId());
             this.fixMessageBuilder.addField(Tags.TARGET_COMP_ID, message.getSenderCompId());
