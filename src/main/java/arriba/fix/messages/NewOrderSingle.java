@@ -7,7 +7,7 @@ import arriba.fix.chunk.FixChunk;
 public final class NewOrderSingle extends FixMessage {
 
     protected NewOrderSingle(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
-            final Map<Integer, FixChunk> groupCountToGroupChunk) {
+            final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
         super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
     }
 
