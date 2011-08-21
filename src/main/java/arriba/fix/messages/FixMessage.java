@@ -2,13 +2,18 @@ package arriba.fix.messages;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import arriba.fix.Fields;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.session.SessionId;
 
 public abstract class FixMessage {
+
+    private static final int DEFAULT_BYTE_ARRAY_SIZE = 32;
 
     private final byte[] beginStringBytes;
     private final FixChunk headerChunk;
@@ -76,25 +81,46 @@ public abstract class FixMessage {
     }
 
     public byte[] toByteArray() {
-        final ByteArrayOutputStream messageBytes = new ByteArrayOutputStream();
         try {
-            messageBytes.write(Tags.BEGIN_STRING);
-            messageBytes.write(this.beginStringBytes);
+            // TODO Create ByteArrayOutputStream implementation sans synchronization.
+            final ByteArrayOutputStream bodyBytes = new ByteArrayOutputStream();
+            writeBody(bodyBytes, this.bodyChunk, this.groupCountToGroupChunk);
 
-            // TODO Write out BodyLength field.
+            final ByteArrayOutputStream messageBytes =
+                new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());
+            write(messageBytes, Tags.BEGIN_STRING, this.beginStringBytes);
+            // TODO Optimize integer serialization.
+            write(messageBytes, Tags.BODY_LENGTH, String.valueOf(bodyBytes.size()).getBytes());
 
             this.headerChunk.write(messageBytes);
-            this.bodyChunk.write(messageBytes);
-            for (final FixChunk[] repeatingGroupChunks : this.groupCountToGroupChunk.values()) {
-                for (final FixChunk repeatingGroupChunk : repeatingGroupChunks) {
-                    repeatingGroupChunk.write(messageBytes);
-                }
-            }
+            // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
+            messageBytes.write(bodyBytes.toByteArray());
             this.trailerChunk.write(messageBytes);
 
             return messageBytes.toByteArray();
         } catch (final IOException e) {
             return new byte[0];
         }
+    }
+
+    private static void writeBody(final OutputStream bodyBytes, final FixChunk bodyChunk,
+            final Map<Integer, FixChunk[]> groupCountToGroupChunk) throws IOException {
+        bodyChunk.write(bodyBytes);
+
+        for (final Entry<Integer, FixChunk[]> numberOfRepeatingGroupsTagToFixChunks : groupCountToGroupChunk.entrySet()) {
+            final byte[] numberOfRepeatingGroupsBytes = String.valueOf(numberOfRepeatingGroupsTagToFixChunks.getValue().length).getBytes();
+            write(bodyBytes, numberOfRepeatingGroupsTagToFixChunks.getKey(), numberOfRepeatingGroupsBytes);
+
+            for (final FixChunk repeatingGroupChunk : numberOfRepeatingGroupsTagToFixChunks.getValue()) {
+                repeatingGroupChunk.write(bodyBytes);
+            }
+        }
+    }
+
+    private static void write(final OutputStream outputStream, final int tag, final byte[] value) throws IOException {
+        outputStream.write(Tags.toByteArray(tag));
+        outputStream.write(Fields.EQUAL_SIGN);
+        outputStream.write(value);
+        outputStream.write(Fields.DELIMITER);
     }
 }
