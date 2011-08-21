@@ -13,10 +13,10 @@ public abstract class FixMessage {
     private final FixChunk headerChunk;
     private final FixChunk bodyChunk;
     private final FixChunk trailerChunk;
-    private final Map<Integer, FixChunk> groupCountToGroupChunk;
+    private final Map<Integer, FixChunk[]> groupCountToGroupChunk;
 
     public FixMessage(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
-            final Map<Integer, FixChunk> groupCountToGroupChunk) {
+            final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
         this.headerChunk = headerChunk;
         this.bodyChunk = bodyChunk;
         this.trailerChunk = trailerChunk;
@@ -55,6 +55,10 @@ public abstract class FixMessage {
         return this.trailerChunk.getValue(tag);
     }
 
+    public FixChunk[] getGroup(final int numberOfEntriesTag) {
+        return this.groupCountToGroupChunk.get(numberOfEntriesTag);
+    }
+
     public String getValue(final int tag) {
         // TODO Search all chunks.
 
@@ -68,8 +72,10 @@ public abstract class FixMessage {
 
             this.headerChunk.write(messageBytes);
             this.bodyChunk.write(messageBytes);
-            for (final FixChunk repeatingGroupChunk : this.groupCountToGroupChunk.values()) {
-                repeatingGroupChunk.write(messageBytes);
+            for (final FixChunk[] repeatingGroupChunks : this.groupCountToGroupChunk.values()) {
+                for (final FixChunk repeatingGroupChunk : repeatingGroupChunks) {
+                    repeatingGroupChunk.write(messageBytes);
+                }
             }
             this.trailerChunk.write(messageBytes);
 

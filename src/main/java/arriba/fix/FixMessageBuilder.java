@@ -46,7 +46,7 @@ public final class FixMessageBuilder<C extends FixChunk> {
 
     public FixMessage build() {
         final FixMessage fixMessage = FixMessageFactory.create(this.messageType, this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(),
-                this.trailerChunkBuilder.build(), new HashMap<Integer, FixChunk>());
+                this.trailerChunkBuilder.build(), new HashMap<Integer, FixChunk[]>());
 
         return fixMessage;
     }
