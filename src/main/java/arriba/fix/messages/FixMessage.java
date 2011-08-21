@@ -10,13 +10,15 @@ import arriba.fix.session.SessionId;
 
 public abstract class FixMessage {
 
+    private final byte[] beginStringBytes;
     private final FixChunk headerChunk;
     private final FixChunk bodyChunk;
     private final FixChunk trailerChunk;
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk;
 
-    public FixMessage(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
-            final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
+    public FixMessage(final byte[] beginStringBytes, final FixChunk headerChunk, final FixChunk bodyChunk,
+            final FixChunk trailerChunk, final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
+        this.beginStringBytes = beginStringBytes;
         this.headerChunk = headerChunk;
         this.bodyChunk = bodyChunk;
         this.trailerChunk = trailerChunk;
@@ -76,7 +78,10 @@ public abstract class FixMessage {
     public byte[] toByteArray() {
         final ByteArrayOutputStream messageBytes = new ByteArrayOutputStream();
         try {
-            // TODO Write out the BeginStrng and the BodyLength fields.
+            messageBytes.write(Tags.BEGIN_STRING);
+            messageBytes.write(this.beginStringBytes);
+
+            // TODO Write out BodyLength field.
 
             this.headerChunk.write(messageBytes);
             this.bodyChunk.write(messageBytes);
