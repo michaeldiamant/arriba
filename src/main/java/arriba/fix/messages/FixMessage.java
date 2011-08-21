@@ -60,9 +60,17 @@ public abstract class FixMessage {
     }
 
     public String getValue(final int tag) {
-        // TODO Search all chunks.
+        final String headerValue = this.getHeaderValue(tag);
+        if (!headerValue.isEmpty()) {
+            return headerValue;
+        }
 
-        return "";
+        final String bodyValue = this.getBodyValue(tag);
+        if (!bodyValue.isEmpty()) {
+            return bodyValue;
+        }
+
+        return this.getTrailerValue(tag);
     }
 
     public byte[] toByteArray() {
