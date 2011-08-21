@@ -94,6 +94,7 @@ public abstract class FixMessage {
 
             this.headerChunk.write(messageBytes);
             // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
+            // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
             messageBytes.write(bodyBytes.toByteArray());
             this.trailerChunk.write(messageBytes);
 
