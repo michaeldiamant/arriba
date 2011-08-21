@@ -6,9 +6,10 @@ import arriba.fix.chunk.FixChunk;
 
 public final class NewOrderSingle extends FixMessage {
 
-    protected NewOrderSingle(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
+    protected NewOrderSingle(final byte[] beginStringBytes, final FixChunk headerChunk,
+            final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
+        super(beginStringBytes, headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
     }
 
     public String getSymbol() {
