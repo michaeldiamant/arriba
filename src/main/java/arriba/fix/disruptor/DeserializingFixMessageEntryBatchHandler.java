@@ -5,10 +5,10 @@ import java.util.Arrays;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import arriba.fix.Fields;
-import arriba.fix.FixFieldCollection;
+import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
+import arriba.fix.chunk.FixChunk;
 import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.FixMessageFactory;
 
 import com.lmax.disruptor.BatchHandler;
 
@@ -17,15 +17,16 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
     private static final byte[] MESSAGE_TYPE_BYTES = Tags.toByteArray(Tags.MESSAGE_TYPE);
 
+    private final FixMessageBuilder<? extends FixChunk> fixMessageBuilder;
+
     private byte nextFlagByte;
     private int nextFlagIndex;
     private boolean hasFoundFinalDelimiter;
     private boolean hasFoundMessageType;
-    private String messageType;
-    private FixFieldCollection.Builder fixFieldCollectionBuilder;
     private int lastDeserializedTag;
 
-    public DeserializingFixMessageEntryBatchHandler() {
+    public DeserializingFixMessageEntryBatchHandler(final FixMessageBuilder<? extends FixChunk> fixMessageBuilder) {
+        this.fixMessageBuilder = fixMessageBuilder;
         this.reset();
     }
 
@@ -58,15 +59,15 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
 
                 final String value = new String(nextValueBuffer.array());
 
-                this.fixFieldCollectionBuilder.addField(this.lastDeserializedTag, value);
+                this.fixMessageBuilder.addField(this.lastDeserializedTag, value);
                 if (this.hasFoundMessageType) {
                     this.hasFoundMessageType = false;
 
-                    this.messageType = value;
+                    this.fixMessageBuilder.setMessageType(value);
                 } else if (this.hasFoundFinalDelimiter) {
                     this.hasFoundFinalDelimiter = false;
 
-                    final FixMessage fixMessage = FixMessageFactory.create(this.fixFieldCollectionBuilder.build(), this.messageType);
+                    final FixMessage fixMessage = this.fixMessageBuilder.build();
                     this.reset();
 
                     return fixMessage;
@@ -83,9 +84,8 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
         this.nextFlagByte = Fields.EQUAL_SIGN;
         this.hasFoundFinalDelimiter = false;
         this.hasFoundMessageType = false;
-        this.messageType = "";
-        this.fixFieldCollectionBuilder = new FixFieldCollection.Builder();
         this.lastDeserializedTag = -1;
+        this.fixMessageBuilder.clear();
     }
 
     public void onEndOfBatch() throws Exception {}
