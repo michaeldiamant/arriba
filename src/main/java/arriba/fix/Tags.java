@@ -10,14 +10,33 @@ public final class Tags {
     private static final int[] HEADERS = new int[HEADER_COUNT];
     private static final int[] TRAILERS = new int[TRAILER_COUNT];
 
+    // Header tags
     public static final int BEGIN_STRING = 8;
     public static final int BODY_LENGTH = 9;
-    public static final int CHECKSUM = 10;
     public static final int MESSAGE_SEQUENCE_NUMBER = 34;
     public static final int MESSAGE_TYPE = 35;
     public static final int SENDER_COMP_ID = 49;
     public static final int SENDING_TIME = 52;
     public static final int TARGET_COMP_ID = 56;
+    // End header tags
+
+    // Body tags
+    public static final int CLIENT_ORDER_ID = 11;
+    public static final int ORDER_QUANTITY = 38;
+    public static final int ORDER_TYPE = 40;
+    public static final int PRICE = 44;
+    public static final int SIDE = 44;
+    public static final int SYMBOL = 55;
+    public static final int TRANSACTION_TIME = 55;
+    public static final int NUMBER_MD_ENTRIES = 268;
+    public static final int MD_ENTRY_TYPE = 269;
+    public static final int MD_ENTRY_PRICE = 270;
+    public static final int MD_ENTRY_SIZE = 271;
+    // End body tags
+
+    // Trailer tags
+    public static final int CHECKSUM = 10;
+    // End trailer tags
 
     static {
         buildByteArrayTags();
