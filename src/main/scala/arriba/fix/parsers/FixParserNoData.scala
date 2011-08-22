@@ -18,6 +18,10 @@ class FixParserNoData extends RegexParsers {
   def value:Parser[String] = """[^\001]*""".r
 }
 
+object FixParserNoData extends FixParserNoData {
+}
+
+
 /**
  * <SOH> is no longer the universal delimiter when dealing with data fields.
  */
@@ -26,6 +30,7 @@ class FixParserData extends RegexParsers {
   def dataLengthEntirety = rep("""[^\001]""".r)
   def shards = rep("""[^\001]*\001""".r)
 }
+
 
 class RefineShardsIntoOneMessage extends FixParserNoData {
   this:FixParserNoData =>
