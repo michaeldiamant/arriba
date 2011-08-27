@@ -15,7 +15,7 @@ import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.MarketDataSnapshotFullRefresh;
 
-public final class ExampleMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
+public final class NewOrderGeneratingMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
 
     private static final String LIMIT = "2";
     private static final String BID = "0";
@@ -28,7 +28,7 @@ public final class ExampleMarketDataHandler implements Handler<MarketDataSnapsho
     private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder = new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(),
             new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
 
-    public ExampleMarketDataHandler(final Sender<FixMessage> sender) {
+    public NewOrderGeneratingMarketDataHandler(final Sender<FixMessage> sender) {
         this.sender = sender;
     }
 
