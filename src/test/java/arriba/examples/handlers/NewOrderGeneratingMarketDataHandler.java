@@ -12,6 +12,7 @@ import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.MarketDataSnapshotFullRefresh;
 
@@ -38,7 +39,8 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
 
         if (this.messageCount.getAndIncrement() % 2 == 0) {
             this.fixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()));
-            this.fixMessageBuilder.addField(Tags.MESSAGE_TYPE, "D");
+            this.fixMessageBuilder.setMessageType("D");
+            this.fixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
             this.fixMessageBuilder.addField(Tags.SENDER_COMP_ID, message.getTargetCompId());
             this.fixMessageBuilder.addField(Tags.TARGET_COMP_ID, message.getSenderCompId());
             this.fixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
@@ -61,6 +63,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
             } catch (final IOException e) {
                 e.printStackTrace();
             }
+            this.fixMessageBuilder.clear();
         }
     }
 
