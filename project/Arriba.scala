@@ -24,7 +24,7 @@ object Arriba extends Build {
     "com.google.collections" % "google-collections" % "1.0",
     "org.specs2" %% "specs2" % "1.5" % "test",
     "com.novocode" % "junit-interface" % "0.6" % "test",
-    "com.lmax" % "disruptor" % "1.2.2-RELEASE",
+//    "com.lmax" % "disruptor" % "2",
     "com.weiglewilczek.slf4s" % "slf4s_2.8.1" % "1.0.4",
     "org.slf4j" % "slf4j-simple" % "1.6.1"
   )

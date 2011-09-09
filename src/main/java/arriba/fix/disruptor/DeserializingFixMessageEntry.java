@@ -1,19 +1,12 @@
 package arriba.fix.disruptor;
 
-import java.util.Arrays;
-
+import arriba.fix.*;
+import arriba.fix.chunk.FixChunk;
+import arriba.fix.messages.FixMessage;
 import com.lmax.disruptor.EventHandler;
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.fix.Fields;
-import arriba.fix.FixMessageBuilder;
-import arriba.fix.RepeatingGroupBuilder;
-import arriba.fix.RepeatingGroups;
-import arriba.fix.Tags;
-import arriba.fix.chunk.FixChunk;
-import arriba.fix.messages.FixMessage;
-
-import com.lmax.disruptor.BatchHandler;
+import java.util.Arrays;
 
 public class DeserializingFixMessageEntry implements EventHandler<FixMessageEntry> {
 
@@ -42,6 +35,7 @@ public class DeserializingFixMessageEntry implements EventHandler<FixMessageEntr
   public void onEvent(FixMessageEntry entry, boolean b) throws Exception {
         final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
+	this.parsingState =  ParsingState.NON_REPEATING_GROUP;
         final FixMessage fixMessage = this.deserializeFixMessage(serializedFixMessage);
 
         entry.setFixMessage(fixMessage);
