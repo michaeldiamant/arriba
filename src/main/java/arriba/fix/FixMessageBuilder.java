@@ -2,6 +2,7 @@ package arriba.fix;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
@@ -21,6 +22,7 @@ public final class FixMessageBuilder<C extends FixChunk> {
     private final FixChunkBuilder<C> trailerChunkBuilder;
 
     private String messageType = "";
+    private Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups;
 
     public FixMessageBuilder(final FixChunkBuilder<C> headerChunkBuilder, final FixChunkBuilder<C> bodyChunkBuilder,
             final FixChunkBuilder<C> trailerChunkBuilder) {
@@ -53,10 +55,16 @@ public final class FixMessageBuilder<C extends FixChunk> {
         return this;
     }
 
+    public FixMessageBuilder<C> setRepeatingGroups(final Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups) {
+        this.repeatingGroupTagToRepeatingGroups = repeatingGroupTagToRepeatingGroups;
+
+        return this;
+    }
+
     public FixMessage build() {
         final FixMessage fixMessage = FixMessageFactory.create(this.messageType, this.beginStringBytes,
-                this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(),
-                this.trailerChunkBuilder.build(), new HashMap<Integer, FixChunk[]>());
+                this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(), this.trailerChunkBuilder.build(),
+                this.repeatingGroupTagToRepeatingGroups == null ? new HashMap<Integer, FixChunk[]>() : this.repeatingGroupTagToRepeatingGroups);
 
         return fixMessage;
     }
@@ -66,5 +74,6 @@ public final class FixMessageBuilder<C extends FixChunk> {
         this.headerChunkBuilder.clear();
         this.bodyChunkBuilder.clear();
         this.trailerChunkBuilder.clear();
+        this.repeatingGroupTagToRepeatingGroups = null;
     }
 }
