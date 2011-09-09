@@ -2,6 +2,7 @@ package arriba.fix.disruptor;
 
 import java.util.Arrays;
 
+import com.lmax.disruptor.EventHandler;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import arriba.fix.Fields;
@@ -14,7 +15,7 @@ import arriba.fix.messages.FixMessage;
 
 import com.lmax.disruptor.BatchHandler;
 
-public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<FixMessageEntry> {
+public class DeserializingFixMessageEntry implements EventHandler<FixMessageEntry> {
 
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
     private static final byte[] MESSAGE_TYPE_BYTES = Tags.toByteArray(Tags.MESSAGE_TYPE);
@@ -32,12 +33,13 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
     private int[] repeatingGroupTags;
     private boolean hasFoundNumberOfRepeatingGroupsTag;
 
-    public DeserializingFixMessageEntryBatchHandler(final FixMessageBuilder<? extends FixChunk> fixMessageBuilder) {
+    public DeserializingFixMessageEntry(final FixMessageBuilder<? extends FixChunk> fixMessageBuilder) {
         this.fixMessageBuilder = fixMessageBuilder;
         this.reset();
     }
 
-    public void onAvailable(final FixMessageEntry entry) throws Exception {
+  @Override
+  public void onEvent(FixMessageEntry entry, boolean b) throws Exception {
         final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
         final FixMessage fixMessage = this.deserializeFixMessage(serializedFixMessage);
@@ -130,7 +132,7 @@ public class DeserializingFixMessageEntryBatchHandler implements BatchHandler<Fi
 
     public void onEndOfBatch() throws Exception {}
 
-    private static enum ParsingState {
+  private static enum ParsingState {
         REPEATING_GROUP,
         NON_REPEATING_GROUP
     }
