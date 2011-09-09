@@ -28,6 +28,10 @@ public final class Tags {
     public static final int SIDE = 44;
     public static final int SYMBOL = 55;
     public static final int TRANSACTION_TIME = 55;
+    public static final int NUMBER_RELATED_SYMBOLS = 146;
+    public static final int MD_REQUEST_ID = 262;
+    public static final int SUBSCRIPTION_REQUEST_TYPE = 263;
+    public static final int MARKET_DEPTH = 264;
     public static final int NUMBER_MD_ENTRIES = 268;
     public static final int MD_ENTRY_TYPE = 269;
     public static final int MD_ENTRY_PRICE = 270;
