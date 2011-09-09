@@ -16,20 +16,20 @@ class SmarterFixParserSpec extends Specification {
     }
 
     "easily crunch through" in {
-      SmarterFixParser.processStream(FixMessages.EXAMPLE_NEW_ORDER_SINGLE) match {
+      SmarterFixParser.apply(FixMessages.EXAMPLE_NEW_ORDER_SINGLE) match {
         case rightAnswer :: Nil =>  true
         case wrongAnser => false
       }
     }
-    "do the heavy lifting for you for 1.X messages" in {
-      SmarterFixParser.processStream(FixMessages.EXAMPLE_NEW_ORDER_SINGLE
+    "do the heavy lifting for you for 2.X messages" in {
+      SmarterFixParser.apply(FixMessages.EXAMPLE_NEW_ORDER_SINGLE + FixMessages.EXAMPLE_NEW_ORDER_SINGLE
         + FixMessages.EXAMPLE_NEW_ORDER_SINGLE.slice(0, Random.nextInt(FixMessages.EXAMPLE_NEW_ORDER_SINGLE.length)) ) match {
-        case rightAnswer :: Nil =>  true
+        case rightAnswer :: rightAnswer2 :: Nil =>  true
         case wrongAnser => false
       }
     }
     "do the heavy lifting for you for 2 messages" in {
-      SmarterFixParser.processStream(FixMessages.EXAMPLE_NEW_ORDER_SINGLE
+      SmarterFixParser.apply(FixMessages.EXAMPLE_NEW_ORDER_SINGLE
         + FixMessages.EXAMPLE_NEW_ORDER_SINGLE ) match {
         case rightAnswer :: anotherRight :: Nil =>  true
         case wrongAnser => false

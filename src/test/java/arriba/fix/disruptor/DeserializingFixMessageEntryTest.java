@@ -19,7 +19,7 @@ import arriba.fix.netty.util.FixMessages;
 
 import com.lmax.disruptor.BatchHandler;
 
-public class DeserializingFixMessageEntryBatchHandlerTest {
+public class DeserializingFixMessageEntryTest {
 
     private BatchHandler<FixMessageEntry> handler;
 
@@ -30,7 +30,7 @@ public class DeserializingFixMessageEntryBatchHandlerTest {
             new FixMessageBuilder<FixChunk>(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
                     mock(FixChunkBuilder.class));
         this.handler =
-            new DeserializingFixMessageEntryBatchHandler(fixMessageBuilder);
+            new DeserializingFixMessageEntry(fixMessageBuilder);
     }
 
     @Test

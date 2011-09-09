@@ -8,7 +8,7 @@ import javax.swing.text.html.parser.Parser
  */
 class FixParserNoData extends RegexParsers {
 
-  def fixMessage = rep(field)
+  def fixMessage:Parser[List[(Int, String)]] = rep(field)
 
 
   def tag:Parser[Int] ="""[1-9][\d]*""".r ^^ (_.toInt)
@@ -19,6 +19,12 @@ class FixParserNoData extends RegexParsers {
 }
 
 object FixParserNoData extends FixParserNoData {
+  def apply(input: String) = {
+    parseAll(fixMessage, input) match {
+      case Success(result, next) => println(result); result
+      case other => null
+    }
+  }
 }
 
 
