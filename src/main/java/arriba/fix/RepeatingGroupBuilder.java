@@ -84,7 +84,6 @@ public final class RepeatingGroupBuilder {
         this.buildGroup();
 
         final Map<Integer, FixChunk[]> mapToReturn = Collections.unmodifiableMap(this.groupCountToGroupChunk);
-        this.groupCountToGroupChunk.clear();
 
         return mapToReturn;
     }
@@ -94,5 +93,6 @@ public final class RepeatingGroupBuilder {
         this.numberOfRepeatingGroupsTag = 0;
         this.numberOfRepeatingGroups = 0;
         this.repeatingGroupTags = null;
+        this.groupCountToGroupChunk.clear();
     }
 }
