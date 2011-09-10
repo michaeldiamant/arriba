@@ -21,9 +21,9 @@ import arriba.fix.messages.FixMessage;
 import arriba.fix.netty.util.FixMessages;
 
 
-public class DeserializingFixMessageEntryTest {
+public class DeserializingFixMessageEventHandlerTest {
 
-    private EventHandler<FixMessageEntry> handler;
+    private EventHandler<FixMessageEvent> handler;
 
     @SuppressWarnings("unchecked")
     @Before
@@ -32,12 +32,12 @@ public class DeserializingFixMessageEntryTest {
             new FixMessageBuilder<FixChunk>(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
                     mock(FixChunkBuilder.class));
         this.handler =
-            new DeserializingFixMessageEntry(fixMessageBuilder);
+            new DeserializingFixMessageEventHandler(fixMessageBuilder);
     }
 
     @Test
     public void verifyFixMessageIsSet() throws Exception {
-        final FixMessageEntry fixMessageEntry = createPreloadedFixMessageEntry();
+        final FixMessageEvent fixMessageEntry = createPreloadedFixMessageEntry();
 
         this.handler.onEvent(fixMessageEntry, false);
 
@@ -47,7 +47,7 @@ public class DeserializingFixMessageEntryTest {
     @Ignore
     @Test
     public void testFixMessageDeserialization() throws Exception {
-        final FixMessageEntry fixMessageEntry = createPreloadedFixMessageEntry();
+        final FixMessageEvent fixMessageEntry = createPreloadedFixMessageEntry();
 
         this.handler.onEvent(fixMessageEntry, false);
 
@@ -62,8 +62,8 @@ public class DeserializingFixMessageEntryTest {
         }
     }
 
-    private static FixMessageEntry createPreloadedFixMessageEntry() {
-        final FixMessageEntry fixMessageEntry = new FixMessageEntry();
+    private static FixMessageEvent createPreloadedFixMessageEntry() {
+        final FixMessageEvent fixMessageEntry = new FixMessageEvent();
         fixMessageEntry.setSerializedFixMessage(FixMessages.toChannelBuffer(FixMessages.EXAMPLE_NEW_ORDER_SINGLE));
 
         return fixMessageEntry;

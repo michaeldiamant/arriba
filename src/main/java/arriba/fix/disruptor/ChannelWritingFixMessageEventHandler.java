@@ -12,16 +12,16 @@ import arriba.fix.netty.ChannelRepository;
 import arriba.fix.netty.UnknownChannelIdException;
 
 
-public final class ChannelWritingFixMessageEntryBatchHandler implements EventHandler<FixMessageEntry> {
+public final class ChannelWritingFixMessageEventHandler implements EventHandler<FixMessageEvent> {
 
     private final ChannelRepository<String> channelRepository;
 
-    public ChannelWritingFixMessageEntryBatchHandler(final ChannelRepository<String> channelRepository) {
+    public ChannelWritingFixMessageEventHandler(final ChannelRepository<String> channelRepository) {
         this.channelRepository = channelRepository;
     }
 
   @Override
-  public void onEvent(final FixMessageEntry entry, boolean b) throws Exception {
+  public void onEvent(final FixMessageEvent entry, boolean b) throws Exception {
         final FixMessage fixMessage = entry.getFixMessage();
 
         final Channel channel;
