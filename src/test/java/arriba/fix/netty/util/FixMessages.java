@@ -12,8 +12,7 @@ import com.google.common.collect.Lists;
 
 public class FixMessages {
 	
-	public static final String EXAMPLE_NEW_ORDER_SINGLE = "8=FIX.4.0\u00019=86\u000135=D\u000149=0\u000156=0\u000134=1\u000152=99990909-17:17:17"
-		+ "\u000111=90001008\u000121=1\u000155=IBM\u000154=1\u000138=10\u000140=1\u000159=0\u000110=191\u0001";
+	public static final String EXAMPLE_NEW_ORDER_SINGLE = "8=FIX.4.0\u00019=108\u000135=D\u000149=0\u000156=0\u000134=1\u000152=99990909-17:17:17\u000111=90001008\u000121=1\u000155=IBM\u000154=1\u000138=10\u000140=1\u000159=0\u000110=191\u0001";
 	
 	private static final String FIELD_DELIMITER = new String(new char[]{(char) Fields.DELIMITER});
 	private static final String EQUALS_SIGN = new String(new char[]{(char) Fields.EQUAL_SIGN});

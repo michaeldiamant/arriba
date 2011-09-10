@@ -1,14 +1,5 @@
 package arriba.server;
 
-import java.net.InetSocketAddress;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.ChannelHandler;
-
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
@@ -16,13 +7,7 @@ import arriba.common.Sender;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.disruptor.ChannelWritingFixMessageEntryBatchHandler;
-import arriba.fix.disruptor.DeserializingFixMessageEntryBatchHandler;
-import arriba.fix.disruptor.FixMessageEntry;
-import arriba.fix.disruptor.FixMessageEntryFactory;
-import arriba.fix.disruptor.FixMessageToRingBufferEntryAdapter;
-import arriba.fix.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
-import arriba.fix.disruptor.SessionNotifyingFixMessageEntryBatchHandler;
+import arriba.fix.disruptor.*;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.NewOrderSingle;
 import arriba.fix.netty.FixMessageFrameDecoder;
@@ -33,15 +18,16 @@ import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
-
 import com.google.common.collect.Maps;
-import com.lmax.disruptor.BatchConsumer;
-import com.lmax.disruptor.ClaimStrategy;
-import com.lmax.disruptor.Consumer;
-import com.lmax.disruptor.ConsumerBarrier;
-import com.lmax.disruptor.ProducerBarrier;
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.WaitStrategy;
+import com.lmax.disruptor.*;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.ChannelHandler;
+
+import java.net.InetSocketAddress;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FixServer {
 
@@ -70,22 +56,23 @@ public class FixServer {
                 ClaimStrategy.Option.SINGLE_THREADED,
                 WaitStrategy.Option.BUSY_SPIN);
 
-        final ConsumerBarrier<FixMessageEntry> deserializationConsumerBarrier = ringBuffer.createConsumerBarrier();
-        final Consumer deserializingConsumer = new BatchConsumer<FixMessageEntry>(deserializationConsumerBarrier,
-                new DeserializingFixMessageEntryBatchHandler(
+        final DependencyBarrier deserializationConsumerBarrier = ringBuffer.newDependencyBarrier();
+        final EventProcessor deserializingConsumer = new BatchEventProcessor<FixMessageEntry>(ringBuffer, deserializationConsumerBarrier,
+                new DeserializingFixMessageEntry(
                         new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(),
                                 new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder())));
 
-        final ConsumerBarrier<FixMessageEntry> sessionNotificationConsumerBarrier = ringBuffer.createConsumerBarrier(deserializingConsumer);
-        final Consumer sessionNotifyingConsumer = new BatchConsumer<FixMessageEntry>(sessionNotificationConsumerBarrier,
+        final DependencyBarrier sessionNotificationConsumerBarrier = ringBuffer.newDependencyBarrier(deserializingConsumer);
+        final BatchEventProcessor sessionNotifyingConsumer = new BatchEventProcessor(ringBuffer, sessionNotificationConsumerBarrier,
                 new SessionNotifyingFixMessageEntryBatchHandler(new InMemorySessionResolver(this.sessionIdToSessions)));
 
         final ExecutorService executorService = Executors.newFixedThreadPool(2);
         executorService.submit(deserializingConsumer);
         executorService.submit(sessionNotifyingConsumer);
 
-        final ProducerBarrier<FixMessageEntry> inboundProducerBarrier = ringBuffer.createProducerBarrier(deserializingConsumer, sessionNotifyingConsumer);
-        return new RingBufferSender<ChannelBuffer, FixMessageEntry>(inboundProducerBarrier,
+        final DependencyBarrier inboundProducerBarrier = ringBuffer.newDependencyBarrier(deserializingConsumer, sessionNotifyingConsumer);
+
+        return new RingBufferSender<ChannelBuffer, FixMessageEntry>(ringBuffer,
                 new SerializedFixMessageToRingBufferEntryAdapter());
     }
 
@@ -95,16 +82,16 @@ public class FixServer {
                 ClaimStrategy.Option.SINGLE_THREADED,
                 WaitStrategy.Option.BUSY_SPIN);
 
-        final ConsumerBarrier<FixMessageEntry> channelSubmissionConsumerBarrier = ringBuffer.createConsumerBarrier();
-        final Consumer channelSubmittingConsumer = new BatchConsumer<FixMessageEntry>(channelSubmissionConsumerBarrier,
+        final DependencyBarrier channelSubmissionConsumerBarrier = ringBuffer.newDependencyBarrier();
+        final BatchEventProcessor<FixMessageEntry> channelSubmittingConsumer = new BatchEventProcessor<FixMessageEntry>(ringBuffer, channelSubmissionConsumerBarrier,
                 new ChannelWritingFixMessageEntryBatchHandler(new InMemoryChannelRepository<String>()));
         // TODO Populate the in-memory channel repository.
 
         final ExecutorService executorService = Executors.newFixedThreadPool(1);
         executorService.submit(channelSubmittingConsumer);
 
-        final ProducerBarrier<FixMessageEntry> outboundProducerBarrier = ringBuffer.createProducerBarrier(channelSubmittingConsumer);
-        return new RingBufferSender<FixMessage, FixMessageEntry>(outboundProducerBarrier,
+        final DependencyBarrier outboundProducerBarrier = ringBuffer.newDependencyBarrier(channelSubmittingConsumer);
+        return new RingBufferSender<FixMessage, FixMessageEntry>(ringBuffer,
                 new FixMessageToRingBufferEntryAdapter());
     }
 

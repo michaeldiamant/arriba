@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import com.lmax.disruptor.BatchEventProcessor;
+import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.EventProcessor;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,11 +20,10 @@ import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.netty.util.FixMessages;
 
-import com.lmax.disruptor.BatchHandler;
 
-public class DeserializingFixMessageEntryBatchHandlerTest {
+public class DeserializingFixMessageEntryTest {
 
-    private BatchHandler<FixMessageEntry> handler;
+    private EventHandler<FixMessageEntry> handler;
 
     @SuppressWarnings("unchecked")
     @Before
@@ -30,14 +32,14 @@ public class DeserializingFixMessageEntryBatchHandlerTest {
             new FixMessageBuilder<FixChunk>(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
                     mock(FixChunkBuilder.class));
         this.handler =
-            new DeserializingFixMessageEntryBatchHandler(fixMessageBuilder);
+            new DeserializingFixMessageEntry(fixMessageBuilder);
     }
 
     @Test
     public void verifyFixMessageIsSet() throws Exception {
         final FixMessageEntry fixMessageEntry = createPreloadedFixMessageEntry();
 
-        this.handler.onAvailable(fixMessageEntry);
+        this.handler.onEvent(fixMessageEntry, false);
 
         assertNotNull(fixMessageEntry.getFixMessage());
     }
@@ -47,7 +49,7 @@ public class DeserializingFixMessageEntryBatchHandlerTest {
     public void testFixMessageDeserialization() throws Exception {
         final FixMessageEntry fixMessageEntry = createPreloadedFixMessageEntry();
 
-        this.handler.onAvailable(fixMessageEntry);
+        this.handler.onEvent(fixMessageEntry, false);
 
         assertAllFieldsAreSet(fixMessageEntry.getFixMessage());
     }

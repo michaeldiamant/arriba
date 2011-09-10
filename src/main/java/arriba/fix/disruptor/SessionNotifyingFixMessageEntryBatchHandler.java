@@ -3,10 +3,9 @@ package arriba.fix.disruptor;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionResolver;
+import com.lmax.disruptor.EventHandler;
 
-import com.lmax.disruptor.BatchHandler;
-
-public final class SessionNotifyingFixMessageEntryBatchHandler implements BatchHandler<FixMessageEntry> {
+public final class SessionNotifyingFixMessageEntryBatchHandler implements EventHandler<FixMessageEntry> {
 
     private final SessionResolver sessionResolver;
 
@@ -14,8 +13,8 @@ public final class SessionNotifyingFixMessageEntryBatchHandler implements BatchH
         this.sessionResolver = sessionResolver;
     }
 
-
-    public void onAvailable(final FixMessageEntry entry) throws Exception {
+  @Override
+  public void onEvent(FixMessageEntry entry, boolean b) throws Exception {
         final FixMessage fixMessage = entry.getFixMessage();
 
         final Session session = this.sessionResolver.resolve(fixMessage.getSessionId());
@@ -24,4 +23,5 @@ public final class SessionNotifyingFixMessageEntryBatchHandler implements BatchH
     }
 
     public void onEndOfBatch() throws Exception {}
+
 }

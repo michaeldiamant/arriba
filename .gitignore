@@ -5,6 +5,7 @@ project/target
 *.classpath
 *.settings
 *.iml
+*.swp
 *.ipr
 *.iws
 .scala_dependencies

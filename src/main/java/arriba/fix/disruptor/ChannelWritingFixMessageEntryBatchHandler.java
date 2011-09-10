@@ -2,6 +2,7 @@ package arriba.fix.disruptor;
 
 import java.io.IOException;
 
+import com.lmax.disruptor.EventHandler;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
@@ -10,9 +11,8 @@ import arriba.fix.messages.FixMessage;
 import arriba.fix.netty.ChannelRepository;
 import arriba.fix.netty.UnknownChannelIdException;
 
-import com.lmax.disruptor.BatchHandler;
 
-public final class ChannelWritingFixMessageEntryBatchHandler implements BatchHandler<FixMessageEntry> {
+public final class ChannelWritingFixMessageEntryBatchHandler implements EventHandler<FixMessageEntry> {
 
     private final ChannelRepository<String> channelRepository;
 
@@ -20,7 +20,8 @@ public final class ChannelWritingFixMessageEntryBatchHandler implements BatchHan
         this.channelRepository = channelRepository;
     }
 
-    public void onAvailable(final FixMessageEntry entry) throws Exception {
+  @Override
+  public void onEvent(final FixMessageEntry entry, boolean b) throws Exception {
         final FixMessage fixMessage = entry.getFixMessage();
 
         final Channel channel;
@@ -35,4 +36,5 @@ public final class ChannelWritingFixMessageEntryBatchHandler implements BatchHan
     }
 
     public void onEndOfBatch() throws Exception {}
+
 }
