@@ -4,12 +4,12 @@ import arriba.fix.messages.FixMessage;
 import com.lmax.disruptor.AbstractEvent;
 import org.jboss.netty.buffer.ChannelBuffer;
 
-public final class FixMessageEntry extends AbstractEvent {
+public final class FixMessageEvent extends AbstractEvent {
 
     private ChannelBuffer serializedFixMessage;
     private FixMessage fixMessage;
 
-    public FixMessageEntry() {}
+    public FixMessageEvent() {}
 
     public void setFixMessage(final FixMessage fixMessage) {
         this.fixMessage = fixMessage;
