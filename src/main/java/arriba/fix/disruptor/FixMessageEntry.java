@@ -1,12 +1,10 @@
 package arriba.fix.disruptor;
 
+import arriba.fix.messages.FixMessage;
+import com.lmax.disruptor.AbstractEvent;
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.fix.messages.FixMessage;
-
-import com.lmax.disruptor.AbstractEntry;
-
-public final class FixMessageEntry extends AbstractEntry  {
+public final class FixMessageEntry extends AbstractEvent {
 
     private ChannelBuffer serializedFixMessage;
     private FixMessage fixMessage;
