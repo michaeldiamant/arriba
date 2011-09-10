@@ -75,6 +75,7 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
             e.printStackTrace();
         }
 
+        this.repeatingGroupBuilder.clear();
         this.fixMessageBuilder.clear();
     }
 
