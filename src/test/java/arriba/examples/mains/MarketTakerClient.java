@@ -1,5 +1,6 @@
 package arriba.examples.mains;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -91,7 +92,7 @@ public class MarketTakerClient {
         this.fixMessageSender = new RingBufferSender<FixMessage, FixMessageEvent>(outgoingRingBuffer, new FixMessageToRingBufferEntryAdapter());
 
 
-        client.connect();
+        client.connect(new InetSocketAddress("localhost", 8080));
     }
 
     private FixMessageBuilder<ArrayFixChunk> fixMessageBuilder() {
