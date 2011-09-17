@@ -36,6 +36,8 @@ public final class Tags {
     public static final int MD_ENTRY_TYPE = 269;
     public static final int MD_ENTRY_PRICE = 270;
     public static final int MD_ENTRY_SIZE = 271;
+    public static final int USERNAME = 553;
+    public static final int PASSWORD = 554;
     // End body tags
 
     // Trailer tags
