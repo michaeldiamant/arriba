@@ -24,13 +24,14 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
     private static final String SELL = "2";
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
-    private final AtomicInteger messageCount = new AtomicInteger();
+    private final AtomicInteger messageCount;
     private final Sender<FixMessage> sender;
     private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder = new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(),
             new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
 
-    public NewOrderGeneratingMarketDataHandler(final Sender<FixMessage> sender) {
+    public NewOrderGeneratingMarketDataHandler(final Sender<FixMessage> sender, final AtomicInteger messageCount) {
         this.sender = sender;
+        this.messageCount = messageCount;
     }
 
     @Override
