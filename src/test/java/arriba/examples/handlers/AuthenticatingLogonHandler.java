@@ -3,7 +3,10 @@ package arriba.examples.handlers;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.jboss.netty.channel.Channel;
 
 import arriba.common.Handler;
 import arriba.common.Sender;
@@ -13,6 +16,7 @@ import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.Logon;
+import arriba.fix.netty.ChannelRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
@@ -23,15 +27,20 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
     private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder;
     private final Sender<FixMessage> fixMessageSender;
     private final AtomicInteger messageCount;
+    private final List<Channel> channels;
+    private final ChannelRepository<String> channelRepository;
 
     public AuthenticatingLogonHandler(final String expectedUsername, final String expectedPassword,
             final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder, final Sender<FixMessage> fixMessageSender,
-            final AtomicInteger messageCount) {
+            final AtomicInteger messageCount, final List<Channel> channels,
+            final ChannelRepository<String> channelRepository) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
         this.fixMessageBuilder = fixMessageBuilder;
         this.fixMessageSender = fixMessageSender;
         this.messageCount = messageCount;
+        this.channels = channels;
+        this.channelRepository = channelRepository;
     }
 
     @Override
@@ -57,6 +66,11 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         this.fixMessageBuilder.addField(Tags.PASSWORD, message.getPassword());
 
         try {
+            // TODO Need to figure out right way to negotiate channel registration server-side.
+            // Assuming first channel entry is the 'right' one.
+            final Channel channelToAdd = this.channels.remove(0);
+            this.channelRepository.add(message.getSenderCompId(), channelToAdd);
+
             this.fixMessageSender.send(this.fixMessageBuilder.build());
         } catch (final IOException e) {
             e.printStackTrace();
