@@ -1,24 +1,39 @@
 package arriba.fix.chunk.arrays;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import arriba.fix.chunk.FixChunkBuilder;
+
+import com.google.common.collect.Maps;
 
 public final class ArrayFixChunkBuilder implements FixChunkBuilder<ArrayFixChunk> {
 
+    private final Map<Integer, String> tagToField = Maps.newHashMap();
+
     @Override
     public FixChunkBuilder<ArrayFixChunk> addField(final int tag, final String value) {
-
-        // TODO Store field.
+        this.tagToField.put(tag, value);
 
         return this;
     }
 
     @Override
     public ArrayFixChunk build() {
-        return new ArrayFixChunk(null, null);
+        final int[] tags = new int[this.tagToField.size()];
+        final String[] values = new String[this.tagToField.size()];
+        int index = 0;
+        for (final Entry<Integer, String> entry : this.tagToField.entrySet()) {
+            tags[index] = entry.getKey();
+            values[index] = entry.getValue();
+            ++index;
+        }
+
+        return new ArrayFixChunk(tags, values);
     }
 
     @Override
     public void clear() {
-
+        this.tagToField.clear();
     }
 }

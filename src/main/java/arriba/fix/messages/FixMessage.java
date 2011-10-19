@@ -10,6 +10,7 @@ import arriba.fix.Fields;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.session.SessionId;
+import arriba.fix.session.SimpleSessionId;
 
 public abstract class FixMessage {
 
@@ -31,7 +32,7 @@ public abstract class FixMessage {
     }
 
     public SessionId getSessionId() {
-        return null;
+        return new SimpleSessionId(this.getSenderCompId());
     }
 
     public String getMessageType() {
@@ -87,7 +88,7 @@ public abstract class FixMessage {
             writeBody(bodyBytes, this.bodyChunk, this.groupCountToGroupChunk);
 
             final ByteArrayOutputStream messageBytes =
-                new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());
+                    new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());
             write(messageBytes, Tags.BEGIN_STRING, this.beginStringBytes);
             // TODO Optimize integer serialization.
             write(messageBytes, Tags.BODY_LENGTH, String.valueOf(bodyBytes.size()).getBytes());

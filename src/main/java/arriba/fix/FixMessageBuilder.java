@@ -62,6 +62,13 @@ public final class FixMessageBuilder<C extends FixChunk> {
     }
 
     public FixMessage build() {
+        // TODO Check for existence of checksum and actually compute it.
+        this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337");
+
+        // TODO Add messageType in more appropiate location.
+        this.headerChunkBuilder.addField(Tags.MESSAGE_TYPE, this.messageType);
+
+
         final FixMessage fixMessage = FixMessageFactory.create(this.messageType, this.beginStringBytes,
                 this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(), this.trailerChunkBuilder.build(),
                 this.repeatingGroupTagToRepeatingGroups == null ? new HashMap<Integer, FixChunk[]>() : this.repeatingGroupTagToRepeatingGroups);
