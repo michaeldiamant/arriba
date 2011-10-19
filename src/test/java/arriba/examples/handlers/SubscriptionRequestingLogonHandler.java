@@ -67,8 +67,6 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
 
         this.fixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
 
-        this.fixMessageBuilder.build();
-
         try {
             this.fixMessageSender.send(this.fixMessageBuilder.build());
         } catch (final IOException e) {

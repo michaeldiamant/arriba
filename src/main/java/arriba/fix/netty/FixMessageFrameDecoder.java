@@ -34,6 +34,9 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
         // Maintain the original buffer reader index to calculate the byte[] size when a complete FIX message is found.
         final int bufferStartReadIndex = buffer.readerIndex();
 
+        final String bufferString = new String(buffer.array());
+        System.out.println("Received buffer " + bufferString);
+
         buffer.markReaderIndex();
 
         while ((this.nextFlagIndex = buffer.bytesBefore(this.nextFlagByte)) != -1) {

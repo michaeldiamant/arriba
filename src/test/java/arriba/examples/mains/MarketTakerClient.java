@@ -11,7 +11,6 @@ import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
-import arriba.common.Sender;
 import arriba.examples.handlers.LogonOnConnectHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
@@ -55,8 +54,9 @@ public class MarketTakerClient {
     private final String username = "tr8der";
     private final String password = "liquidity";
 
-    private Sender<FixMessage> fixMessageSender = null;
-    private Sender<ChannelBuffer> inboundRingBufferSender = null;
+    private final RingBufferSender<FixMessage, FixMessageEvent> fixMessageSender = new RingBufferSender<FixMessage, FixMessageEvent>(null, new FixMessageToRingBufferEntryAdapter());;
+    private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
+            new SerializedFixMessageToRingBufferEntryAdapter());
 
     public MarketTakerClient() {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
@@ -77,8 +77,7 @@ public class MarketTakerClient {
         incomingDisruptor.handleEventsWith(this.deserializingConsumer()).then(this.sessionNotifyingConsumer());
         final RingBuffer<FixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
 
-        this.inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(inboundRingBuffer,
-                new SerializedFixMessageToRingBufferEntryAdapter());
+        this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer); // FIXME Major hack
 
         final ClientBootstrap client = FixClientBootstrap.create(new FixMessageFrameDecoder(), this.logonOnConnectHandler(), this.deserializedFixMessageHandler());
 
@@ -89,10 +88,15 @@ public class MarketTakerClient {
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
         final RingBuffer<FixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
-        this.fixMessageSender = new RingBufferSender<FixMessage, FixMessageEvent>(outgoingRingBuffer, new FixMessageToRingBufferEntryAdapter());
-
+        this.fixMessageSender.setOutboundRingBuffer(outgoingRingBuffer);  // FIXME This is a major hack.
 
         client.connect(new InetSocketAddress("localhost", 8080));
+
+        try {
+            Thread.sleep(1000 * 60 * 1);
+        } catch (final InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private FixMessageBuilder<ArrayFixChunk> fixMessageBuilder() {
@@ -123,4 +127,7 @@ public class MarketTakerClient {
                 this.fixMessageSender, this.channelRepository);
     }
 
+    public static void main(final String[] args) {
+        new MarketTakerClient().start();
+    }
 }

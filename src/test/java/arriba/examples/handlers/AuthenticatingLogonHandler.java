@@ -36,6 +36,8 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
     @Override
     public void handle(final Logon message) {
+        System.out.println("Got logon from " + message.getUsername());
+
         if (!this.expectedUsername.equals(message.getUsername()) || !this.expectedPassword.equals(message.getPassword())) {
             System.out.println("Username and password do not match!");
 

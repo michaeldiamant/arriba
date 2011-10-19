@@ -62,8 +62,9 @@ public class MarketMakerClient {
     private final ExecutorService quotesExecutorService = Executors.newSingleThreadExecutor();
     private final SubscriptionService subscriptionService = new InMemorySubscriptionService();
 
-    private Sender<FixMessage> fixMessageSender = null;
-    private Sender<ChannelBuffer> inboundRingBufferSender = null;
+    private final RingBufferSender<FixMessage, FixMessageEvent> fixMessageSender = new RingBufferSender<FixMessage, FixMessageEvent>(null, new FixMessageToRingBufferEntryAdapter());;
+    private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
+            new SerializedFixMessageToRingBufferEntryAdapter());
 
     public MarketMakerClient() {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
@@ -92,8 +93,7 @@ public class MarketMakerClient {
         incomingDisruptor.handleEventsWith(this.deserializingConsumer()).then(this.sessionNotifyingConsumer());
         final RingBuffer<FixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
 
-        this.inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(inboundRingBuffer,
-                new SerializedFixMessageToRingBufferEntryAdapter());
+        this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer);
 
         final ServerBootstrap server = FixServerBootstrap.create(new FixMessageFrameDecoder(), this.deserializedFixMessageHandler());
 
@@ -104,7 +104,7 @@ public class MarketMakerClient {
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
         final RingBuffer<FixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
-        this.fixMessageSender = new RingBufferSender<FixMessage, FixMessageEvent>(outgoingRingBuffer, new FixMessageToRingBufferEntryAdapter());
+        this.fixMessageSender.setOutboundRingBuffer(outgoingRingBuffer);
 
         server.bind(new InetSocketAddress("localhost", 8080));
     }
@@ -130,5 +130,9 @@ public class MarketMakerClient {
 
     private ChannelHandler deserializedFixMessageHandler() {
         return new SerializedFixMessageHandler(this.inboundRingBufferSender);
+    }
+
+    public static void main(final String[] args) {
+        new MarketMakerClient().start();
     }
 }

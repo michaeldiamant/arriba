@@ -23,7 +23,7 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
     private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder =
-        new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
+            new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final String targetCompId;
@@ -59,9 +59,9 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
         this.fixMessageBuilder.addField(Tags.PASSWORD, this.password);
 
         try {
-            this.fixMessageSender.send(this.fixMessageBuilder.build());
-
             this.channelRepository.add(this.targetCompId, e.getChannel());
+
+            this.fixMessageSender.send(this.fixMessageBuilder.build());
         } catch (final IOException ioe) {
             ioe.printStackTrace();
         }
