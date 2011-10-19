@@ -48,6 +48,8 @@ public final class RepeatingGroupBuilder {
             return;
         }
 
+        // FIXME buildGroup() algorithm is incorrect.  Need to debug.
+
         final FixChunk[] groupChunks = new FixChunk[this.numberOfRepeatingGroups];
         int groupChunkIndex = 0;
         final int firstRepeatingGroupTag = this.tags[0];
