@@ -19,6 +19,10 @@ public final class RepeatingGroups {
                 Tags.MD_ENTRY_SIZE,
                 Tags.MD_ENTRY_TYPE
         };
+
+        NUMBER_IN_GROUP_TAGS[Tags.NUMBER_RELATED_SYMBOLS] = new int[] {
+                Tags.SYMBOL
+        };
     }
 
     private static void sortNumberInGroupTagValues() {
