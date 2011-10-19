@@ -1,20 +1,23 @@
 package arriba.examples.mains;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
-import arriba.common.Sender;
 import arriba.examples.handlers.AuthenticatingLogonHandler;
+import arriba.examples.handlers.NewClientSessionHandler;
 import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
@@ -66,11 +69,14 @@ public class MarketMakerClient {
     private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
             new SerializedFixMessageToRingBufferEntryAdapter());
 
+    private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
+
     public MarketMakerClient() {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
         final Map<String, Handler<?>> messageIdentifierToHandlers = Maps.newHashMap();
         messageIdentifierToHandlers.put("A",
-                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, this.fixMessageBuilder(), this.fixMessageSender, this.messageCount));
+                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, this.fixMessageBuilder(),
+                        this.fixMessageSender, this.messageCount, this.channels, this.channelRepository));
         messageIdentifierToHandlers.put("V",
                 new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService));
         messageIdentifierToHandlers.put("D",
@@ -95,7 +101,7 @@ public class MarketMakerClient {
 
         this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer);
 
-        final ServerBootstrap server = FixServerBootstrap.create(new FixMessageFrameDecoder(), this.deserializedFixMessageHandler());
+        final ServerBootstrap server = FixServerBootstrap.create(new FixMessageFrameDecoder(), new NewClientSessionHandler(this.channels), this.deserializedFixMessageHandler());
 
 
         // Outgoing
