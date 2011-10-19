@@ -94,7 +94,7 @@ public class MarketMakerClient {
 
         // Incoming
         final DisruptorWizard<FixMessageEvent> incomingDisruptor = new DisruptorWizard<FixMessageEvent>(new FixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
-                ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.BUSY_SPIN);
+                ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.YIELDING);
 
         incomingDisruptor.handleEventsWith(this.deserializingConsumer()).then(this.sessionNotifyingConsumer());
         final RingBuffer<FixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
@@ -106,7 +106,7 @@ public class MarketMakerClient {
 
         // Outgoing
         final DisruptorWizard<FixMessageEvent> outgoingDisruptor = new DisruptorWizard<FixMessageEvent>(new FixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
-                ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.BUSY_SPIN);
+                ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.YIELDING);
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
         final RingBuffer<FixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
