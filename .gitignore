@@ -10,3 +10,6 @@ project/target
 *.iws
 .scala_dependencies
 *.scssc
+*.idea
+*.DS_Store
+*.DS_STORE
