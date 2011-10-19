@@ -83,7 +83,8 @@ public final class RepeatingGroupBuilder {
     public Map<Integer, FixChunk[]> build() {
         this.buildGroup();
 
-        final Map<Integer, FixChunk[]> mapToReturn = Collections.unmodifiableMap(this.groupCountToGroupChunk);
+        final Map<Integer, FixChunk[]> mapToReturn =
+                Collections.unmodifiableMap(Maps.newHashMap(this.groupCountToGroupChunk));
 
         return mapToReturn;
     }
