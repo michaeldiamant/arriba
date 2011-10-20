@@ -24,6 +24,7 @@ public final class RepeatingGroupBuilder {
     private int tagValueIndex = 0;
     private int numberOfRepeatingGroupsTag;
     private int numberOfRepeatingGroups;
+    private int builtTagIndex = 0;
 
     public RepeatingGroupBuilder setNumberOfRepeatingGroupsTag(final int tag) {
         if (null == (this.repeatingGroupTags = RepeatingGroups.NUMBER_IN_GROUP_TAGS[tag])) {
@@ -48,25 +49,25 @@ public final class RepeatingGroupBuilder {
             return;
         }
 
-        // FIXME buildGroup() algorithm is incorrect.  Need to debug.
-
         final FixChunk[] groupChunks = new FixChunk[this.numberOfRepeatingGroups];
         int groupChunkIndex = 0;
-        final int firstRepeatingGroupTag = this.tags[0];
+        int firstRepeatingGroupTag = -1;
 
-        for (int localTagValueIndex = 0; localTagValueIndex < this.tagValueIndex; localTagValueIndex++) {
-            if (localTagValueIndex > 0 && firstRepeatingGroupTag == this.tags[localTagValueIndex]) {
+        for (; this.builtTagIndex < this.tagValueIndex; this.builtTagIndex++) {
+            if (firstRepeatingGroupTag == -1) {
+                firstRepeatingGroupTag = this.tags[this.builtTagIndex];
+            } else if (firstRepeatingGroupTag == this.tags[this.builtTagIndex]) {
                 groupChunks[groupChunkIndex] = this.chunkBuilder.build();
                 this.chunkBuilder.clear();
                 ++groupChunkIndex;
             }
 
-            this.chunkBuilder.addField(this.tags[localTagValueIndex], this.values[localTagValueIndex]);
+            this.chunkBuilder.addField(this.tags[this.builtTagIndex], this.values[this.builtTagIndex]);
             // TODO Consider resetting the value of each tags / values index.
-
-            ++localTagValueIndex;
         }
 
+        groupChunks[groupChunkIndex] = this.chunkBuilder.build();
+        this.chunkBuilder.clear();
         this.groupCountToGroupChunk.put(this.numberOfRepeatingGroupsTag, groupChunks);
     }
 
@@ -95,6 +96,7 @@ public final class RepeatingGroupBuilder {
         this.tagValueIndex = 0;
         this.numberOfRepeatingGroupsTag = 0;
         this.numberOfRepeatingGroups = 0;
+        this.builtTagIndex = 0;
         this.repeatingGroupTags = null;
         this.groupCountToGroupChunk.clear();
     }
