@@ -1,7 +1,6 @@
-package arriba.fix.netty;
+package arriba.transport.channels;
 
 import org.jboss.netty.channel.Channel;
-
 
 public interface ChannelRepository<ID> {
 

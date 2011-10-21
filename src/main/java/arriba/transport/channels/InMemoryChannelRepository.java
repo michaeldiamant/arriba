@@ -1,4 +1,4 @@
-package arriba.fix.netty;
+package arriba.transport.channels;
 
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
+
 
 public final class InMemoryChannelRepository<ID> implements ChannelRepository<ID> {
 

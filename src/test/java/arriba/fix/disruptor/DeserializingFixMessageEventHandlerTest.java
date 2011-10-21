@@ -15,7 +15,7 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.messages.FixMessage;
-import arriba.fix.netty.util.FixMessages;
+import arriba.transport.netty.util.FixMessages;
 
 import com.lmax.disruptor.EventHandler;
 

@@ -7,8 +7,8 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 
 import arriba.fix.messages.FixMessage;
-import arriba.fix.netty.ChannelRepository;
-import arriba.fix.netty.UnknownChannelIdException;
+import arriba.transport.channels.ChannelRepository;
+import arriba.transport.channels.UnknownChannelIdException;
 
 import com.lmax.disruptor.EventHandler;
 

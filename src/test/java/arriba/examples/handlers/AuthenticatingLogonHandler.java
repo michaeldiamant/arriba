@@ -16,7 +16,7 @@ import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.Logon;
-import arriba.fix.netty.ChannelRepository;
+import arriba.transport.channels.ChannelRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
 

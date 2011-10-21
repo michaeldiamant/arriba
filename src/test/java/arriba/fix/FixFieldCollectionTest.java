@@ -10,7 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import arriba.fix.FixFieldCollection.Builder;
-import arriba.fix.netty.util.FixMessages;
+import arriba.transport.netty.util.FixMessages;
 
 public class FixFieldCollectionTest {
 

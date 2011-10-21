@@ -1,4 +1,4 @@
-package arriba.fix.netty.util;
+package arriba.transport.netty.util;
 
 import java.util.List;
 

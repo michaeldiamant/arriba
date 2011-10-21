@@ -1,4 +1,4 @@
-package arriba.fix.netty;
+package arriba.transport.netty;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
