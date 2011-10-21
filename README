@@ -1,1 +1,1 @@
-Arriba is a performant FIX engine implementation that utilizes Netty and the Disruptor pattern.
+Arriba is a performant FIX engine implementation that utilizes the Disruptor pattern.  FIX protocol handling is separated from the underlying transport layer, which allows transport implementations to be swapped in.  Currently, Arriba provides a Netty integration to receive and to transmit FIX messages.
