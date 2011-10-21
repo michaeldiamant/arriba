@@ -1,4 +1,4 @@
-package arriba.server;
+package arriba.transport.netty.servers;
 
 
 public class Both {
