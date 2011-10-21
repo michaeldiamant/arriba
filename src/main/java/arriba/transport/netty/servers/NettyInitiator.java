@@ -1,4 +1,4 @@
-package arriba.server;
+package arriba.transport.netty.servers;
 
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;

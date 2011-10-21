@@ -30,11 +30,11 @@ import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
-import arriba.server.FixClientBootstrap;
 import arriba.transport.channels.ChannelRepository;
 import arriba.transport.channels.InMemoryChannelRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.SerializedFixMessageHandler;
+import arriba.transport.netty.servers.FixClientBootstrap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
