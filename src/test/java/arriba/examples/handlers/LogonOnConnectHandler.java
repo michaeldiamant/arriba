@@ -16,7 +16,7 @@ import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
-import arriba.fix.netty.ChannelRepository;
+import arriba.transport.channels.ChannelRepository;
 
 public class LogonOnConnectHandler extends SimpleChannelHandler {
 

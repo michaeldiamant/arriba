@@ -1,4 +1,4 @@
-package arriba.fix.netty;
+package arriba.transport.channels;
 
 public final class UnknownChannelIdException extends Exception {
 

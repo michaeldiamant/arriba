@@ -1,4 +1,4 @@
-package arriba.fix.netty;
+package arriba.transport.netty;
 
 import java.util.Arrays;
 

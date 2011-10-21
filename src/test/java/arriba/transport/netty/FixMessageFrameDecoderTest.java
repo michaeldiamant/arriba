@@ -1,4 +1,4 @@
-package arriba.fix.netty;
+package arriba.transport.netty;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
@@ -11,7 +11,8 @@ import org.jboss.netty.handler.codec.embedder.DecoderEmbedder;
 import org.junit.Before;
 import org.junit.Test;
 
-import arriba.fix.netty.util.FixMessages;
+import arriba.transport.netty.FixMessageFrameDecoder;
+import arriba.transport.netty.util.FixMessages;
 
 import com.google.common.collect.Lists;
 

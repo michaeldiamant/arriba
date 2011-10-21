@@ -25,14 +25,14 @@ import arriba.fix.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.fix.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.NewOrderSingle;
-import arriba.fix.netty.FixMessageFrameDecoder;
-import arriba.fix.netty.InMemoryChannelRepository;
-import arriba.fix.netty.SerializedFixMessageHandler;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
+import arriba.transport.channels.InMemoryChannelRepository;
+import arriba.transport.netty.FixMessageFrameDecoder;
+import arriba.transport.netty.SerializedFixMessageHandler;
 
 import com.google.common.collect.Maps;
 import com.lmax.disruptor.BatchEventProcessor;
