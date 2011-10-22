@@ -1,57 +1,37 @@
 package arriba.fix.chunk.arrays;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
+
+import java.util.List;
 
 import org.junit.Test;
 
+import com.google.common.primitives.Ints;
+
 public abstract class AbstractTagIndexResolverTest {
 
-    public abstract TagIndexResolver getTagIndexResolver();
+    private final TagIndexResolver resolver = this.getResolver();
 
-    public abstract int[] getAllTags();
+    public abstract TagIndexResolver getResolver();
 
-    private final TagIndexResolver resolver = this.getTagIndexResolver();
-    private final int[] allTags = this.getAllTags();
+    public abstract int[] getExpectedRequiredTags();
 
-    @Test
-    public void testGetTagCount() {
-        assertThat(this.resolver.getTagCount(), is(this.allTags.length));
-    }
+    public abstract int[] getExpectedOptionalTags();
 
     @Test
-    public void testIsDefinedForWithDefinedTag() {
-        final int lastDefinedTag = this.allTags[this.allTags.length - 1];
-        assertThat(this.resolver.isDefinedFor(lastDefinedTag), is(true));
-    }
-
-    @Test
-    public void testIsDefinedForWithUndefinedTagGreaterThanMaxTag() {
-        assertThat(this.resolver.isDefinedFor(Integer.MAX_VALUE), is(false));
-    }
-
-    @Test
-    public void testIsDefinedForWithUndefinedTagLessThanMaxTag() {
-        assertThat(this.resolver.isDefinedFor(0), is(false));
-    }
-
-    @Test
-    public void testGetTagIndex() {
-        for (final int tag : this.allTags) {
-            assertThat(this.resolver.getTagIndex(tag), is(not(TagIndexResolver.INVALID_TAG_INDEX)));
+    public void assertRequiredTagsAreProvided() {
+        final List<Integer> requiredTags = Ints.asList(this.resolver.getRequiredTags());
+        for (final int expectedRequiredTag : this.getExpectedRequiredTags()) {
+            assertThat(requiredTags, hasItem(expectedRequiredTag));
         }
     }
 
     @Test
-    public void testGetMaxTag() {
-        int expectedMaxTag = 0;
-        for (final int tag : this.allTags) {
-            if (tag > expectedMaxTag) {
-                expectedMaxTag = tag;
-            }
+    public void assertOptionalTagsAreProvided() {
+        final List<Integer> optionalTags = Ints.asList(this.resolver.getOptionalTags());
+        for (final int expectedOptionalTag : this.getExpectedOptionalTags()) {
+            assertThat(optionalTags, hasItem(expectedOptionalTag));
         }
-
-        assertThat(this.resolver.getMaxTag(), is(expectedMaxTag));
     }
 }
