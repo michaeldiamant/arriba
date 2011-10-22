@@ -1,4 +1,4 @@
-package arriba.disruptor;
+package arriba.transport.netty;
 
 import java.io.IOException;
 
@@ -6,6 +6,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 
+import arriba.disruptor.FixMessageEvent;
 import arriba.fix.messages.FixMessage;
 import arriba.transport.channels.ChannelRepository;
 import arriba.transport.channels.UnknownChannelIdException;
