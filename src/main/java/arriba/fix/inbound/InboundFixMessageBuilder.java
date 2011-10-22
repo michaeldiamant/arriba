@@ -1,16 +1,15 @@
-package arriba.fix;
+package arriba.fix.inbound;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.InboundFixMessage;
-import arriba.fix.inbound.InboundFixMessageFactory;
 
-public final class FixMessageBuilder {
+public final class InboundFixMessageBuilder {
 
     private static final byte[] DEFAULT_BEGIN_STRING_BYTES = BeginString.FIXT11;
     private static final int[] HEADER_TAGS = Tags.getHeaders();
@@ -24,14 +23,14 @@ public final class FixMessageBuilder {
     private String messageType = "";
     private Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups;
 
-    public FixMessageBuilder(final FixChunkBuilder headerChunkBuilder, final FixChunkBuilder bodyChunkBuilder,
+    public InboundFixMessageBuilder(final FixChunkBuilder headerChunkBuilder, final FixChunkBuilder bodyChunkBuilder,
             final FixChunkBuilder trailerChunkBuilder) {
         this.headerChunkBuilder = headerChunkBuilder;
         this.bodyChunkBuilder = bodyChunkBuilder;
         this.trailerChunkBuilder = trailerChunkBuilder;
     }
 
-    public FixMessageBuilder addField(final int tag, final String value) {
+    public InboundFixMessageBuilder addField(final int tag, final String value) {
         if (Arrays.binarySearch(HEADER_TAGS, tag) >= 0) {
             this.headerChunkBuilder.addField(tag, value);
         } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {
@@ -43,19 +42,19 @@ public final class FixMessageBuilder {
         return this;
     }
 
-    public FixMessageBuilder setBeginStringBytes(final byte[] beginStringBytes) {
+    public InboundFixMessageBuilder setBeginStringBytes(final byte[] beginStringBytes) {
         this.beginStringBytes = beginStringBytes;
 
         return this;
     }
 
-    public FixMessageBuilder setMessageType(final String messageType) {
+    public InboundFixMessageBuilder setMessageType(final String messageType) {
         this.messageType = messageType;
 
         return this;
     }
 
-    public FixMessageBuilder setRepeatingGroups(final Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups) {
+    public InboundFixMessageBuilder setRepeatingGroups(final Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups) {
         this.repeatingGroupTagToRepeatingGroups = repeatingGroupTagToRepeatingGroups;
 
         return this;

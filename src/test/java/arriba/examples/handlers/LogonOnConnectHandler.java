@@ -11,10 +11,10 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
 import arriba.common.Sender;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.transport.channels.ChannelRepository;
 
@@ -22,8 +22,8 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
 
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
-    private final FixMessageBuilder fixMessageBuilder =
-            new FixMessageBuilder(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
+    private final InboundFixMessageBuilder inboundFixMessageBuilder =
+            new InboundFixMessageBuilder(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final String targetCompId;
@@ -48,25 +48,25 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
     public void channelConnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
-        this.fixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()));
-        this.fixMessageBuilder.setMessageType("A");
-        this.fixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
-        this.fixMessageBuilder.addField(Tags.SENDER_COMP_ID, this.senderCompId);
-        this.fixMessageBuilder.addField(Tags.TARGET_COMP_ID, this.targetCompId);
-        this.fixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
+        this.inboundFixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()));
+        this.inboundFixMessageBuilder.setMessageType("A");
+        this.inboundFixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
+        this.inboundFixMessageBuilder.addField(Tags.SENDER_COMP_ID, this.senderCompId);
+        this.inboundFixMessageBuilder.addField(Tags.TARGET_COMP_ID, this.targetCompId);
+        this.inboundFixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
 
-        this.fixMessageBuilder.addField(Tags.USERNAME, this.username);
-        this.fixMessageBuilder.addField(Tags.PASSWORD, this.password);
+        this.inboundFixMessageBuilder.addField(Tags.USERNAME, this.username);
+        this.inboundFixMessageBuilder.addField(Tags.PASSWORD, this.password);
 
         try {
             this.channelRepository.add(this.targetCompId, e.getChannel());
 
-            this.fixMessageSender.send(this.fixMessageBuilder.build());
+            this.fixMessageSender.send(this.inboundFixMessageBuilder.build());
         } catch (final IOException ioe) {
             ioe.printStackTrace();
         }
 
-        this.fixMessageBuilder.clear();
+        this.inboundFixMessageBuilder.clear();
     }
 
 }

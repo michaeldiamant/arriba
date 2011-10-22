@@ -20,8 +20,8 @@ import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.examples.handlers.LogonOnConnectHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
@@ -61,7 +61,7 @@ public class MarketTakerClient {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
         final Map<String, Handler<?>> messageIdentifierToHandlers = Maps.newHashMap();
         messageIdentifierToHandlers.put("A",
-                new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), this.fixMessageSender, this.fixMessageBuilder(), this.messageCount));
+                new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), this.fixMessageSender, this.inboundFixMessageBuilder(), this.messageCount));
         messageIdentifierToHandlers.put("W",
                 new NewOrderGeneratingMarketDataHandler(this.fixMessageSender, this.messageCount));
 
@@ -98,8 +98,8 @@ public class MarketTakerClient {
         }
     }
 
-    private FixMessageBuilder fixMessageBuilder() {
-        return new FixMessageBuilder(
+    private InboundFixMessageBuilder inboundFixMessageBuilder() {
+        return new InboundFixMessageBuilder(
                 new ArrayFixChunkBuilder(),
                 new ArrayFixChunkBuilder(),
                 new ArrayFixChunkBuilder());
@@ -114,7 +114,7 @@ public class MarketTakerClient {
     }
 
     private EventHandler<FixMessageEvent> deserializingConsumer() {
-        return new DeserializingFixMessageEventHandler(this.fixMessageBuilder());
+        return new DeserializingFixMessageEventHandler(this.inboundFixMessageBuilder());
     }
 
     private ChannelHandler deserializedFixMessageHandler() {

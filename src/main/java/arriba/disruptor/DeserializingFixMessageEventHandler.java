@@ -5,10 +5,10 @@ import java.util.Arrays;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import arriba.fix.Fields;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 
 import com.lmax.disruptor.EventHandler;
@@ -18,7 +18,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
     private static final byte[] MESSAGE_TYPE_BYTES = Tags.toByteArray(Tags.MESSAGE_TYPE);
 
-    private final FixMessageBuilder fixMessageBuilder;
+    private final InboundFixMessageBuilder inboundFixMessageBuilder;
     private final RepeatingGroupBuilder groupBuilder = new RepeatingGroupBuilder();
 
     private byte nextFlagByte;
@@ -31,8 +31,8 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private int[] repeatingGroupTags;
     private boolean hasFoundNumberOfRepeatingGroupsTag;
 
-    public DeserializingFixMessageEventHandler(final FixMessageBuilder fixMessageBuilder) {
-        this.fixMessageBuilder = fixMessageBuilder;
+    public DeserializingFixMessageEventHandler(final InboundFixMessageBuilder inboundFixMessageBuilder) {
+        this.inboundFixMessageBuilder = inboundFixMessageBuilder;
         this.reset();
     }
 
@@ -95,15 +95,15 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
 
                     break;
                 case NON_REPEATING_GROUP:
-                    this.fixMessageBuilder.addField(this.lastDeserializedTag, value);
+                    this.inboundFixMessageBuilder.addField(this.lastDeserializedTag, value);
                     if (this.hasFoundMessageType) {
                         this.hasFoundMessageType = false;
 
-                        this.fixMessageBuilder.setMessageType(value);
+                        this.inboundFixMessageBuilder.setMessageType(value);
                     } else if (this.hasFoundFinalDelimiter) {
                         this.hasFoundFinalDelimiter = false;
 
-                        final InboundFixMessage inboundFixMessage = this.fixMessageBuilder.build();
+                        final InboundFixMessage inboundFixMessage = this.inboundFixMessageBuilder.build();
                         this.reset();
 
                         return inboundFixMessage;
@@ -125,7 +125,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
         this.hasFoundMessageType = false;
         this.lastDeserializedTag = -1;
         this.repeatingGroupTags = null;
-        this.fixMessageBuilder.clear();
+        this.inboundFixMessageBuilder.clear();
         this.groupBuilder.clear();
     }
 

@@ -8,10 +8,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import arriba.common.Handler;
 import arriba.common.Sender;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.Logon;
 
@@ -23,16 +23,16 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
 
     private final Set<String> symbolsToSubscribe;
     private final Sender<InboundFixMessage> fixMessageSender;
-    private final FixMessageBuilder fixMessageBuilder;
+    private final InboundFixMessageBuilder inboundFixMessageBuilder;
     private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
 
     public SubscriptionRequestingLogonHandler(final Set<String> symbolsToSubscribe,
-            final Sender<InboundFixMessage> fixMessageSender, final FixMessageBuilder fixMessageBuilder,
+            final Sender<InboundFixMessage> fixMessageSender, final InboundFixMessageBuilder inboundFixMessageBuilder,
             final AtomicInteger messageCount) {
         this.symbolsToSubscribe = symbolsToSubscribe;
         this.fixMessageSender = fixMessageSender;
-        this.fixMessageBuilder = fixMessageBuilder;
+        this.inboundFixMessageBuilder = inboundFixMessageBuilder;
         this.messageCount = messageCount;
     }
 
@@ -40,18 +40,18 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
     public void handle(final Logon message) {
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
-        this.fixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()));
-        this.fixMessageBuilder.setMessageType("V");
-        this.fixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
-        this.fixMessageBuilder.addField(Tags.SENDER_COMP_ID, message.getTargetCompId());
-        this.fixMessageBuilder.addField(Tags.TARGET_COMP_ID, message.getSenderCompId());
-        this.fixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
+        this.inboundFixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()));
+        this.inboundFixMessageBuilder.setMessageType("V");
+        this.inboundFixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
+        this.inboundFixMessageBuilder.addField(Tags.SENDER_COMP_ID, message.getTargetCompId());
+        this.inboundFixMessageBuilder.addField(Tags.TARGET_COMP_ID, message.getSenderCompId());
+        this.inboundFixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
 
         // TODO Consolidate the standard header tags boiler plate logic.
 
-        this.fixMessageBuilder.addField(Tags.MD_REQUEST_ID, String.valueOf(this.messageCount.get()));
-        this.fixMessageBuilder.addField(Tags.MARKET_DEPTH, FULL_BOOK_MARKET_DEPTH);
-        this.fixMessageBuilder.addField(Tags.SUBSCRIPTION_REQUEST_TYPE, SNAPSHOT_AND_UPDATES_REQUEST);
+        this.inboundFixMessageBuilder.addField(Tags.MD_REQUEST_ID, String.valueOf(this.messageCount.get()));
+        this.inboundFixMessageBuilder.addField(Tags.MARKET_DEPTH, FULL_BOOK_MARKET_DEPTH);
+        this.inboundFixMessageBuilder.addField(Tags.SUBSCRIPTION_REQUEST_TYPE, SNAPSHOT_AND_UPDATES_REQUEST);
 
         this.repeatingGroupBuilder.setNumberOfRepeatingGroups(this.symbolsToSubscribe.size());
         this.repeatingGroupBuilder.setNumberOfRepeatingGroupsTag(Tags.NUMBER_RELATED_SYMBOLS);
@@ -64,16 +64,16 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
         this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_TYPE, "0");
         this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_TYPE, "1");
 
-        this.fixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
+        this.inboundFixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
 
         try {
-            this.fixMessageSender.send(this.fixMessageBuilder.build());
+            this.fixMessageSender.send(this.inboundFixMessageBuilder.build());
         } catch (final IOException e) {
             e.printStackTrace();
         }
 
         this.repeatingGroupBuilder.clear();
-        this.fixMessageBuilder.clear();
+        this.inboundFixMessageBuilder.clear();
     }
 
 }
