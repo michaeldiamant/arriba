@@ -1,4 +1,4 @@
-package arriba.fix.messages;
+package arriba.fix.inbound;
 
 import java.util.Map;
 

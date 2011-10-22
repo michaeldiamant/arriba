@@ -13,7 +13,7 @@ import org.junit.Test;
 import arriba.fix.Field;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.FixChunkBuilder;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 import arriba.transport.netty.util.FixMessages;
 
 import com.lmax.disruptor.EventHandler;

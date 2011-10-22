@@ -13,8 +13,8 @@ import arriba.common.Sender;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.Logon;
+import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.Logon;
 import arriba.transport.channels.ChannelRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {

@@ -6,7 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 
 import arriba.fix.Field;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 
 import com.google.common.collect.Lists;
 

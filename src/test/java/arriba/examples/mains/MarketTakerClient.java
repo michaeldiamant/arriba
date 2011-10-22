@@ -22,7 +22,7 @@ import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;

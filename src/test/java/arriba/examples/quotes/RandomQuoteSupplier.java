@@ -13,7 +13,7 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 
 public final class RandomQuoteSupplier implements Runnable {
 

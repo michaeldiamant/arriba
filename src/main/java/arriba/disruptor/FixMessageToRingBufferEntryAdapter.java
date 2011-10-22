@@ -1,6 +1,6 @@
 package arriba.disruptor;
 
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 
 public final class FixMessageToRingBufferEntryAdapter implements MessageToDisruptorAdapter<FixMessage, FixMessageEvent>{
 
