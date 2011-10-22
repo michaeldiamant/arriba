@@ -6,12 +6,17 @@ import arriba.fix.Tags;
 public class StandardTrailerTagIndexResolverTest extends AbstractTagIndexResolverTest {
 
     @Override
-    public TagIndexResolver getTagIndexResolver() {
+    public TagIndexResolver getResolver() {
         return new StandardTrailerTagIndexResolver();
     }
 
     @Override
-    public int[] getAllTags() {
+    public int[] getExpectedRequiredTags() {
         return Tags.getTrailers();
+    }
+
+    @Override
+    public int[] getExpectedOptionalTags() {
+        return new int[0];
     }
 }

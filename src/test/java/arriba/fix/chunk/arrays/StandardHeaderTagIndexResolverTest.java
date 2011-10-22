@@ -5,12 +5,17 @@ import arriba.fix.Tags;
 public class StandardHeaderTagIndexResolverTest extends AbstractTagIndexResolverTest {
 
     @Override
-    public TagIndexResolver getTagIndexResolver() {
+    public TagIndexResolver getResolver() {
         return new StandardHeaderTagIndexResolver();
     }
 
     @Override
-    public int[] getAllTags() {
+    public int[] getExpectedRequiredTags() {
         return Tags.getHeaders();
+    }
+
+    @Override
+    public int[] getExpectedOptionalTags() {
+        return new int[0];
     }
 }
