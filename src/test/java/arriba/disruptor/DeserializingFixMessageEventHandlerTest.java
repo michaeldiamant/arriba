@@ -1,4 +1,4 @@
-package arriba.fix.disruptor;
+package arriba.disruptor;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import arriba.disruptor.DeserializingFixMessageEventHandler;
+import arriba.disruptor.FixMessageEvent;
 import arriba.fix.Field;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.FixChunk;
