@@ -13,7 +13,6 @@ import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
 import arriba.common.Sender;
-import arriba.disruptor.ChannelWritingFixMessageEventHandler;
 import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.FixMessageEventFactory;
@@ -31,6 +30,7 @@ import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
 import arriba.transport.channels.InMemoryChannelRepository;
+import arriba.transport.netty.ChannelWritingFixMessageEventHandler;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.SerializedFixMessageHandler;
 
