@@ -1,6 +1,6 @@
 package arriba.disruptor.outbound;
 
-import arriba.fix.OutboundFixMessage;
+import arriba.fix.outbound.OutboundFixMessage;
 
 import com.lmax.disruptor.AbstractEvent;
 

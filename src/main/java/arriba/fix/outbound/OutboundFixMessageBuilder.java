@@ -1,7 +1,10 @@
-package arriba.fix;
+package arriba.fix.outbound;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import arriba.fix.Fields;
+import arriba.fix.Tags;
 
 /**
  * An outbound FIX message builder constructs messages to be sent in byte[] format.

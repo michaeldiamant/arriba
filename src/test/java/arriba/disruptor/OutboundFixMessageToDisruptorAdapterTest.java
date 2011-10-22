@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import arriba.disruptor.outbound.OutboundFixMessageEvent;
 import arriba.disruptor.outbound.OutboundFixMessageToDisruptorAdapter;
-import arriba.fix.OutboundFixMessage;
+import arriba.fix.outbound.OutboundFixMessage;
 
 public class OutboundFixMessageToDisruptorAdapterTest {
 

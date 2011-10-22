@@ -1,4 +1,4 @@
-package arriba.fix;
+package arriba.fix.outbound;
 
 public final class OutboundFixMessage {
 
