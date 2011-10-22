@@ -8,12 +8,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import arriba.common.Handler;
 import arriba.common.Sender;
-import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.Logon;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 
 public final class SubscriptionRequestingLogonHandler implements Handler<Logon> {
 

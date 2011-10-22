@@ -1,4 +1,4 @@
-package arriba.fix;
+package arriba.fix.inbound;
 
 import java.util.Map;
 
@@ -6,7 +6,9 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
+import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 
 public class RepeatingGroupBuilderTest {
 

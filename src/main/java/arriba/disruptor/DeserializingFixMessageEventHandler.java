@@ -5,11 +5,11 @@ import java.util.Arrays;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import arriba.fix.Fields;
-import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 
 import com.lmax.disruptor.EventHandler;
 
