@@ -1,10 +1,10 @@
 package arriba.fix.chunk;
 
-public interface FixChunkBuilder<C extends FixChunk> {
+public interface FixChunkBuilder {
 
-    FixChunkBuilder<C> addField(int tag, String value);
+    FixChunkBuilder addField(int tag, String value);
 
-    C build();
+    FixChunk build();
 
     void clear();
 }

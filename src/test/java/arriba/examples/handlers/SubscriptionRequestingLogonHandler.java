@@ -11,7 +11,6 @@ import arriba.common.Sender;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.Logon;
@@ -24,12 +23,12 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
 
     private final Set<String> symbolsToSubscribe;
     private final Sender<FixMessage> fixMessageSender;
-    private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder;
+    private final FixMessageBuilder fixMessageBuilder;
     private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
 
     public SubscriptionRequestingLogonHandler(final Set<String> symbolsToSubscribe,
-            final Sender<FixMessage> fixMessageSender, final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder,
+            final Sender<FixMessage> fixMessageSender, final FixMessageBuilder fixMessageBuilder,
             final AtomicInteger messageCount) {
         this.symbolsToSubscribe = symbolsToSubscribe;
         this.fixMessageSender = fixMessageSender;

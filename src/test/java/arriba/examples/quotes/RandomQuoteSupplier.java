@@ -12,7 +12,6 @@ import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 
@@ -22,7 +21,7 @@ public final class RandomQuoteSupplier implements Runnable {
 
     private final SubscriptionService subscriptionService;
     private final Set<String> symbols;
-    private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder;
+    private final FixMessageBuilder fixMessageBuilder;
     private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
     private final String senderCompId;
@@ -30,7 +29,7 @@ public final class RandomQuoteSupplier implements Runnable {
     private final Sender<FixMessage> fixMessageSender;
 
     public RandomQuoteSupplier(final SubscriptionService subscriptionService, final Set<String> symbols,
-            final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder, final AtomicInteger messageCount,
+            final FixMessageBuilder fixMessageBuilder, final AtomicInteger messageCount,
             final String senderCompId, final Sender<FixMessage> fixMessageSender) {
         this.subscriptionService = subscriptionService;
         this.symbols = symbols;

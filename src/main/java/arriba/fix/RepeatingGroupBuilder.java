@@ -6,7 +6,6 @@ import java.util.Map;
 
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 
 import com.google.common.collect.Maps;
@@ -18,7 +17,7 @@ public final class RepeatingGroupBuilder {
     private final int[] tags = new int[MAX_REPEATING_GROUP_COUNT];
     private final String[] values = new String[MAX_REPEATING_GROUP_COUNT];
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk = Maps.newHashMap();
-    private final FixChunkBuilder<ArrayFixChunk> chunkBuilder = new ArrayFixChunkBuilder();
+    private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder();
 
     private int[] repeatingGroupTags = null;
     private int tagValueIndex = 0;

@@ -3,23 +3,24 @@ package arriba.fix.chunk.arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 
 import com.google.common.collect.Maps;
 
-public final class ArrayFixChunkBuilder implements FixChunkBuilder<ArrayFixChunk> {
+public final class ArrayFixChunkBuilder implements FixChunkBuilder {
 
     private final Map<Integer, String> tagToField = Maps.newHashMap();
 
     @Override
-    public FixChunkBuilder<ArrayFixChunk> addField(final int tag, final String value) {
+    public FixChunkBuilder addField(final int tag, final String value) {
         this.tagToField.put(tag, value);
 
         return this;
     }
 
     @Override
-    public ArrayFixChunk build() {
+    public FixChunk build() {
         final int[] tags = new int[this.tagToField.size()];
         final String[] values = new String[this.tagToField.size()];
         int index = 0;

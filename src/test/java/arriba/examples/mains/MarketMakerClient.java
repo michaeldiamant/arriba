@@ -29,7 +29,6 @@ import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.FixMessageBuilder;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.NewOrderSingle;
@@ -115,8 +114,8 @@ public class MarketMakerClient {
         server.bind(new InetSocketAddress("localhost", 8080));
     }
 
-    private FixMessageBuilder<ArrayFixChunk> fixMessageBuilder() {
-        return new FixMessageBuilder<ArrayFixChunk>(
+    private FixMessageBuilder fixMessageBuilder() {
+        return new FixMessageBuilder(
                 new ArrayFixChunkBuilder(),
                 new ArrayFixChunkBuilder(),
                 new ArrayFixChunkBuilder());
