@@ -1,9 +1,10 @@
-package arriba.fix;
+package arriba.fix.inbound;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
+import arriba.fix.RepeatingGroups;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;

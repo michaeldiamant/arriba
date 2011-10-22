@@ -9,11 +9,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import arriba.common.Sender;
 import arriba.examples.subscriptions.SubscriptionService;
-import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 
 public final class RandomQuoteSupplier implements Runnable {
 
