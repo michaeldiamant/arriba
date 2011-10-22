@@ -1,4 +1,4 @@
-package arriba.fix.disruptor;
+package arriba.disruptor;
 
 import arriba.fix.messages.FixMessage;
 import com.lmax.disruptor.AbstractEvent;

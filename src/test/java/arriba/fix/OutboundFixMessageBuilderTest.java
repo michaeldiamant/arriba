@@ -9,10 +9,10 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
 import org.junit.Test;
 
+import arriba.disruptor.DeserializingFixMessageEventHandler;
+import arriba.disruptor.FixMessageEvent;
 import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.disruptor.DeserializingFixMessageEventHandler;
-import arriba.fix.disruptor.FixMessageEvent;
 import arriba.fix.messages.FixMessage;
 
 import com.google.common.collect.Lists;

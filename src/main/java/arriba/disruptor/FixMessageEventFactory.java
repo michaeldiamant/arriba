@@ -1,4 +1,4 @@
-package arriba.fix.disruptor;
+package arriba.disruptor;
 
 
 import com.lmax.disruptor.EventFactory;

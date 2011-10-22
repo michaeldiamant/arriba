@@ -1,4 +1,4 @@
-package arriba.fix.disruptor;
+package arriba.disruptor;
 
 import arriba.common.MessageToRingBufferEntryAdapter;
 import arriba.fix.messages.FixMessage;
