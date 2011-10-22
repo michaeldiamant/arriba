@@ -1,6 +1,6 @@
 package arriba.disruptor;
 
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 
 import com.lmax.disruptor.AbstractEvent;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -8,16 +8,16 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public final class FixMessageEvent extends AbstractEvent {
 
     private ChannelBuffer serializedFixMessage;
-    private FixMessage fixMessage;
+    private InboundFixMessage inboundFixMessage;
 
     public FixMessageEvent() {}
 
-    public void setFixMessage(final FixMessage fixMessage) {
-        this.fixMessage = fixMessage;
+    public void setFixMessage(final InboundFixMessage inboundFixMessage) {
+        this.inboundFixMessage = inboundFixMessage;
     }
 
-    public FixMessage getFixMessage() {
-        return this.fixMessage;
+    public InboundFixMessage getFixMessage() {
+        return this.inboundFixMessage;
     }
 
     public ChannelBuffer getSerializedFixMessage() {

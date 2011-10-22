@@ -12,7 +12,7 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.Logon;
 
 public final class SubscriptionRequestingLogonHandler implements Handler<Logon> {
@@ -22,13 +22,13 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
     private static final String SNAPSHOT_AND_UPDATES_REQUEST = "1";
 
     private final Set<String> symbolsToSubscribe;
-    private final Sender<FixMessage> fixMessageSender;
+    private final Sender<InboundFixMessage> fixMessageSender;
     private final FixMessageBuilder fixMessageBuilder;
     private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
 
     public SubscriptionRequestingLogonHandler(final Set<String> symbolsToSubscribe,
-            final Sender<FixMessage> fixMessageSender, final FixMessageBuilder fixMessageBuilder,
+            final Sender<InboundFixMessage> fixMessageSender, final FixMessageBuilder fixMessageBuilder,
             final AtomicInteger messageCount) {
         this.symbolsToSubscribe = symbolsToSubscribe;
         this.fixMessageSender = fixMessageSender;

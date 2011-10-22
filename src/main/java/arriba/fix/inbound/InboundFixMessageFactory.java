@@ -4,9 +4,9 @@ import java.util.Map;
 
 import arriba.fix.chunk.FixChunk;
 
-public final class FixMessageFactory {
+public final class InboundFixMessageFactory {
 
-    public static FixMessage create(final String messageType, final byte[] beginStringBytes, final FixChunk headerChunk,
+    public static InboundFixMessage create(final String messageType, final byte[] beginStringBytes, final FixChunk headerChunk,
             final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
 

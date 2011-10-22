@@ -7,8 +7,8 @@ import java.util.Map;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.FixMessage;
-import arriba.fix.inbound.FixMessageFactory;
+import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageFactory;
 
 public final class FixMessageBuilder {
 
@@ -61,7 +61,7 @@ public final class FixMessageBuilder {
         return this;
     }
 
-    public FixMessage build() {
+    public InboundFixMessage build() {
         // TODO Check for existence of checksum and actually compute it.
         this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337");
 
@@ -69,11 +69,11 @@ public final class FixMessageBuilder {
         this.headerChunkBuilder.addField(Tags.MESSAGE_TYPE, this.messageType);
 
 
-        final FixMessage fixMessage = FixMessageFactory.create(this.messageType, this.beginStringBytes,
+        final InboundFixMessage inboundFixMessage = InboundFixMessageFactory.create(this.messageType, this.beginStringBytes,
                 this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(), this.trailerChunkBuilder.build(),
                 this.repeatingGroupTagToRepeatingGroups == null ? new HashMap<Integer, FixChunk[]>() : this.repeatingGroupTagToRepeatingGroups);
 
-        return fixMessage;
+        return inboundFixMessage;
     }
 
     public void clear() {

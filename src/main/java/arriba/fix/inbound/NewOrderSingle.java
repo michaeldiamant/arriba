@@ -4,7 +4,7 @@ import java.util.Map;
 
 import arriba.fix.chunk.FixChunk;
 
-public final class NewOrderSingle extends FixMessage {
+public final class NewOrderSingle extends InboundFixMessage {
 
     protected NewOrderSingle(final byte[] beginStringBytes, final FixChunk headerChunk,
             final FixChunk bodyChunk, final FixChunk trailerChunk,
