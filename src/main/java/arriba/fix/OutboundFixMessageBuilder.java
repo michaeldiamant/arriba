@@ -3,7 +3,6 @@ package arriba.fix;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-
 /**
  * An outbound FIX message builder constructs messages to be sent in byte[] format.
  */
@@ -14,6 +13,9 @@ public final class OutboundFixMessageBuilder {
 
     private final byte[][] tags = new byte[MAX_MESSAGE_FIELDS_COUNT][];
     private final String[] values = new String[MAX_MESSAGE_FIELDS_COUNT];
+
+    private String targetCompId = null;
+
     private int readIndex = 0;
     private int messageLength = 0;
 
@@ -31,7 +33,17 @@ public final class OutboundFixMessageBuilder {
         return this;
     }
 
-    public byte[] build() {
+    public OutboundFixMessageBuilder setTargetCompId(final String targetCompId) {
+        this.targetCompId = targetCompId;
+
+        return this.addField(Tags.TARGET_COMP_ID, targetCompId);
+    }
+
+    public OutboundFixMessage build() {
+        if (null == this.targetCompId) {
+            throw new IllegalStateException("Target component ID must be specified.");
+        }
+
         try {
             // TODO Extend to allow underlying array to be resized.  This will enable
             // reuse of one ByteArrayOutputStream instance.
@@ -42,21 +54,28 @@ public final class OutboundFixMessageBuilder {
 
                 final String value = this.values[writeIndex];
                 final int valueLength = value.length();
-                for (int valueIndex = 0 ; valueIndex < valueLength ; valueIndex++) {
-                    out.write((byte)value.charAt(valueIndex));
+                for (int valueIndex = 0; valueIndex < valueLength; valueIndex++) {
+                    out.write((byte) value.charAt(valueIndex));
                 }
 
                 out.write(Fields.DELIMITER);
             }
 
-            this.readIndex = 0;
-            this.messageLength = 0;
-
             // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
             // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
-            return out.toByteArray();
+            final OutboundFixMessage message = new OutboundFixMessage(out.toByteArray(), this.targetCompId);
+
+            this.reset();
+
+            return message;
         } catch (final IOException e) {
-            return new byte[0];
+            return new OutboundFixMessage(new byte[0], this.targetCompId);
         }
+    }
+
+    private void reset() {
+        this.readIndex = 0;
+        this.messageLength = 0;
+        this.targetCompId = null;
     }
 }
