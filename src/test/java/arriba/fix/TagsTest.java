@@ -19,10 +19,10 @@ public class TagsTest {
 
     @Test
     public void testToDelimitedByteArray() {
-        final byte[] undelimitedTagBytes = Integer.toString(this.tag).getBytes();
-        final byte[] expectedTagBytes = new byte[1 + undelimitedTagBytes.length];
-        expectedTagBytes[0] = Fields.DELIMITER;
-        System.arraycopy(undelimitedTagBytes, 0, expectedTagBytes, 1, undelimitedTagBytes.length);
+        final byte[] tagBytesSansEqualSign = Integer.toString(this.tag).getBytes();
+        final byte[] expectedTagBytes = new byte[tagBytesSansEqualSign.length + 1];
+        System.arraycopy(tagBytesSansEqualSign, 0, expectedTagBytes, 0, tagBytesSansEqualSign.length);
+        expectedTagBytes[tagBytesSansEqualSign.length] = Fields.EQUAL_SIGN;
 
         final byte[] actualTagBytes = Tags.toDelimitedByteArray(this.tag);
 

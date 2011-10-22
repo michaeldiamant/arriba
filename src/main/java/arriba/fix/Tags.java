@@ -65,17 +65,18 @@ public final class Tags {
     }
 
     private static void buildByteArrayTags() {
-        final int fieldDelimiterLength = 1;
+        final int equalSignLength = 1;
         for (int tagIndex = 0; tagIndex < MAXIMUM_TAG; tagIndex++) {
             final byte[] tagBytes = Integer.toString(tagIndex).getBytes();
 
             BYTE_ARRAY_TAGS[tagIndex] = tagBytes;
 
-            final byte[] fieldDelimitedTagBytes = new byte[fieldDelimiterLength + tagBytes.length];
-            fieldDelimitedTagBytes[0] = Fields.DELIMITER;
-            System.arraycopy(tagBytes, 0, fieldDelimitedTagBytes, fieldDelimiterLength, tagBytes.length);
+            final byte[] equalSignDelimitedTagBytes = new byte[tagBytes.length + equalSignLength];
 
-            DELIMITED_BYTE_ARRAY_TAGS[tagIndex] = fieldDelimitedTagBytes;
+            System.arraycopy(tagBytes, 0, equalSignDelimitedTagBytes, 0, tagBytes.length);
+            equalSignDelimitedTagBytes[tagBytes.length] = Fields.EQUAL_SIGN;
+
+            DELIMITED_BYTE_ARRAY_TAGS[tagIndex] = equalSignDelimitedTagBytes;
         }
     }
 
