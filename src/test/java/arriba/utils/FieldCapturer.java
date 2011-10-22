@@ -12,7 +12,7 @@ public abstract class FieldCapturer {
         this.fields.add(new Field<String>(tag, value));
     }
 
-    public void reset() {
+    public void clear() {
         this.fields.clear();
     }
 }

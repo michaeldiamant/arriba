@@ -66,7 +66,7 @@ public class OutboundFixMessageBuilderTest {
         this.capturer.addField(Tags.CHECKSUM, "1337");
 
         this.capturer.build();
-        this.capturer.reset();
+        this.capturer.clear();
 
         this.capturer.addField(Tags.BEGIN_STRING, "FIX.4.4");
         this.capturer.addField(Tags.MESSAGE_TYPE, "W");
