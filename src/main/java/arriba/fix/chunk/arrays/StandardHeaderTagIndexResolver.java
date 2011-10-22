@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import arriba.fix.Tags;
 
-public final class StandardHeaderTagIndexResolver implements TagIndexResolver {
+public final class StandardHeaderTagIndexResolver extends TagIndexResolver {
 
     // TODO Consider adding initialization check to ensure all header tags
     // have been used (e.g. test against Tags.getHeaders()).
@@ -30,11 +30,6 @@ public final class StandardHeaderTagIndexResolver implements TagIndexResolver {
     }
 
     @Override
-    public boolean isDefinedFor(final int tag) {
-        return TAG_INDEXES[tag] != TagIndexResolver.INVALID_TAG_INDEX;
-    }
-
-    @Override
     public int getTagIndex(final int tag) {
         return TAG_INDEXES[tag];
     }
@@ -42,5 +37,10 @@ public final class StandardHeaderTagIndexResolver implements TagIndexResolver {
     @Override
     public int getTagCount() {
         return TAG_COUNT;
+    }
+
+    @Override
+    protected int getMaxTag() {
+        return MAX_TAG;
     }
 }

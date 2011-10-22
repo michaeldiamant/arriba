@@ -1,12 +1,16 @@
 package arriba.fix.chunk.arrays;
 
-public interface TagIndexResolver {
+public abstract class TagIndexResolver {
 
-    final int INVALID_TAG_INDEX = -1;
+    final protected static int INVALID_TAG_INDEX = -1;
 
-    boolean isDefinedFor(int tag);
+    public boolean isDefinedFor(final int tag) {
+        return tag <= this.getMaxTag() && this.getTagIndex(tag) != TagIndexResolver.INVALID_TAG_INDEX;
+    }
 
-    int getTagIndex(int tag);
+    public abstract int getTagIndex(int tag);
 
-    int getTagCount();
+    public abstract int getTagCount();
+
+    protected abstract int getMaxTag();
 }
