@@ -5,8 +5,8 @@ import java.util.List;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 
-import arriba.fix.Field;
 import arriba.fix.Fields;
+import arriba.utils.Field;
 
 import com.google.common.collect.Lists;
 

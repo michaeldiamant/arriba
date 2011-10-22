@@ -10,11 +10,11 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import arriba.fix.Field;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.transport.netty.util.FixMessages;
+import arriba.utils.Field;
 
 import com.lmax.disruptor.EventHandler;
 
