@@ -22,7 +22,7 @@ import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
@@ -53,7 +53,7 @@ public class MarketTakerClient {
     private final String username = "tr8der";
     private final String password = "liquidity";
 
-    private final RingBufferSender<FixMessage, FixMessageEvent> fixMessageSender = new RingBufferSender<FixMessage, FixMessageEvent>(null, new FixMessageToRingBufferEntryAdapter());;
+    private final RingBufferSender<InboundFixMessage, FixMessageEvent> fixMessageSender = new RingBufferSender<InboundFixMessage, FixMessageEvent>(null, new FixMessageToRingBufferEntryAdapter());;
     private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
             new SerializedFixMessageToRingBufferEntryAdapter());
 

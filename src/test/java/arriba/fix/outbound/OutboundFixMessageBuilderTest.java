@@ -12,7 +12,7 @@ import arriba.disruptor.FixMessageEvent;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessageBuilder;
 import arriba.utils.FieldCapturer;
@@ -50,7 +50,7 @@ public class OutboundFixMessageBuilderTest {
 
         final OutboundFixMessage outboundMessage = this.builder.build();
 
-        final FixMessage message = this.deserialize(outboundMessage.getMessage());
+        final InboundFixMessage message = this.deserialize(outboundMessage.getMessage());
 
         this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
@@ -87,7 +87,7 @@ public class OutboundFixMessageBuilderTest {
 
         final OutboundFixMessage outboundMessage = this.builder.build();
 
-        final FixMessage message = this.deserialize(outboundMessage.getMessage());
+        final InboundFixMessage message = this.deserialize(outboundMessage.getMessage());
         this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
     }
@@ -102,7 +102,7 @@ public class OutboundFixMessageBuilderTest {
         }
     }
 
-    private FixMessage deserialize(final byte[] message) throws Exception {
+    private InboundFixMessage deserialize(final byte[] message) throws Exception {
         final EventHandler<FixMessageEvent> deserializer = new DeserializingFixMessageEventHandler(new FixMessageBuilder(
                 new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder()));
 

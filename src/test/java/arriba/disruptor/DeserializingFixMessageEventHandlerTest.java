@@ -13,7 +13,7 @@ import org.junit.Test;
 import arriba.fix.Field;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.FixChunkBuilder;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.transport.netty.util.FixMessages;
 
 import com.lmax.disruptor.EventHandler;
@@ -51,9 +51,9 @@ public class DeserializingFixMessageEventHandlerTest {
         assertAllFieldsAreSet(fixMessageEntry.getFixMessage());
     }
 
-    private static void assertAllFieldsAreSet(final FixMessage fixMessage) {
+    private static void assertAllFieldsAreSet(final InboundFixMessage inboundFixMessage) {
         for (final Field<String> field : FixMessages.toFields(FixMessages.EXAMPLE_NEW_ORDER_SINGLE)) {
-            final String value = fixMessage.getValue(field.getTag());
+            final String value = inboundFixMessage.getValue(field.getTag());
 
             assertThat("Tag " + field.getTag() + " is missing a value.", value, is(not("")));
         }

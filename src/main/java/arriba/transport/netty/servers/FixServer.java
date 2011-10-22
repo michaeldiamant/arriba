@@ -21,7 +21,7 @@ import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
@@ -54,7 +54,7 @@ public class FixServer {
 
     public void start() {
         final Sender<ChannelBuffer> inboundRingBufferSender = this.createInboundFixMessageRingBuffer();
-        final Sender<FixMessage> outboundRingBufferSender = this.createOutboundFixMessageRingBuffer();
+        final Sender<InboundFixMessage> outboundRingBufferSender = this.createOutboundFixMessageRingBuffer();
 
         // TODO Use the outboundRingBufferSender to send FIX messages.
 
@@ -88,7 +88,7 @@ public class FixServer {
                 new SerializedFixMessageToRingBufferEntryAdapter());
     }
 
-    private Sender<FixMessage> createOutboundFixMessageRingBuffer() {
+    private Sender<InboundFixMessage> createOutboundFixMessageRingBuffer() {
         final RingBuffer<FixMessageEvent> ringBuffer = new RingBuffer<FixMessageEvent>(new FixMessageEventFactory(),
                 1024 * 32,
                 ClaimStrategy.Option.SINGLE_THREADED,
@@ -103,7 +103,7 @@ public class FixServer {
         executorService.submit(channelSubmittingConsumer);
 
         final DependencyBarrier outboundProducerBarrier = ringBuffer.newDependencyBarrier(channelSubmittingConsumer);
-        return new RingBufferSender<FixMessage, FixMessageEvent>(ringBuffer,
+        return new RingBufferSender<InboundFixMessage, FixMessageEvent>(ringBuffer,
                 new FixMessageToRingBufferEntryAdapter());
     }
 

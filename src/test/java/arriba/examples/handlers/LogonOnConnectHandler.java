@@ -15,7 +15,7 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.transport.channels.ChannelRepository;
 
 public class LogonOnConnectHandler extends SimpleChannelHandler {
@@ -29,12 +29,12 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
     private final String targetCompId;
     private final String username;
     private final String password;
-    private final Sender<FixMessage> fixMessageSender;
+    private final Sender<InboundFixMessage> fixMessageSender;
     private final ChannelRepository<String> channelRepository;
 
     public LogonOnConnectHandler(final AtomicInteger messageCount,
             final String senderCompId, final String targetCompId, final String username, final String password,
-            final Sender<FixMessage> fixMessageSender, final ChannelRepository<String> channelRepository) {
+            final Sender<InboundFixMessage> fixMessageSender, final ChannelRepository<String> channelRepository) {
         this.messageCount = messageCount;
         this.senderCompId = senderCompId;
         this.targetCompId = targetCompId;

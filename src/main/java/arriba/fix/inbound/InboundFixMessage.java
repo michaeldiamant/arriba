@@ -12,7 +12,7 @@ import arriba.fix.chunk.FixChunk;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 
-public abstract class FixMessage {
+public abstract class InboundFixMessage {
 
     private static final int DEFAULT_BYTE_ARRAY_SIZE = 32;
 
@@ -22,7 +22,7 @@ public abstract class FixMessage {
     private final FixChunk trailerChunk;
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk;
 
-    public FixMessage(final byte[] beginStringBytes, final FixChunk headerChunk, final FixChunk bodyChunk,
+    public InboundFixMessage(final byte[] beginStringBytes, final FixChunk headerChunk, final FixChunk bodyChunk,
             final FixChunk trailerChunk, final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
         this.beginStringBytes = beginStringBytes;
         this.headerChunk = headerChunk;

@@ -7,7 +7,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 
 import arriba.disruptor.FixMessageEvent;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.transport.channels.ChannelRepository;
 import arriba.transport.channels.UnknownChannelIdException;
 
@@ -24,16 +24,16 @@ public final class ChannelWritingFixMessageEventHandler implements EventHandler<
 
     @Override
     public void onEvent(final FixMessageEvent entry, final boolean b) throws Exception {
-        final FixMessage fixMessage = entry.getFixMessage();
+        final InboundFixMessage inboundFixMessage = entry.getFixMessage();
 
         final Channel channel;
         try {
-            channel = this.channelRepository.find(fixMessage.getTargetCompId());
+            channel = this.channelRepository.find(inboundFixMessage.getTargetCompId());
         } catch (final UnknownChannelIdException e) {
             throw new IOException(e);
         }
 
-        final ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(fixMessage.toByteArray());
+        final ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(inboundFixMessage.toByteArray());
         channel.write(messageBuffer);
     }
 

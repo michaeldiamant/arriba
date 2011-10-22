@@ -5,7 +5,7 @@ import java.util.Map;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 
-public final class MarketDataRequest extends FixMessage {
+public final class MarketDataRequest extends InboundFixMessage {
 
     public MarketDataRequest(final byte[] beginStringBytes, final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {

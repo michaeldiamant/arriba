@@ -9,7 +9,7 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 
 import com.lmax.disruptor.EventHandler;
 
@@ -41,12 +41,12 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
         final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
         this.parsingState = ParsingState.NON_REPEATING_GROUP;
-        final FixMessage fixMessage = this.deserializeFixMessage(serializedFixMessage);
+        final InboundFixMessage inboundFixMessage = this.deserializeFixMessage(serializedFixMessage);
 
-        entry.setFixMessage(fixMessage);
+        entry.setFixMessage(inboundFixMessage);
     }
 
-    private FixMessage deserializeFixMessage(final ChannelBuffer fixMessageBuffer) throws DeserializationException {
+    private InboundFixMessage deserializeFixMessage(final ChannelBuffer fixMessageBuffer) throws DeserializationException {
         while ((this.nextFlagIndex = fixMessageBuffer.bytesBefore(this.nextFlagByte)) != -1) {
             final ChannelBuffer nextValueBuffer = fixMessageBuffer.readBytes(this.nextFlagIndex);
             fixMessageBuffer.readerIndex(fixMessageBuffer.readerIndex() + 1);
@@ -103,10 +103,10 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                     } else if (this.hasFoundFinalDelimiter) {
                         this.hasFoundFinalDelimiter = false;
 
-                        final FixMessage fixMessage = this.fixMessageBuilder.build();
+                        final InboundFixMessage inboundFixMessage = this.fixMessageBuilder.build();
                         this.reset();
 
-                        return fixMessage;
+                        return inboundFixMessage;
                     }
 
                     break;

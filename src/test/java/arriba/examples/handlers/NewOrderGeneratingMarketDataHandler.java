@@ -12,7 +12,7 @@ import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
 
 public final class NewOrderGeneratingMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
@@ -24,11 +24,11 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
     private final AtomicInteger messageCount;
-    private final Sender<FixMessage> sender;
+    private final Sender<InboundFixMessage> sender;
     private final FixMessageBuilder fixMessageBuilder = new FixMessageBuilder(new ArrayFixChunkBuilder(),
             new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
 
-    public NewOrderGeneratingMarketDataHandler(final Sender<FixMessage> sender, final AtomicInteger messageCount) {
+    public NewOrderGeneratingMarketDataHandler(final Sender<InboundFixMessage> sender, final AtomicInteger messageCount) {
         this.sender = sender;
         this.messageCount = messageCount;
     }

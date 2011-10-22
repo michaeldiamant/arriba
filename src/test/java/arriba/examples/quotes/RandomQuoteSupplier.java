@@ -13,7 +13,7 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.InboundFixMessage;
 
 public final class RandomQuoteSupplier implements Runnable {
 
@@ -26,11 +26,11 @@ public final class RandomQuoteSupplier implements Runnable {
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final Random random = new Random();
-    private final Sender<FixMessage> fixMessageSender;
+    private final Sender<InboundFixMessage> fixMessageSender;
 
     public RandomQuoteSupplier(final SubscriptionService subscriptionService, final Set<String> symbols,
             final FixMessageBuilder fixMessageBuilder, final AtomicInteger messageCount,
-            final String senderCompId, final Sender<FixMessage> fixMessageSender) {
+            final String senderCompId, final Sender<InboundFixMessage> fixMessageSender) {
         this.subscriptionService = subscriptionService;
         this.symbols = symbols;
         this.fixMessageBuilder = fixMessageBuilder;
