@@ -12,8 +12,8 @@ import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.MarketDataSnapshotFullRefresh;
+import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
 
 public final class NewOrderGeneratingMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
 

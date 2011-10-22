@@ -3,7 +3,7 @@ package arriba.fix.session;
 import arriba.common.Handler;
 import arriba.common.HandlerRepository;
 import arriba.common.NonexistentHandlerException;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 
 public class Session {
 

@@ -7,8 +7,8 @@ import java.util.Map;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.FixMessageFactory;
+import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.FixMessageFactory;
 
 public final class FixMessageBuilder {
 

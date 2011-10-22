@@ -1,6 +1,7 @@
 package arriba.disruptor;
 
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
+
 import com.lmax.disruptor.AbstractEvent;
 import org.jboss.netty.buffer.ChannelBuffer;
 

@@ -3,7 +3,7 @@ package arriba.senders;
 import java.io.IOException;
 
 import arriba.common.Sender;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 
 public final class FixTimestampSender implements Sender<FixMessage> {
 

@@ -6,7 +6,7 @@ import java.util.Map;
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 
 public final class AlwaysResolvingSessionResolver implements SessionResolver {
 

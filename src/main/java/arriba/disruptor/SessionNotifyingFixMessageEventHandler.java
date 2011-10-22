@@ -1,6 +1,6 @@
 package arriba.disruptor;
 
-import arriba.fix.messages.FixMessage;
+import arriba.fix.inbound.FixMessage;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionResolver;
 import com.lmax.disruptor.EventHandler;

@@ -12,8 +12,8 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.messages.FixMessage;
-import arriba.fix.messages.Logon;
+import arriba.fix.inbound.FixMessage;
+import arriba.fix.inbound.Logon;
 
 public final class SubscriptionRequestingLogonHandler implements Handler<Logon> {
 
