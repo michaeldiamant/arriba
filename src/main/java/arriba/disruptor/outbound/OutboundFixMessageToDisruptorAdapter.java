@@ -1,7 +1,7 @@
 package arriba.disruptor.outbound;
 
 import arriba.disruptor.MessageToDisruptorAdapter;
-import arriba.fix.OutboundFixMessage;
+import arriba.fix.outbound.OutboundFixMessage;
 
 public final class OutboundFixMessageToDisruptorAdapter implements MessageToDisruptorAdapter<OutboundFixMessage, OutboundFixMessageEvent> {
 

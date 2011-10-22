@@ -1,4 +1,4 @@
-package arriba.fix;
+package arriba.fix.outbound;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -9,8 +9,12 @@ import org.junit.Test;
 
 import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
+import arriba.fix.FixMessageBuilder;
+import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.messages.FixMessage;
+import arriba.fix.outbound.OutboundFixMessage;
+import arriba.fix.outbound.OutboundFixMessageBuilder;
 import arriba.utils.FieldCapturer;
 
 import com.lmax.disruptor.EventHandler;
