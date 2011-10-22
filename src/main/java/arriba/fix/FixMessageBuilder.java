@@ -10,28 +10,28 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.FixMessageFactory;
 
-public final class FixMessageBuilder<C extends FixChunk> {
+public final class FixMessageBuilder {
 
     private static final byte[] DEFAULT_BEGIN_STRING_BYTES = BeginString.FIXT11;
     private static final int[] HEADER_TAGS = Tags.getHeaders();
     private static final int[] TRAILER_TAGS = Tags.getTrailers();
 
     private byte[] beginStringBytes = DEFAULT_BEGIN_STRING_BYTES;
-    private final FixChunkBuilder<C> headerChunkBuilder;
-    private final FixChunkBuilder<C> bodyChunkBuilder;
-    private final FixChunkBuilder<C> trailerChunkBuilder;
+    private final FixChunkBuilder headerChunkBuilder;
+    private final FixChunkBuilder bodyChunkBuilder;
+    private final FixChunkBuilder trailerChunkBuilder;
 
     private String messageType = "";
     private Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups;
 
-    public FixMessageBuilder(final FixChunkBuilder<C> headerChunkBuilder, final FixChunkBuilder<C> bodyChunkBuilder,
-            final FixChunkBuilder<C> trailerChunkBuilder) {
+    public FixMessageBuilder(final FixChunkBuilder headerChunkBuilder, final FixChunkBuilder bodyChunkBuilder,
+            final FixChunkBuilder trailerChunkBuilder) {
         this.headerChunkBuilder = headerChunkBuilder;
         this.bodyChunkBuilder = bodyChunkBuilder;
         this.trailerChunkBuilder = trailerChunkBuilder;
     }
 
-    public FixMessageBuilder<C> addField(final int tag, final String value) {
+    public FixMessageBuilder addField(final int tag, final String value) {
         if (Arrays.binarySearch(HEADER_TAGS, tag) >= 0) {
             this.headerChunkBuilder.addField(tag, value);
         } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {
@@ -43,19 +43,19 @@ public final class FixMessageBuilder<C extends FixChunk> {
         return this;
     }
 
-    public FixMessageBuilder<C> setBeginStringBytes(final byte[] beginStringBytes) {
+    public FixMessageBuilder setBeginStringBytes(final byte[] beginStringBytes) {
         this.beginStringBytes = beginStringBytes;
 
         return this;
     }
 
-    public FixMessageBuilder<C> setMessageType(final String messageType) {
+    public FixMessageBuilder setMessageType(final String messageType) {
         this.messageType = messageType;
 
         return this;
     }
 
-    public FixMessageBuilder<C> setRepeatingGroups(final Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups) {
+    public FixMessageBuilder setRepeatingGroups(final Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups) {
         this.repeatingGroupTagToRepeatingGroups = repeatingGroupTagToRepeatingGroups;
 
         return this;

@@ -10,11 +10,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import arriba.disruptor.DeserializingFixMessageEventHandler;
-import arriba.disruptor.FixMessageEvent;
 import arriba.fix.Field;
 import arriba.fix.FixMessageBuilder;
-import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.messages.FixMessage;
 import arriba.transport.netty.util.FixMessages;
@@ -26,14 +23,13 @@ public class DeserializingFixMessageEventHandlerTest {
 
     private EventHandler<FixMessageEvent> handler;
 
-    @SuppressWarnings("unchecked")
     @Before
     public void before() {
-        final FixMessageBuilder<FixChunk> fixMessageBuilder =
-            new FixMessageBuilder<FixChunk>(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
-                    mock(FixChunkBuilder.class));
+        final FixMessageBuilder fixMessageBuilder =
+                new FixMessageBuilder(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
+                        mock(FixChunkBuilder.class));
         this.handler =
-            new DeserializingFixMessageEventHandler(fixMessageBuilder);
+                new DeserializingFixMessageEventHandler(fixMessageBuilder);
     }
 
     @Test

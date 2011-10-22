@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.messages.FixMessage;
 
@@ -108,7 +107,7 @@ public class OutboundFixMessageBuilderTest {
     }
 
     private FixMessage deserialize(final byte[] message) throws Exception {
-        final EventHandler<FixMessageEvent> deserializer = new DeserializingFixMessageEventHandler(new FixMessageBuilder<ArrayFixChunk>(
+        final EventHandler<FixMessageEvent> deserializer = new DeserializingFixMessageEventHandler(new FixMessageBuilder(
                 new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder()));
 
         final FixMessageEvent event = new FixMessageEvent();

@@ -1,5 +1,6 @@
 package arriba.examples.handlers;
 
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +13,6 @@ import org.jboss.netty.channel.SimpleChannelHandler;
 import arriba.common.Sender;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
@@ -22,8 +22,8 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
 
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
-    private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder =
-            new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
+    private final FixMessageBuilder fixMessageBuilder =
+            new FixMessageBuilder(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final String targetCompId;

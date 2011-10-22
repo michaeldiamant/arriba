@@ -9,7 +9,6 @@ import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
-import arriba.fix.chunk.FixChunk;
 import arriba.fix.messages.FixMessage;
 
 import com.lmax.disruptor.EventHandler;
@@ -19,7 +18,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
     private static final byte[] MESSAGE_TYPE_BYTES = Tags.toByteArray(Tags.MESSAGE_TYPE);
 
-    private final FixMessageBuilder<? extends FixChunk> fixMessageBuilder;
+    private final FixMessageBuilder fixMessageBuilder;
     private final RepeatingGroupBuilder groupBuilder = new RepeatingGroupBuilder();
 
     private byte nextFlagByte;
@@ -32,7 +31,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private int[] repeatingGroupTags;
     private boolean hasFoundNumberOfRepeatingGroupsTag;
 
-    public DeserializingFixMessageEventHandler(final FixMessageBuilder<? extends FixChunk> fixMessageBuilder) {
+    public DeserializingFixMessageEventHandler(final FixMessageBuilder fixMessageBuilder) {
         this.fixMessageBuilder = fixMessageBuilder;
         this.reset();
     }

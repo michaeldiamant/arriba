@@ -10,7 +10,6 @@ import arriba.common.Sender;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
@@ -26,7 +25,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
 
     private final AtomicInteger messageCount;
     private final Sender<FixMessage> sender;
-    private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder = new FixMessageBuilder<ArrayFixChunk>(new ArrayFixChunkBuilder(),
+    private final FixMessageBuilder fixMessageBuilder = new FixMessageBuilder(new ArrayFixChunkBuilder(),
             new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
 
     public NewOrderGeneratingMarketDataHandler(final Sender<FixMessage> sender, final AtomicInteger messageCount) {

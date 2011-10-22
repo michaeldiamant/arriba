@@ -12,7 +12,6 @@ import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.FixMessageBuilder;
 import arriba.fix.Tags;
-import arriba.fix.chunk.arrays.ArrayFixChunk;
 import arriba.fix.fields.BeginString;
 import arriba.fix.messages.FixMessage;
 import arriba.fix.messages.Logon;
@@ -24,14 +23,14 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
     private final String expectedUsername;
     private final String expectedPassword;
-    private final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder;
+    private final FixMessageBuilder fixMessageBuilder;
     private final Sender<FixMessage> fixMessageSender;
     private final AtomicInteger messageCount;
     private final List<Channel> channels;
     private final ChannelRepository<String> channelRepository;
 
     public AuthenticatingLogonHandler(final String expectedUsername, final String expectedPassword,
-            final FixMessageBuilder<ArrayFixChunk> fixMessageBuilder, final Sender<FixMessage> fixMessageSender,
+            final FixMessageBuilder fixMessageBuilder, final Sender<FixMessage> fixMessageSender,
             final AtomicInteger messageCount, final List<Channel> channels,
             final ChannelRepository<String> channelRepository) {
         this.expectedUsername = expectedUsername;
