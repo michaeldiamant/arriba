@@ -3,8 +3,6 @@ package arriba.fix;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.List;
-
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,18 +11,18 @@ import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.messages.FixMessage;
+import arriba.utils.FieldCapturer;
 
-import com.google.common.collect.Lists;
 import com.lmax.disruptor.EventHandler;
 
 public class OutboundFixMessageBuilderTest {
 
-    private final List<Field<String>> fields = Lists.newArrayList();
+    private final FieldCapturer capturer = new FieldCapturer();
     private OutboundFixMessageBuilder builder;
 
     @Before
     public void before() {
-        this.fields.clear();
+        this.capturer.reset();
         this.builder = new OutboundFixMessageBuilder();
     }
 
@@ -50,7 +48,7 @@ public class OutboundFixMessageBuilderTest {
 
         final FixMessage message = this.deserialize(outboundMessage.getMessage());
 
-        this.assertFixFieldsAreSet(message);
+        this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
     }
 
@@ -68,7 +66,7 @@ public class OutboundFixMessageBuilderTest {
         this.addField(Tags.CHECKSUM, "1337");
 
         this.builder.build();
-        this.fields.clear();
+        this.capturer.reset();
 
         this.addField(Tags.BEGIN_STRING, "FIX.4.4");
         this.addField(Tags.MESSAGE_TYPE, "W");
@@ -86,18 +84,12 @@ public class OutboundFixMessageBuilderTest {
         final OutboundFixMessage outboundMessage = this.builder.build();
 
         final FixMessage message = this.deserialize(outboundMessage.getMessage());
-        this.assertFixFieldsAreSet(message);
+        this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
     }
 
-    private void assertFixFieldsAreSet(final FixMessage message) {
-        for (final Field<String> field : this.fields) {
-            assertThat(message.getValue(field.getTag()), is(field.getValue()));
-        }
-    }
-
     private OutboundFixMessageBuilder addField(final int tag, final String value) {
-        this.fields.add(new Field<String>(tag, value));
+        this.capturer.capture(tag, value);
 
         if (Tags.TARGET_COMP_ID == tag) {
             return this.builder.setTargetCompId(value);
