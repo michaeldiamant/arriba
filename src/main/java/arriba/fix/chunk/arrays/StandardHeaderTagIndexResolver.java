@@ -9,8 +9,8 @@ public final class StandardHeaderTagIndexResolver implements TagIndexResolver {
     // TODO Consider adding initialization check to ensure all header tags
     // have been used (e.g. test against Tags.getHeaders()).
 
-    private static final int MAX_HEADER_TAG = Tags.TARGET_COMP_ID;
-    private static final int[] TAG_INDEXES = new int[MAX_HEADER_TAG + 1];
+    private static final int MAX_TAG = Tags.TARGET_COMP_ID;
+    private static final int[] TAG_INDEXES = new int[MAX_TAG + 1];
     private static int TAG_COUNT = 0;
 
     static {
