@@ -5,9 +5,9 @@ import java.io.IOException;
 
 
 /**
- * An outgoing FIX message builder constructs messages to be sent in byte[] format.
+ * An outbound FIX message builder constructs messages to be sent in byte[] format.
  */
-public final class OutgoingFixMessageBuilder {
+public final class OutboundFixMessageBuilder {
 
     private static final int MAX_MESSAGE_FIELDS_COUNT = 1000;
     private static final int FIELD_DELIMITER_LENGTH = 1;
@@ -17,7 +17,7 @@ public final class OutgoingFixMessageBuilder {
     private int readIndex = 0;
     private int messageLength = 0;
 
-    public OutgoingFixMessageBuilder addField(final int tag, final String value) {
+    public OutboundFixMessageBuilder addField(final int tag, final String value) {
         final byte[] tagBytes = Tags.toDelimitedByteArray(tag);
         this.tags[this.readIndex] = tagBytes;
         this.values[this.readIndex] = value;
