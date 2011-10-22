@@ -11,44 +11,40 @@ import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessageBuilder;
-import arriba.utils.FieldCapturer;
+import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.utils.OutboundFixMessageFieldCapturer;
 
 import com.lmax.disruptor.EventHandler;
 
 public class OutboundFixMessageBuilderTest {
 
-    private final FieldCapturer capturer = new FieldCapturer();
-    private OutboundFixMessageBuilder builder;
+    private OutboundFixMessageFieldCapturer capturer;
 
     @Before
     public void before() {
-        this.capturer.reset();
-        this.builder = new OutboundFixMessageBuilder();
+        this.capturer = new OutboundFixMessageFieldCapturer(new OutboundFixMessageBuilder());
     }
 
     @Test(expected=IllegalStateException.class)
     public void testBuildingWithoutSettingTargetCompId() {
-        this.builder.build();
+        this.capturer.build();
     }
 
     @Test
     public void testBuildingSingleSerializedFixMessage() throws Exception {
-        this.addField(Tags.BEGIN_STRING, "FIX.5.0");
-        this.addField(Tags.MESSAGE_TYPE, "D");
-        this.addField(Tags.SENDER_COMP_ID, "sender");
-        this.addField(Tags.TARGET_COMP_ID, "target");
-        this.addField(Tags.SYMBOL, "EURUSD");
-        this.addField(Tags.ORDER_TYPE, "1");
-        this.addField(Tags.ORDER_QUANTITY, "5");
-        this.addField(Tags.SIDE, "1");
-        this.addField(Tags.CLIENT_ORDER_ID, "clOrdId");
-        this.addField(Tags.CHECKSUM, "1337");
+        this.capturer.addField(Tags.BEGIN_STRING, "FIX.5.0");
+        this.capturer.addField(Tags.MESSAGE_TYPE, "D");
+        this.capturer.addField(Tags.SENDER_COMP_ID, "sender");
+        this.capturer.setTargetCompId("target");
+        this.capturer.addField(Tags.SYMBOL, "EURUSD");
+        this.capturer.addField(Tags.ORDER_TYPE, "1");
+        this.capturer.addField(Tags.ORDER_QUANTITY, "5");
+        this.capturer.addField(Tags.SIDE, "1");
+        this.capturer.addField(Tags.CLIENT_ORDER_ID, "clOrdId");
+        this.capturer.addField(Tags.CHECKSUM, "1337");
 
-        final OutboundFixMessage outboundMessage = this.builder.build();
+        final OutboundFixMessage outboundMessage = this.capturer.build();
 
         final InboundFixMessage message = this.deserialize(outboundMessage.getMessage());
 
@@ -58,48 +54,38 @@ public class OutboundFixMessageBuilderTest {
 
     @Test
     public void testBuildingTwoSerializedFixMessages() throws Exception {
-        this.addField(Tags.BEGIN_STRING, "FIX.5.0");
-        this.addField(Tags.MESSAGE_TYPE, "D");
-        this.addField(Tags.SENDER_COMP_ID, "sender");
-        this.addField(Tags.TARGET_COMP_ID, "target");
-        this.addField(Tags.SYMBOL, "EURUSD");
-        this.addField(Tags.ORDER_TYPE, "1");
-        this.addField(Tags.ORDER_QUANTITY, "5");
-        this.addField(Tags.SIDE, "1");
-        this.addField(Tags.CLIENT_ORDER_ID, "clOrdId");
-        this.addField(Tags.CHECKSUM, "1337");
+        this.capturer.addField(Tags.BEGIN_STRING, "FIX.5.0");
+        this.capturer.addField(Tags.MESSAGE_TYPE, "D");
+        this.capturer.addField(Tags.SENDER_COMP_ID, "sender");
+        this.capturer.setTargetCompId("target");
+        this.capturer.addField(Tags.SYMBOL, "EURUSD");
+        this.capturer.addField(Tags.ORDER_TYPE, "1");
+        this.capturer.addField(Tags.ORDER_QUANTITY, "5");
+        this.capturer.addField(Tags.SIDE, "1");
+        this.capturer.addField(Tags.CLIENT_ORDER_ID, "clOrdId");
+        this.capturer.addField(Tags.CHECKSUM, "1337");
 
-        this.builder.build();
+        this.capturer.build();
         this.capturer.reset();
 
-        this.addField(Tags.BEGIN_STRING, "FIX.4.4");
-        this.addField(Tags.MESSAGE_TYPE, "W");
-        this.addField(Tags.SENDER_COMP_ID, "sender1");
-        this.addField(Tags.TARGET_COMP_ID, "target1");
-        this.addField(Tags.MARKET_DEPTH, "1");
-        this.addField(Tags.SENDING_TIME, "now");
-        this.addField(Tags.TRANSACTION_TIME, "now");
-        this.addField(Tags.MD_ENTRY_PRICE, "1.245");
-        this.addField(Tags.MD_ENTRY_SIZE, "5");
-        this.addField(Tags.MD_ENTRY_TYPE, "1");
-        this.addField(Tags.MD_REQUEST_ID, "reqId1");
-        this.addField(Tags.CHECKSUM, "1337");
+        this.capturer.addField(Tags.BEGIN_STRING, "FIX.4.4");
+        this.capturer.addField(Tags.MESSAGE_TYPE, "W");
+        this.capturer.addField(Tags.SENDER_COMP_ID, "sender1");
+        this.capturer.setTargetCompId("target1");
+        this.capturer.addField(Tags.MARKET_DEPTH, "1");
+        this.capturer.addField(Tags.SENDING_TIME, "now");
+        this.capturer.addField(Tags.TRANSACTION_TIME, "now");
+        this.capturer.addField(Tags.MD_ENTRY_PRICE, "1.245");
+        this.capturer.addField(Tags.MD_ENTRY_SIZE, "5");
+        this.capturer.addField(Tags.MD_ENTRY_TYPE, "1");
+        this.capturer.addField(Tags.MD_REQUEST_ID, "reqId1");
+        this.capturer.addField(Tags.CHECKSUM, "1337");
 
-        final OutboundFixMessage outboundMessage = this.builder.build();
+        final OutboundFixMessage outboundMessage = this.capturer.build();
 
         final InboundFixMessage message = this.deserialize(outboundMessage.getMessage());
         this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
-    }
-
-    private OutboundFixMessageBuilder addField(final int tag, final String value) {
-        this.capturer.capture(tag, value);
-
-        if (Tags.TARGET_COMP_ID == tag) {
-            return this.builder.setTargetCompId(value);
-        } else {
-            return this.builder.addField(tag, value);
-        }
     }
 
     private InboundFixMessage deserialize(final byte[] message) throws Exception {
