@@ -54,7 +54,6 @@ public final class OutboundFixMessageBuilder {
 
             // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
             // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
-            System.out.println(">> " + new String(out.toByteArray()));
             return out.toByteArray();
         } catch (final IOException e) {
             return new byte[0];
