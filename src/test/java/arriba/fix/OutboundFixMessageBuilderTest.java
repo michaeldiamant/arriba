@@ -29,6 +29,11 @@ public class OutboundFixMessageBuilderTest {
         this.builder = new OutboundFixMessageBuilder();
     }
 
+    @Test(expected=IllegalStateException.class)
+    public void testBuildingWithoutSettingTargetCompId() {
+        this.builder.build();
+    }
+
     @Test
     public void testBuildingSingleSerializedFixMessage() throws Exception {
         this.addField(Tags.BEGIN_STRING, "FIX.5.0");
@@ -42,10 +47,12 @@ public class OutboundFixMessageBuilderTest {
         this.addField(Tags.CLIENT_ORDER_ID, "clOrdId");
         this.addField(Tags.CHECKSUM, "1337");
 
-        final byte[] messageBytes = this.builder.build();
-        final FixMessage message = this.deserialize(messageBytes);
+        final OutboundFixMessage outboundMessage = this.builder.build();
+
+        final FixMessage message = this.deserialize(outboundMessage.getMessage());
 
         this.assertFixFieldsAreSet(message);
+        assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
     }
 
     @Test
@@ -77,10 +84,11 @@ public class OutboundFixMessageBuilderTest {
         this.addField(Tags.MD_REQUEST_ID, "reqId1");
         this.addField(Tags.CHECKSUM, "1337");
 
-        final byte[] messageBytes = this.builder.build();
-        final FixMessage message = this.deserialize(messageBytes);
+        final OutboundFixMessage outboundMessage = this.builder.build();
 
+        final FixMessage message = this.deserialize(outboundMessage.getMessage());
         this.assertFixFieldsAreSet(message);
+        assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
     }
 
     private void assertFixFieldsAreSet(final FixMessage message) {
@@ -91,7 +99,12 @@ public class OutboundFixMessageBuilderTest {
 
     private OutboundFixMessageBuilder addField(final int tag, final String value) {
         this.fields.add(new Field<String>(tag, value));
-        return this.builder.addField(tag, value);
+
+        if (Tags.TARGET_COMP_ID == tag) {
+            return this.builder.setTargetCompId(value);
+        } else {
+            return this.builder.addField(tag, value);
+        }
     }
 
     private FixMessage deserialize(final byte[] message) throws Exception {
