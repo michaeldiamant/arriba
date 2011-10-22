@@ -28,8 +28,8 @@ import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.session.InMemorySessionResolver;
@@ -74,7 +74,7 @@ public class MarketMakerClient {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
         final Map<String, Handler<?>> messageIdentifierToHandlers = Maps.newHashMap();
         messageIdentifierToHandlers.put("A",
-                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, this.fixMessageBuilder(),
+                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, this.inboundFixMessageBuilder(),
                         this.fixMessageSender, this.messageCount, this.channels, this.channelRepository));
         messageIdentifierToHandlers.put("V",
                 new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService));
@@ -87,7 +87,7 @@ public class MarketMakerClient {
 
     public void start() {
         // Quotes
-        final Runnable quoteSupplier = new RandomQuoteSupplier(this.subscriptionService, Sets.newHashSet("EURUSD"), this.fixMessageBuilder(),
+        final Runnable quoteSupplier = new RandomQuoteSupplier(this.subscriptionService, Sets.newHashSet("EURUSD"), this.inboundFixMessageBuilder(),
                 this.messageCount, this.senderCompId, this.fixMessageSender);
         this.quotesExecutorService.submit(quoteSupplier);
 
@@ -114,8 +114,8 @@ public class MarketMakerClient {
         server.bind(new InetSocketAddress("localhost", 8080));
     }
 
-    private FixMessageBuilder fixMessageBuilder() {
-        return new FixMessageBuilder(
+    private InboundFixMessageBuilder inboundFixMessageBuilder() {
+        return new InboundFixMessageBuilder(
                 new ArrayFixChunkBuilder(),
                 new ArrayFixChunkBuilder(),
                 new ArrayFixChunkBuilder());
@@ -130,7 +130,7 @@ public class MarketMakerClient {
     }
 
     private EventHandler<FixMessageEvent> deserializingConsumer() {
-        return new DeserializingFixMessageEventHandler(this.fixMessageBuilder());
+        return new DeserializingFixMessageEventHandler(this.inboundFixMessageBuilder());
     }
 
     private ChannelHandler deserializedFixMessageHandler() {

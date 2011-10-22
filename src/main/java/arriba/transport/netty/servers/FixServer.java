@@ -19,8 +19,8 @@ import arriba.disruptor.FixMessageEventFactory;
 import arriba.disruptor.FixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.session.InMemorySessionResolver;
@@ -71,7 +71,7 @@ public class FixServer {
         final DependencyBarrier deserializationConsumerBarrier = ringBuffer.newDependencyBarrier();
         final EventProcessor deserializingConsumer = new BatchEventProcessor<FixMessageEvent>(ringBuffer, deserializationConsumerBarrier,
                 new DeserializingFixMessageEventHandler(
-                        new FixMessageBuilder(new ArrayFixChunkBuilder(),
+                        new InboundFixMessageBuilder(new ArrayFixChunkBuilder(),
                                 new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder())));
 
         final DependencyBarrier sessionNotificationConsumerBarrier = ringBuffer.newDependencyBarrier(deserializingConsumer);

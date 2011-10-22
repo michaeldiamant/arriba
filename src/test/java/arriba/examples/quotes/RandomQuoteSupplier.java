@@ -9,10 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import arriba.common.Sender;
 import arriba.examples.subscriptions.SubscriptionService;
-import arriba.fix.FixMessageBuilder;
 import arriba.fix.RepeatingGroupBuilder;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 
 public final class RandomQuoteSupplier implements Runnable {
@@ -21,7 +21,7 @@ public final class RandomQuoteSupplier implements Runnable {
 
     private final SubscriptionService subscriptionService;
     private final Set<String> symbols;
-    private final FixMessageBuilder fixMessageBuilder;
+    private final InboundFixMessageBuilder inboundFixMessageBuilder;
     private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
     private final String senderCompId;
@@ -29,11 +29,11 @@ public final class RandomQuoteSupplier implements Runnable {
     private final Sender<InboundFixMessage> fixMessageSender;
 
     public RandomQuoteSupplier(final SubscriptionService subscriptionService, final Set<String> symbols,
-            final FixMessageBuilder fixMessageBuilder, final AtomicInteger messageCount,
+            final InboundFixMessageBuilder inboundFixMessageBuilder, final AtomicInteger messageCount,
             final String senderCompId, final Sender<InboundFixMessage> fixMessageSender) {
         this.subscriptionService = subscriptionService;
         this.symbols = symbols;
-        this.fixMessageBuilder = fixMessageBuilder;
+        this.inboundFixMessageBuilder = inboundFixMessageBuilder;
         this.messageCount = messageCount;
         this.senderCompId = senderCompId;
         this.fixMessageSender = fixMessageSender;
@@ -47,14 +47,14 @@ public final class RandomQuoteSupplier implements Runnable {
             final double symbolBidPrice = this.random.nextDouble() * this.random.nextInt(25);
 
             for (final String subscriberCompId : this.subscriptionService.findSubscribers(symbol)) {
-                this.fixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()));
-                this.fixMessageBuilder.setMessageType("W");
-                this.fixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
-                this.fixMessageBuilder.addField(Tags.SENDER_COMP_ID, this.senderCompId);
-                this.fixMessageBuilder.addField(Tags.TARGET_COMP_ID, subscriberCompId);
-                this.fixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
+                this.inboundFixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()));
+                this.inboundFixMessageBuilder.setMessageType("W");
+                this.inboundFixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
+                this.inboundFixMessageBuilder.addField(Tags.SENDER_COMP_ID, this.senderCompId);
+                this.inboundFixMessageBuilder.addField(Tags.TARGET_COMP_ID, subscriberCompId);
+                this.inboundFixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
 
-                this.fixMessageBuilder.addField(Tags.SYMBOL, symbol);
+                this.inboundFixMessageBuilder.addField(Tags.SYMBOL, symbol);
 
                 this.repeatingGroupBuilder.setNumberOfRepeatingGroupsTag(Tags.NUMBER_MD_ENTRIES);
                 this.repeatingGroupBuilder.setNumberOfRepeatingGroups(2);
@@ -68,16 +68,16 @@ public final class RandomQuoteSupplier implements Runnable {
                 this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_SIZE, "200");
                 this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice + 0.05));
 
-                this.fixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
+                this.inboundFixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
 
                 try {
-                    this.fixMessageSender.send(this.fixMessageBuilder.build());
+                    this.fixMessageSender.send(this.inboundFixMessageBuilder.build());
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }
 
                 this.repeatingGroupBuilder.clear();
-                this.fixMessageBuilder.clear();
+                this.inboundFixMessageBuilder.clear();
             }
         }
     }
