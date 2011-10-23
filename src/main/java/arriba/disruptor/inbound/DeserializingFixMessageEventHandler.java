@@ -83,13 +83,16 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
             } else if (Fields.DELIMITER == this.nextFlagByte) {
                 this.nextFlagByte = Fields.EQUAL_SIGN;
 
-                final String value = new String(nextValueBuffer.array());
+                final byte[] value = nextValueBuffer.array();
 
                 switch (this.parsingState) {
                 case REPEATING_GROUP:
                     if (this.hasFoundNumberOfRepeatingGroupsTag) {
                         this.hasFoundNumberOfRepeatingGroupsTag = false;
-                        this.groupBuilder.setNumberOfRepeatingGroups(Integer.parseInt(value));
+
+                        // TODO Optimize this conversion.  Consider caching String-to-int values.
+                        final int numberOfRepeatingGroups = Integer.parseInt(new String(value));
+                        this.groupBuilder.setNumberOfRepeatingGroups(numberOfRepeatingGroups);
                     } else {
                         this.groupBuilder.addField(this.lastDeserializedTag, value);
                     }

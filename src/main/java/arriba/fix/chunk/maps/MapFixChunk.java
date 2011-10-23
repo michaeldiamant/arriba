@@ -14,15 +14,15 @@ import com.google.common.collect.Maps;
 
 public final class MapFixChunk implements FixChunk {
 
-    private final Map<Integer, String> tagToValues;
+    private final Map<Integer, byte[]> tagToValues;
 
-    public MapFixChunk(final Map<Integer, String> tagToValues) {
+    public MapFixChunk(final Map<Integer, byte[]> tagToValues) {
         this.tagToValues = Maps.newHashMap(tagToValues);
     }
 
     @Override
     public String getValue(final int tag) {
-        return this.tagToValues.get(this.tagToValues);
+        return new String(this.tagToValues.get(this.tagToValues));
     }
 
     @Override
@@ -42,10 +42,10 @@ public final class MapFixChunk implements FixChunk {
         write(this.tagToValues, outputStream);
     }
 
-    private static void write(final Map<Integer, String> tagToValues, final OutputStream outputStream) throws IOException {
-        for (final Entry<Integer, String> tagToValue : tagToValues.entrySet()) {
+    private static void write(final Map<Integer, byte[]> tagToValues, final OutputStream outputStream) throws IOException {
+        for (final Entry<Integer, byte[]> tagToValue : tagToValues.entrySet()) {
             final byte[] tagBytes = Tags.toByteArray(tagToValue.getKey());
-            final byte[] valueBytes = tagToValue.getValue().getBytes();
+            final byte[] valueBytes = tagToValue.getValue();
 
             outputStream.write(tagBytes);
             outputStream.write(Fields.EQUAL_SIGN);

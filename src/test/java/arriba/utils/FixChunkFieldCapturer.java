@@ -13,7 +13,12 @@ public final class FixChunkFieldCapturer extends FieldCapturer {
         this.builder = builder;
     }
 
+    @Deprecated
     public FixChunkBuilder addField(final int tag, final String value) {
+        return this.addField(tag, value.getBytes());
+    }
+
+    public FixChunkBuilder addField(final int tag, final byte[] value) {
         this.capture(tag, value);
 
         return this.builder.addField(tag, value);

@@ -11,9 +11,9 @@ import arriba.fix.chunk.FixChunk;
 public final class ArrayFixChunk implements FixChunk {
 
     private final int[] tagArray;
-    private final String[] valueArray;
+    private final byte[][] valueArray;
 
-    protected ArrayFixChunk(final int[] tagArray, final String[] valueArray) {
+    protected ArrayFixChunk(final int[] tagArray, final byte[][] valueArray) {
         this.tagArray = tagArray;
         this.valueArray = valueArray;
     }
@@ -23,7 +23,7 @@ public final class ArrayFixChunk implements FixChunk {
         return search(this.tagArray, this.valueArray, tag);
     }
 
-    private static String search(final int[] tagArray, final String[] valueArray, final int tag) {
+    private static String search(final int[] tagArray, final byte[][] valueArray, final int tag) {
         int valueIndex = -1;
         for (int tagIndex = tagArray.length - 1; tagIndex >= 0; tagIndex--) {
             if (tag == tagArray[tagIndex]) {
@@ -33,7 +33,7 @@ public final class ArrayFixChunk implements FixChunk {
         }
 
         // TODO Handle not finding a tag.
-        return valueIndex < 0 ? "" : valueArray[valueIndex];
+        return valueIndex < 0 ? "" : new String(valueArray[valueIndex]);
     }
 
     @Override
@@ -50,13 +50,12 @@ public final class ArrayFixChunk implements FixChunk {
         }
     }
 
-    private static void write(final int[] tagArray, final String[] valueArray, final OutputStream outputStream) throws IOException {
+    private static void write(final int[] tagArray, final byte[][] valueArray, final OutputStream outputStream) throws IOException {
         for (int tagIndex = 0; tagIndex < tagArray.length; tagIndex++) {
             final int tag = tagArray[tagIndex];
-            final String value = valueArray[tagIndex];
 
             final byte[] tagBytes = Tags.toByteArray(tag);
-            final byte[] valueBytes = value.getBytes();
+            final byte[] valueBytes = valueArray[tagIndex];;
 
             outputStream.write(tagBytes);
             outputStream.write(Fields.EQUAL_SIGN);

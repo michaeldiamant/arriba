@@ -20,7 +20,7 @@ public final class InboundFixMessageBuilder {
     private final FixChunkBuilder bodyChunkBuilder;
     private final FixChunkBuilder trailerChunkBuilder;
 
-    private String messageType = "";
+    private byte[] messageType = null;
     private Map<Integer, FixChunk[]> repeatingGroupTagToRepeatingGroups;
 
     public InboundFixMessageBuilder(final FixChunkBuilder headerChunkBuilder, final FixChunkBuilder bodyChunkBuilder,
@@ -30,7 +30,12 @@ public final class InboundFixMessageBuilder {
         this.trailerChunkBuilder = trailerChunkBuilder;
     }
 
+    @Deprecated
     public InboundFixMessageBuilder addField(final int tag, final String value) {
+        return this.addField(tag, value.getBytes());
+    }
+
+    public InboundFixMessageBuilder addField(final int tag, final byte[] value) {
         if (Arrays.binarySearch(HEADER_TAGS, tag) >= 0) {
             this.headerChunkBuilder.addField(tag, value);
         } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {
@@ -48,7 +53,12 @@ public final class InboundFixMessageBuilder {
         return this;
     }
 
+    @Deprecated
     public InboundFixMessageBuilder setMessageType(final String messageType) {
+        return this.setMessageType(messageType.getBytes());
+    }
+
+    public InboundFixMessageBuilder setMessageType(final byte[] messageType) {
         this.messageType = messageType;
 
         return this;
@@ -62,7 +72,7 @@ public final class InboundFixMessageBuilder {
 
     public InboundFixMessage build() {
         // TODO Check for existence of checksum and actually compute it.
-        this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337");
+        this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337".getBytes());
 
         // TODO Add messageType in more appropiate location.
         this.headerChunkBuilder.addField(Tags.MESSAGE_TYPE, this.messageType);
@@ -81,5 +91,7 @@ public final class InboundFixMessageBuilder {
         this.bodyChunkBuilder.clear();
         this.trailerChunkBuilder.clear();
         this.repeatingGroupTagToRepeatingGroups = null;
+
+        this.messageType = null;
     }
 }

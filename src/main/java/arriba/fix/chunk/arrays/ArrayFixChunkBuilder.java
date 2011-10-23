@@ -10,10 +10,10 @@ import com.google.common.collect.Maps;
 
 public final class ArrayFixChunkBuilder implements FixChunkBuilder {
 
-    private final Map<Integer, String> tagToField = Maps.newHashMap();
+    private final Map<Integer, byte[]> tagToField = Maps.newHashMap();
 
     @Override
-    public FixChunkBuilder addField(final int tag, final String value) {
+    public FixChunkBuilder addField(final int tag, final byte[] value) {
         this.tagToField.put(tag, value);
 
         return this;
@@ -22,9 +22,9 @@ public final class ArrayFixChunkBuilder implements FixChunkBuilder {
     @Override
     public FixChunk build() {
         final int[] tags = new int[this.tagToField.size()];
-        final String[] values = new String[this.tagToField.size()];
+        final byte[][] values = new byte[this.tagToField.size()][];
         int index = 0;
-        for (final Entry<Integer, String> entry : this.tagToField.entrySet()) {
+        for (final Entry<Integer, byte[]> entry : this.tagToField.entrySet()) {
             tags[index] = entry.getKey();
             values[index] = entry.getValue();
             ++index;

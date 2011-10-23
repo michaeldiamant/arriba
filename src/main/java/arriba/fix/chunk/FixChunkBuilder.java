@@ -2,7 +2,7 @@ package arriba.fix.chunk;
 
 public interface FixChunkBuilder {
 
-    FixChunkBuilder addField(int tag, String value);
+    FixChunkBuilder addField(int tag, byte[] value);
 
     FixChunk build();
 

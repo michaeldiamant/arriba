@@ -16,7 +16,7 @@ public final class RepeatingGroupBuilder {
     private static final int MAX_REPEATING_GROUP_COUNT = 1000;
 
     private final int[] tags = new int[MAX_REPEATING_GROUP_COUNT];
-    private final String[] values = new String[MAX_REPEATING_GROUP_COUNT];
+    private final byte[][] values = new byte[MAX_REPEATING_GROUP_COUNT][];
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk = Maps.newHashMap();
     private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder();
 
@@ -71,7 +71,12 @@ public final class RepeatingGroupBuilder {
         this.groupCountToGroupChunk.put(this.numberOfRepeatingGroupsTag, groupChunks);
     }
 
+    @Deprecated
     public RepeatingGroupBuilder addField(final int tag, final String value) {
+        return this.addField(tag, value.getBytes());
+    }
+
+    public RepeatingGroupBuilder addField(final int tag, final byte[] value) {
         if (Arrays.binarySearch(this.repeatingGroupTags, tag) < 0) {
             throw new IllegalArgumentException("Tag " + tag + " is not a known repeating group tag (" + this.repeatingGroupTags + ").");
         }
