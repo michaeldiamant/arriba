@@ -21,8 +21,8 @@ import arriba.examples.handlers.LogonOnConnectHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
@@ -100,9 +100,10 @@ public class MarketTakerClient {
 
     private InboundFixMessageBuilder inboundFixMessageBuilder() {
         return new InboundFixMessageBuilder(
-                new ArrayFixChunkBuilder(),
-                new ArrayFixChunkBuilder(),
-                new ArrayFixChunkBuilder());
+                new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
+                new ArrayFixChunkBuilder(null),
+                new ArrayFixChunkBuilder(null)
+                );
     }
 
     private EventHandler<FixMessageEvent> channelWritingConsumer() {

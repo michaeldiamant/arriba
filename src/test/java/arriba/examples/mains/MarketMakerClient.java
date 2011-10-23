@@ -29,8 +29,8 @@ import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
@@ -116,9 +116,10 @@ public class MarketMakerClient {
 
     private InboundFixMessageBuilder inboundFixMessageBuilder() {
         return new InboundFixMessageBuilder(
-                new ArrayFixChunkBuilder(),
-                new ArrayFixChunkBuilder(),
-                new ArrayFixChunkBuilder());
+                new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
+                new ArrayFixChunkBuilder(null),
+                new ArrayFixChunkBuilder(null)
+                );
     }
 
     private EventHandler<FixMessageEvent> channelWritingConsumer() {

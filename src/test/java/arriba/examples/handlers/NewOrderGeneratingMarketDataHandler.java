@@ -11,8 +11,8 @@ import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
 
 public final class NewOrderGeneratingMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
@@ -25,8 +25,12 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
 
     private final AtomicInteger messageCount;
     private final Sender<InboundFixMessage> sender;
-    private final InboundFixMessageBuilder inboundFixMessageBuilder = new InboundFixMessageBuilder(new ArrayFixChunkBuilder(),
-            new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
+    private final InboundFixMessageBuilder inboundFixMessageBuilder =
+            new InboundFixMessageBuilder(
+                    new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
+                    new ArrayFixChunkBuilder(null),
+                    new ArrayFixChunkBuilder(null)
+                    );
 
     public NewOrderGeneratingMarketDataHandler(final Sender<InboundFixMessage> sender, final AtomicInteger messageCount) {
         this.sender = sender;

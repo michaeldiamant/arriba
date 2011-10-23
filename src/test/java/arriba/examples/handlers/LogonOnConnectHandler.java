@@ -14,8 +14,8 @@ import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.transport.channels.ChannelRepository;
 
 public class LogonOnConnectHandler extends SimpleChannelHandler {
@@ -23,7 +23,11 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
     private final InboundFixMessageBuilder inboundFixMessageBuilder =
-            new InboundFixMessageBuilder(new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder());
+            new InboundFixMessageBuilder(
+                    new ArrayFixChunkBuilder(null),  // FIXME Replace null TagIndexResolver.
+                    new ArrayFixChunkBuilder(null),
+                    new ArrayFixChunkBuilder(null)
+                    );
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final String targetCompId;
