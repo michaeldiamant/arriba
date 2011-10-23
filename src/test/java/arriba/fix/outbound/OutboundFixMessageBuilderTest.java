@@ -11,11 +11,11 @@ import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.chunk.arrays.NewOrderSingleTagIndexResolver;
-import arriba.fix.chunk.arrays.StandardHeaderTagIndexResolver;
-import arriba.fix.chunk.arrays.StandardTrailerTagIndexResolver;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.fix.tagindexresolvers.NewOrderSingleTagIndexResolver;
+import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
+import arriba.fix.tagindexresolvers.StandardTrailerTagIndexResolver;
 import arriba.utils.OutboundFixMessageFieldCapturer;
 
 import com.lmax.disruptor.EventHandler;

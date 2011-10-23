@@ -2,6 +2,7 @@ package arriba.fix.chunk.arrays;
 
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
+import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public final class ArrayFixChunkBuilder implements FixChunkBuilder {
 

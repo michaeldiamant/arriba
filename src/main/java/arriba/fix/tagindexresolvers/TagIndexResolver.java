@@ -1,4 +1,4 @@
-package arriba.fix.chunk.arrays;
+package arriba.fix.tagindexresolvers;
 
 import java.util.Arrays;
 
