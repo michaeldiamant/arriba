@@ -26,7 +26,7 @@ public final class Tags {
     public static final int ORDER_QUANTITY = 38;
     public static final int ORDER_TYPE = 40;
     public static final int PRICE = 44;
-    public static final int SIDE = 44;
+    public static final int SIDE = 54;
     public static final int SYMBOL = 55;
     public static final int TRANSACTION_TIME = 55;
     public static final int NUMBER_RELATED_SYMBOLS = 146;
