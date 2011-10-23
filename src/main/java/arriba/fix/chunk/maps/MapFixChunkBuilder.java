@@ -9,10 +9,10 @@ import com.google.common.collect.Maps;
 
 public final class MapFixChunkBuilder implements FixChunkBuilder {
 
-    private final Map<Integer, String> tagToValues = Maps.newHashMap();
+    private final Map<Integer, byte[]> tagToValues = Maps.newHashMap();
 
     @Override
-    public FixChunkBuilder addField(final int tag, final String value) {
+    public FixChunkBuilder addField(final int tag, final byte[] value) {
         this.tagToValues.put(tag, value);
 
         return this;
