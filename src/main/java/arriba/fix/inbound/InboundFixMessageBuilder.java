@@ -15,7 +15,7 @@ public final class InboundFixMessageBuilder {
     private static final int[] HEADER_TAGS = Tags.getHeaders();
     private static final int[] TRAILER_TAGS = Tags.getTrailers();
 
-    private byte[] beginStringBytes = DEFAULT_BEGIN_STRING_BYTES;
+    private byte[] beginStringBytes = DEFAULT_BEGIN_STRING_BYTES; // TODO Why is this here?
     private final FixChunkBuilder headerChunkBuilder;
     private final FixChunkBuilder bodyChunkBuilder;
     private final FixChunkBuilder trailerChunkBuilder;
@@ -36,6 +36,8 @@ public final class InboundFixMessageBuilder {
     }
 
     public InboundFixMessageBuilder addField(final int tag, final byte[] value) {
+        // TODO Make search constant time.
+
         if (Arrays.binarySearch(HEADER_TAGS, tag) >= 0) {
             this.headerChunkBuilder.addField(tag, value);
         } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {

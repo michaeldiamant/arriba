@@ -68,14 +68,10 @@ public abstract class InboundFixMessage {
     }
 
     public String getValue(final int tag) {
-        final String headerValue = this.getHeaderValue(tag);
-        if (!headerValue.isEmpty()) {
-            return headerValue;
-        }
-
-        final String bodyValue = this.getBodyValue(tag);
-        if (!bodyValue.isEmpty()) {
-            return bodyValue;
+        if (this.bodyChunk.isDefinedFor(tag)) {
+            return this.getBodyValue(tag);
+        } else if (this.headerChunk.isDefinedFor(tag)) {
+            return this.getHeaderValue(tag);
         }
 
         return this.getTrailerValue(tag);
