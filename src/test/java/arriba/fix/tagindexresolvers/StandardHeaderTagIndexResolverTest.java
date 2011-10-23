@@ -1,6 +1,8 @@
-package arriba.fix.chunk.arrays;
+package arriba.fix.tagindexresolvers;
 
 import arriba.fix.Tags;
+import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
+import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public class StandardHeaderTagIndexResolverTest extends AbstractTagIndexResolverTest {
 

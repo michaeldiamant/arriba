@@ -1,4 +1,4 @@
-package arriba.fix.chunk.arrays;
+package arriba.fix.tagindexresolvers;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.hasItem;
@@ -6,6 +6,8 @@ import static org.junit.matchers.JUnitMatchers.hasItem;
 import java.util.List;
 
 import org.junit.Test;
+
+import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 import com.google.common.primitives.Ints;
 

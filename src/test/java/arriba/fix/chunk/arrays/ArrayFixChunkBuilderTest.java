@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
+import arriba.fix.tagindexresolvers.NewOrderSingleTagIndexResolver;
+import arriba.fix.tagindexresolvers.TagIndexResolver;
 import arriba.utils.FixChunkFieldCapturer;
 
 public class ArrayFixChunkBuilderTest {

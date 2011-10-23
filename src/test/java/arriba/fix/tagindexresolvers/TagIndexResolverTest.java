@@ -1,4 +1,4 @@
-package arriba.fix.chunk.arrays;
+package arriba.fix.tagindexresolvers;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import arriba.fix.Tags;
+import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public class TagIndexResolverTest {
 

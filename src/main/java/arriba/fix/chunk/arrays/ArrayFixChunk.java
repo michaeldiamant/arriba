@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import arriba.fix.chunk.FixChunk;
+import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public final class ArrayFixChunk implements FixChunk {
 
