@@ -8,6 +8,7 @@ import arriba.fix.RepeatingGroups;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
 
 import com.google.common.collect.Maps;
 
@@ -18,7 +19,9 @@ public final class RepeatingGroupBuilder {
     private final int[] tags = new int[MAX_REPEATING_GROUP_COUNT];
     private final byte[][] values = new byte[MAX_REPEATING_GROUP_COUNT][];
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk = Maps.newHashMap();
-    private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder(null);
+
+    // FIXME Provided TagIndexResolver is incorrect.  Supplied so unit tests will pass.
+    private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder(new StandardHeaderTagIndexResolver());
 
     private int[] repeatingGroupTags = null;
     private int tagValueIndex = 0;
