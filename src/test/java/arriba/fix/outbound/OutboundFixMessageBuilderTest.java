@@ -7,8 +7,8 @@ import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
 import org.junit.Test;
 
-import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
+import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;

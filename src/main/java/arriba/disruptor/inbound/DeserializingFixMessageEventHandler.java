@@ -1,14 +1,15 @@
-package arriba.disruptor;
+package arriba.disruptor.inbound;
 
 import java.util.Arrays;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+import arriba.disruptor.FixMessageEvent;
 import arriba.fix.Fields;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.RepeatingGroupBuilder;
 
 import com.lmax.disruptor.EventHandler;
@@ -37,7 +38,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     }
 
     @Override
-    public void onEvent(final FixMessageEvent entry, final boolean b) throws Exception {
+    public void onEvent(final FixMessageEvent entry, final boolean endOfBatch) throws Exception {
         final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
         this.parsingState = ParsingState.NON_REPEATING_GROUP;

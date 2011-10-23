@@ -1,4 +1,4 @@
-package arriba.disruptor;
+package arriba.disruptor.inbound;
 
 public final class DeserializationException extends Exception {
 
