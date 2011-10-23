@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;

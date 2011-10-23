@@ -11,12 +11,12 @@ import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
-import arriba.disruptor.DeserializingFixMessageEventHandler;
 import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.FixMessageEventFactory;
 import arriba.disruptor.FixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
+import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.examples.handlers.LogonOnConnectHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
