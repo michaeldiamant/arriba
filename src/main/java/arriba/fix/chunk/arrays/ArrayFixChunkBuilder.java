@@ -6,30 +6,14 @@ import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public final class ArrayFixChunkBuilder implements FixChunkBuilder {
 
-    private static final int MAXIMUM_VALUE_COUNT = 1000;
-
     private final byte[][] values;
-    private TagIndexResolver resolver;
+    private final TagIndexResolver resolver;
     private int maxTagIndex = 0;
-
-    public ArrayFixChunkBuilder() {
-        this(null);
-    }
 
     public ArrayFixChunkBuilder(final TagIndexResolver resolver) {
         this.resolver = resolver;
 
-        this.values = new byte[MAXIMUM_VALUE_COUNT][];
-    }
-
-    public FixChunkBuilder setTagIndexResolver(final TagIndexResolver resolver) {
-        if (0 != this.maxTagIndex) {
-            throw new IllegalStateException("Tag index resolver cannot be set during construction.  Builder must be cleared.");
-        }
-
-        this.resolver = resolver;
-
-        return this;
+        this.values = new byte[resolver.getTagCount()][];
     }
 
     @Override

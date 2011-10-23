@@ -18,7 +18,7 @@ public final class RepeatingGroupBuilder {
     private final int[] tags = new int[MAX_REPEATING_GROUP_COUNT];
     private final byte[][] values = new byte[MAX_REPEATING_GROUP_COUNT][];
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk = Maps.newHashMap();
-    private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder();
+    private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder(null);
 
     private int[] repeatingGroupTags = null;
     private int tagValueIndex = 0;
