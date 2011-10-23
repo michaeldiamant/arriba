@@ -11,6 +11,9 @@ import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.chunk.arrays.NewOrderSingleTagIndexResolver;
+import arriba.fix.chunk.arrays.StandardHeaderTagIndexResolver;
+import arriba.fix.chunk.arrays.StandardTrailerTagIndexResolver;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.utils.OutboundFixMessageFieldCapturer;
@@ -72,13 +75,12 @@ public class OutboundFixMessageBuilderTest {
         this.capturer.addField(Tags.MESSAGE_TYPE, "W");
         this.capturer.addField(Tags.SENDER_COMP_ID, "sender1");
         this.capturer.setTargetCompId("target1");
-        this.capturer.addField(Tags.MARKET_DEPTH, "1");
-        this.capturer.addField(Tags.SENDING_TIME, "now");
-        this.capturer.addField(Tags.TRANSACTION_TIME, "now");
-        this.capturer.addField(Tags.MD_ENTRY_PRICE, "1.245");
-        this.capturer.addField(Tags.MD_ENTRY_SIZE, "5");
-        this.capturer.addField(Tags.MD_ENTRY_TYPE, "1");
-        this.capturer.addField(Tags.MD_REQUEST_ID, "reqId1");
+        this.capturer.addField(Tags.ORDER_QUANTITY, "10");
+        this.capturer.addField(Tags.SIDE, "2");
+        this.capturer.addField(Tags.CLIENT_ORDER_ID, "clOrdId1");
+        this.capturer.addField(Tags.SYMBOL, "USDJPY");
+        this.capturer.addField(Tags.ORDER_TYPE, "2");
+        this.capturer.addField(Tags.PRICE, "1.32");
         this.capturer.addField(Tags.CHECKSUM, "1337");
 
         final OutboundFixMessage outboundMessage = this.capturer.build();
@@ -89,8 +91,14 @@ public class OutboundFixMessageBuilderTest {
     }
 
     private InboundFixMessage deserialize(final byte[] message) throws Exception {
-        final EventHandler<FixMessageEvent> deserializer = new DeserializingFixMessageEventHandler(new InboundFixMessageBuilder(
-                new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder(), new ArrayFixChunkBuilder()));
+        final EventHandler<FixMessageEvent> deserializer =
+                new DeserializingFixMessageEventHandler(
+                        new InboundFixMessageBuilder(
+                                new ArrayFixChunkBuilder(new StandardHeaderTagIndexResolver()),
+                                new ArrayFixChunkBuilder(new NewOrderSingleTagIndexResolver()),
+                                new ArrayFixChunkBuilder(new StandardTrailerTagIndexResolver())
+                                )
+                        );
 
         final FixMessageEvent event = new FixMessageEvent();
         event.setSerializedFixMessage(ChannelBuffers.copiedBuffer(message));

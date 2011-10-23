@@ -9,11 +9,12 @@ import arriba.utils.FixChunkFieldCapturer;
 
 public class ArrayFixChunkBuilderTest {
 
+    private final TagIndexResolver newOrderSingleResolver = new NewOrderSingleTagIndexResolver();
     private FixChunkFieldCapturer capturer;
 
     @Before
     public void before() {
-        this.capturer = new FixChunkFieldCapturer(new ArrayFixChunkBuilder());
+        this.capturer = new FixChunkFieldCapturer(new ArrayFixChunkBuilder(this.newOrderSingleResolver));
     }
 
     @Test
@@ -40,13 +41,13 @@ public class ArrayFixChunkBuilderTest {
         this.capturer.build();
         this.capturer.clear();
 
-        this.capturer.addField(Tags.MARKET_DEPTH, "1");
-        this.capturer.addField(Tags.SENDING_TIME, "now");
-        this.capturer.addField(Tags.TRANSACTION_TIME, "now");
-        this.capturer.addField(Tags.MD_ENTRY_PRICE, "1.245");
-        this.capturer.addField(Tags.MD_ENTRY_SIZE, "5");
-        this.capturer.addField(Tags.MD_ENTRY_TYPE, "1");
-        this.capturer.addField(Tags.MD_REQUEST_ID, "reqId1");
+        this.capturer.addField(Tags.CLIENT_ORDER_ID, "clOrdId1");
+        this.capturer.addField(Tags.SYMBOL, "USDJPY");
+        this.capturer.addField(Tags.ACCOUNT, "acct1");
+        this.capturer.addField(Tags.PRICE, "1.737");
+        this.capturer.addField(Tags.ORDER_QUANTITY, "17");
+        this.capturer.addField(Tags.ORDER_TYPE, "1");
+        this.capturer.addField(Tags.SIDE, "2");
 
         final FixChunk fixChunk = this.capturer.build();
 

@@ -21,6 +21,11 @@ public final class MapFixChunk implements FixChunk {
     }
 
     @Override
+    public boolean isDefinedFor(final int tag) {
+        return this.tagToValues.containsKey(tag);
+    }
+
+    @Override
     public String getValue(final int tag) {
         return new String(this.tagToValues.get(this.tagToValues));
     }
