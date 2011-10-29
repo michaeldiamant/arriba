@@ -7,9 +7,9 @@ import arriba.fix.chunk.FixChunk;
 
 public final class Logon extends InboundFixMessage {
 
-    public Logon(final byte[] beginStringBytes, final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
+    public Logon(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        super(beginStringBytes, headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
+        super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
     }
 
     public String getUsername() {

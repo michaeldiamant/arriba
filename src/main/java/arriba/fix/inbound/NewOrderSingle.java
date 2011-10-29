@@ -6,10 +6,10 @@ import arriba.fix.chunk.FixChunk;
 
 public final class NewOrderSingle extends InboundFixMessage {
 
-    protected NewOrderSingle(final byte[] beginStringBytes, final FixChunk headerChunk,
+    protected NewOrderSingle(final FixChunk headerChunk,
             final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        super(beginStringBytes, headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
+        super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
     }
 
     public String getSymbol() {
@@ -27,6 +27,6 @@ public final class NewOrderSingle extends InboundFixMessage {
     @Override
     public String toString() {
         return "NewOrderSingle -> 55=" + this.getSymbol() + " 40=" + this.getOrderType() +
-        " 38=" + this.getOrderQuantity();
+                " 38=" + this.getOrderQuantity();
     }
 }

@@ -81,7 +81,7 @@ public final class InboundFixMessageBuilder {
         this.headerChunkBuilder.addField(Tags.MESSAGE_TYPE, this.messageType);
 
 
-        final InboundFixMessage inboundFixMessage = InboundFixMessageFactory.create(this.messageType, this.beginStringBytes,
+        final InboundFixMessage inboundFixMessage = InboundFixMessageFactory.create(this.messageType,
                 this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(), this.trailerChunkBuilder.build(),
                 this.repeatingGroupTagToRepeatingGroups == null ? new HashMap<Integer, FixChunk[]>() : this.repeatingGroupTagToRepeatingGroups);
 
