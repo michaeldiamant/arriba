@@ -7,10 +7,10 @@ import arriba.fix.chunk.FixChunk;
 
 public final class MarketDataSnapshotFullRefresh extends InboundFixMessage {
 
-    public MarketDataSnapshotFullRefresh(final byte[] beginStringBytes, final FixChunk headerChunk,
+    public MarketDataSnapshotFullRefresh(final FixChunk headerChunk,
             final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        super(beginStringBytes, headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
+        super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
     }
 
     public String getSymbol() {

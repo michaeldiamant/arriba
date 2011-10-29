@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import arriba.fix.Fields;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
+import arriba.fix.fields.BeginString;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 
@@ -16,15 +17,13 @@ public abstract class InboundFixMessage {
 
     private static final int DEFAULT_BYTE_ARRAY_SIZE = 32;
 
-    private final byte[] beginStringBytes;
     private final FixChunk headerChunk;
     private final FixChunk bodyChunk;
     private final FixChunk trailerChunk;
     private final Map<Integer, FixChunk[]> groupCountToGroupChunk;
 
-    public InboundFixMessage(final byte[] beginStringBytes, final FixChunk headerChunk, final FixChunk bodyChunk,
+    public InboundFixMessage(final FixChunk headerChunk, final FixChunk bodyChunk,
             final FixChunk trailerChunk, final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        this.beginStringBytes = beginStringBytes;
         this.headerChunk = headerChunk;
         this.bodyChunk = bodyChunk;
         this.trailerChunk = trailerChunk;
@@ -85,7 +84,7 @@ public abstract class InboundFixMessage {
 
             final ByteArrayOutputStream messageBytes =
                     new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());
-            write(messageBytes, Tags.BEGIN_STRING, this.beginStringBytes);
+            write(messageBytes, Tags.BEGIN_STRING, BeginString.FIXT11);
             // TODO Optimize integer serialization.
             write(messageBytes, Tags.BODY_LENGTH, String.valueOf(bodyBytes.size()).getBytes());
 
