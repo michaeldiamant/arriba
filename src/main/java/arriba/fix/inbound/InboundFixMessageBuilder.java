@@ -49,6 +49,7 @@ public final class InboundFixMessageBuilder {
         return this;
     }
 
+    @Deprecated
     public InboundFixMessageBuilder setBeginStringBytes(final byte[] beginStringBytes) {
         this.beginStringBytes = beginStringBytes;
 
