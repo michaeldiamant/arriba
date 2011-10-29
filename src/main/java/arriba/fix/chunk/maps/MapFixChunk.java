@@ -27,7 +27,12 @@ public final class MapFixChunk implements FixChunk {
 
     @Override
     public String getValue(final int tag) {
-        return new String(this.tagToValues.get(this.tagToValues));
+        return new String(this.tagToValues.get(tag));
+    }
+
+    @Override
+    public byte[] getSerializedValue(final int tag) {
+        return this.tagToValues.get(tag);
     }
 
     @Override

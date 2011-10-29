@@ -22,6 +22,11 @@ public final class ArrayFixChunk implements FixChunk {
     }
 
     @Override
+    public byte[] getSerializedValue(final int tag) {
+        return this.values[this.resolver.getTagIndex(tag)];
+    }
+
+    @Override
     public String getValue(final int tag) {
         return new String(this.values[this.resolver.getTagIndex(tag)]);
     }
