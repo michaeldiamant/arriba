@@ -2,7 +2,6 @@ package arriba.disruptor;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
@@ -12,8 +11,8 @@ import org.junit.Test;
 
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.fix.chunk.FixChunkBuilder;
-import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.transport.netty.util.FixMessages;
 import arriba.utils.Field;
 
@@ -31,15 +30,6 @@ public class DeserializingFixMessageEventHandlerTest {
                         mock(FixChunkBuilder.class));
         this.handler =
                 new DeserializingFixMessageEventHandler(inboundFixMessageBuilder);
-    }
-
-    @Test
-    public void verifyFixMessageIsSet() throws Exception {
-        final FixMessageEvent fixMessageEntry = createPreloadedFixMessageEntry();
-
-        this.handler.onEvent(fixMessageEntry, false);
-
-        assertNotNull(fixMessageEntry.getFixMessage());
     }
 
     @Ignore
