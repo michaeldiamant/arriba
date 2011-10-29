@@ -9,6 +9,8 @@ public interface FixChunk {
 
     String getValue(int tag);
 
+    byte[] getSerializedValue(int tag);
+
     @Deprecated
     byte[] toByteArray();
 
