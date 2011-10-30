@@ -12,9 +12,10 @@ import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.InboundFixMessageBuilder;
-import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.Logon;
+import arriba.fix.outbound.OutboundFixMessage;
+import arriba.fix.outbound.OutboundFixMessageBuilder;
 import arriba.transport.channels.ChannelRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
@@ -23,19 +24,18 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
     private final String expectedUsername;
     private final String expectedPassword;
-    private final InboundFixMessageBuilder inboundFixMessageBuilder;
-    private final Sender<InboundFixMessage> fixMessageSender;
+    private final Sender<OutboundFixMessage> fixMessageSender;
     private final AtomicInteger messageCount;
     private final List<Channel> channels;
     private final ChannelRepository<String> channelRepository;
+    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
 
     public AuthenticatingLogonHandler(final String expectedUsername, final String expectedPassword,
-            final InboundFixMessageBuilder inboundFixMessageBuilder, final Sender<InboundFixMessage> fixMessageSender,
+            final Sender<OutboundFixMessage> fixMessageSender,
             final AtomicInteger messageCount, final List<Channel> channels,
             final ChannelRepository<String> channelRepository) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
-        this.inboundFixMessageBuilder = inboundFixMessageBuilder;
         this.fixMessageSender = fixMessageSender;
         this.messageCount = messageCount;
         this.channels = channels;
@@ -54,15 +54,16 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
-        this.inboundFixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()));
-        this.inboundFixMessageBuilder.setMessageType("A");
-        this.inboundFixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
-        this.inboundFixMessageBuilder.addField(Tags.SENDER_COMP_ID, message.getTargetCompId());
-        this.inboundFixMessageBuilder.addField(Tags.TARGET_COMP_ID, message.getSenderCompId());
-        this.inboundFixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
+        this.builder
+        .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+        .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()))
+        .addField(Tags.MESSAGE_TYPE, new String(MessageType.LOGON))
+        .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
+        .addField(Tags.TARGET_COMP_ID, message.getSenderCompId())
+        .addField(Tags.SENDING_TIME, sdf.format(new Date()))
 
-        this.inboundFixMessageBuilder.addField(Tags.USERNAME, message.getUsername());
-        this.inboundFixMessageBuilder.addField(Tags.PASSWORD, message.getPassword());
+        .addField(Tags.USERNAME, message.getUsername())
+        .addField(Tags.PASSWORD, message.getPassword());
 
         try {
             // TODO Need to figure out right way to negotiate channel registration server-side.
@@ -70,12 +71,10 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
             final Channel channelToAdd = this.channels.remove(0);
             this.channelRepository.add(message.getSenderCompId(), channelToAdd);
 
-            this.fixMessageSender.send(this.inboundFixMessageBuilder.build());
+            this.fixMessageSender.send(this.builder.build());
         } catch (final IOException e) {
             e.printStackTrace();
         }
-
-        this.inboundFixMessageBuilder.clear();
     }
 
 }

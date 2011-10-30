@@ -13,7 +13,6 @@ import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.FixMessageEventFactory;
-import arriba.disruptor.FixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
@@ -21,8 +20,8 @@ import arriba.examples.handlers.LogonOnConnectHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
@@ -53,7 +52,7 @@ public class MarketTakerClient {
     private final String username = "tr8der";
     private final String password = "liquidity";
 
-    private final RingBufferSender<InboundFixMessage, FixMessageEvent> fixMessageSender = new RingBufferSender<InboundFixMessage, FixMessageEvent>(null, new FixMessageToRingBufferEntryAdapter());;
+    private final RingBufferSender<OutboundFixMessage, FixMessageEvent> fixMessageSender = null;
     private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
             new SerializedFixMessageToRingBufferEntryAdapter());
 
@@ -61,7 +60,7 @@ public class MarketTakerClient {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
         final Map<String, Handler<?>> messageIdentifierToHandlers = Maps.newHashMap();
         messageIdentifierToHandlers.put("A",
-                new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), this.fixMessageSender, this.inboundFixMessageBuilder(), this.messageCount));
+                new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), this.fixMessageSender, this.messageCount));
         messageIdentifierToHandlers.put("W",
                 new NewOrderGeneratingMarketDataHandler(this.fixMessageSender, this.messageCount));
 

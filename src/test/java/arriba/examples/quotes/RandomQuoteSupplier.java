@@ -12,8 +12,9 @@ import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
 import arriba.fix.inbound.InboundFixMessageBuilder;
-import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.RepeatingGroupBuilder;
+import arriba.fix.outbound.OutboundFixMessage;
+import arriba.fix.outbound.OutboundFixMessageBuilder;
 
 public final class RandomQuoteSupplier implements Runnable {
 
@@ -22,15 +23,17 @@ public final class RandomQuoteSupplier implements Runnable {
     private final SubscriptionService subscriptionService;
     private final Set<String> symbols;
     private final InboundFixMessageBuilder inboundFixMessageBuilder;
+    private final OutboundFixMessageBuilder builder = null;
+
     private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final Random random = new Random();
-    private final Sender<InboundFixMessage> fixMessageSender;
+    private final Sender<OutboundFixMessage> fixMessageSender;
 
     public RandomQuoteSupplier(final SubscriptionService subscriptionService, final Set<String> symbols,
             final InboundFixMessageBuilder inboundFixMessageBuilder, final AtomicInteger messageCount,
-            final String senderCompId, final Sender<InboundFixMessage> fixMessageSender) {
+            final String senderCompId, final Sender<OutboundFixMessage> fixMessageSender) {
         this.subscriptionService = subscriptionService;
         this.symbols = symbols;
         this.inboundFixMessageBuilder = inboundFixMessageBuilder;
@@ -47,14 +50,15 @@ public final class RandomQuoteSupplier implements Runnable {
             final double symbolBidPrice = this.random.nextDouble() * this.random.nextInt(25);
 
             for (final String subscriberCompId : this.subscriptionService.findSubscribers(symbol)) {
-                this.inboundFixMessageBuilder.addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()));
-                this.inboundFixMessageBuilder.setMessageType("W");
-                this.inboundFixMessageBuilder.setBeginStringBytes(BeginString.FIXT11);
-                this.inboundFixMessageBuilder.addField(Tags.SENDER_COMP_ID, this.senderCompId);
-                this.inboundFixMessageBuilder.addField(Tags.TARGET_COMP_ID, subscriberCompId);
-                this.inboundFixMessageBuilder.addField(Tags.SENDING_TIME, sdf.format(new Date()));
+                this.builder
+                .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+                .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()))
+                .addField(Tags.MESSAGE_TYPE, "W")
+                .addField(Tags.SENDER_COMP_ID, this.senderCompId)
+                .addField(Tags.TARGET_COMP_ID, subscriberCompId)
+                .addField(Tags.SENDING_TIME, sdf.format(new Date()))
 
-                this.inboundFixMessageBuilder.addField(Tags.SYMBOL, symbol);
+                .addField(Tags.SYMBOL, symbol);
 
                 this.repeatingGroupBuilder.setNumberOfRepeatingGroupsTag(Tags.NUMBER_MD_ENTRIES);
                 this.repeatingGroupBuilder.setNumberOfRepeatingGroups(2);
@@ -71,7 +75,7 @@ public final class RandomQuoteSupplier implements Runnable {
                 this.inboundFixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
 
                 try {
-                    this.fixMessageSender.send(this.inboundFixMessageBuilder.build());
+                    this.fixMessageSender.send(this.builder.build());
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }
