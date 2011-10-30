@@ -17,7 +17,6 @@ import com.lmax.disruptor.EventHandler;
 public final class DeserializingFixMessageEventHandler implements EventHandler<FixMessageEvent> {
 
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
-    private static final byte[] MESSAGE_TYPE_BYTES = Tags.toByteArray(Tags.MESSAGE_TYPE);
 
     private final InboundFixMessageBuilder inboundFixMessageBuilder;
     private final RepeatingGroupBuilder groupBuilder = new RepeatingGroupBuilder();
@@ -25,7 +24,6 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private byte nextFlagByte;
     private int nextFlagIndex;
     private boolean hasFoundFinalDelimiter;
-    private boolean hasFoundMessageType;
     private int lastDeserializedTag;
 
     private ParsingState parsingState;
@@ -58,10 +56,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                 final byte[] tag = nextValueBuffer.array();
                 if (Arrays.equals(CHECKSUM_BYTES, tag)) {
                     this.hasFoundFinalDelimiter = true;
-                } else if (Arrays.equals(MESSAGE_TYPE_BYTES, tag)) {
-                    this.hasFoundMessageType = true;
                 }
-
                 this.lastDeserializedTag = Integer.parseInt(new String(tag));
 
                 switch (this.parsingState) {
@@ -100,11 +95,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                     break;
                 case NON_REPEATING_GROUP:
                     this.inboundFixMessageBuilder.addField(this.lastDeserializedTag, value);
-                    if (this.hasFoundMessageType) {
-                        this.hasFoundMessageType = false;
-
-                        this.inboundFixMessageBuilder.setMessageType(value);
-                    } else if (this.hasFoundFinalDelimiter) {
+                    if (this.hasFoundFinalDelimiter) {
                         this.hasFoundFinalDelimiter = false;
 
                         final InboundFixMessage inboundFixMessage = this.inboundFixMessageBuilder.build();
@@ -126,7 +117,6 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
         this.nextFlagIndex = -1;
         this.nextFlagByte = Fields.EQUAL_SIGN;
         this.hasFoundFinalDelimiter = false;
-        this.hasFoundMessageType = false;
         this.lastDeserializedTag = -1;
         this.repeatingGroupTags = null;
         this.inboundFixMessageBuilder.clear();

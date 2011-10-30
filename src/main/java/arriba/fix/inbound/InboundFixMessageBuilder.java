@@ -61,6 +61,7 @@ public final class InboundFixMessageBuilder {
         return this.setMessageType(messageType.getBytes());
     }
 
+    @Deprecated
     public InboundFixMessageBuilder setMessageType(final byte[] messageType) {
         this.messageType = messageType;
 
@@ -77,11 +78,7 @@ public final class InboundFixMessageBuilder {
         // TODO Check for existence of checksum and actually compute it.
         this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337".getBytes());
 
-        // TODO Add messageType in more appropiate location.
-        this.headerChunkBuilder.addField(Tags.MESSAGE_TYPE, this.messageType);
-
-
-        final InboundFixMessage inboundFixMessage = InboundFixMessageFactory.create(this.messageType,
+        final InboundFixMessage inboundFixMessage = InboundFixMessageFactory.create(
                 this.headerChunkBuilder.build(), this.bodyChunkBuilder.build(), this.trailerChunkBuilder.build(),
                 this.repeatingGroupTagToRepeatingGroups == null ? new HashMap<Integer, FixChunk[]>() : this.repeatingGroupTagToRepeatingGroups);
 
