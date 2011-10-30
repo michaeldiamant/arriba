@@ -11,8 +11,6 @@ import arriba.common.Sender;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
-import arriba.fix.inbound.InboundFixMessageBuilder;
-import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessageBuilder;
 
@@ -22,21 +20,18 @@ public final class RandomQuoteSupplier implements Runnable {
 
     private final SubscriptionService subscriptionService;
     private final Set<String> symbols;
-    private final InboundFixMessageBuilder inboundFixMessageBuilder;
-    private final OutboundFixMessageBuilder builder = null;
+    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
 
-    private final RepeatingGroupBuilder repeatingGroupBuilder = new RepeatingGroupBuilder();
     private final AtomicInteger messageCount;
     private final String senderCompId;
     private final Random random = new Random();
     private final Sender<OutboundFixMessage> fixMessageSender;
 
     public RandomQuoteSupplier(final SubscriptionService subscriptionService, final Set<String> symbols,
-            final InboundFixMessageBuilder inboundFixMessageBuilder, final AtomicInteger messageCount,
+            final AtomicInteger messageCount,
             final String senderCompId, final Sender<OutboundFixMessage> fixMessageSender) {
         this.subscriptionService = subscriptionService;
         this.symbols = symbols;
-        this.inboundFixMessageBuilder = inboundFixMessageBuilder;
         this.messageCount = messageCount;
         this.senderCompId = senderCompId;
         this.fixMessageSender = fixMessageSender;
@@ -58,30 +53,22 @@ public final class RandomQuoteSupplier implements Runnable {
                 .addField(Tags.TARGET_COMP_ID, subscriberCompId)
                 .addField(Tags.SENDING_TIME, sdf.format(new Date()))
 
-                .addField(Tags.SYMBOL, symbol);
+                .addField(Tags.SYMBOL, symbol)
 
-                this.repeatingGroupBuilder.setNumberOfRepeatingGroupsTag(Tags.NUMBER_MD_ENTRIES);
-                this.repeatingGroupBuilder.setNumberOfRepeatingGroups(2);
+                .addField(Tags.NUMBER_MD_ENTRIES, "2")
+                .addField(Tags.MD_ENTRY_TYPE, "0")
+                .addField(Tags.MD_ENTRY_SIZE, "100")
+                .addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice))
 
-                this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_TYPE, "0");
-                this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_SIZE, "100");
-                this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice));
-
-
-                this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_TYPE, "1");
-                this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_SIZE, "200");
-                this.repeatingGroupBuilder.addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice + 0.05));
-
-                this.inboundFixMessageBuilder.setRepeatingGroups(this.repeatingGroupBuilder.build());
+                .addField(Tags.MD_ENTRY_TYPE, "1")
+                .addField(Tags.MD_ENTRY_SIZE, "200")
+                .addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice + 0.05));
 
                 try {
                     this.fixMessageSender.send(this.builder.build());
                 } catch (final IOException e) {
                     e.printStackTrace();
                 }
-
-                this.repeatingGroupBuilder.clear();
-                this.inboundFixMessageBuilder.clear();
             }
         }
     }

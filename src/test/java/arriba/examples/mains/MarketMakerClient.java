@@ -88,7 +88,7 @@ public class MarketMakerClient {
 
     public void start() {
         // Quotes
-        final Runnable quoteSupplier = new RandomQuoteSupplier(this.subscriptionService, Sets.newHashSet("EURUSD"), this.inboundFixMessageBuilder(),
+        final Runnable quoteSupplier = new RandomQuoteSupplier(this.subscriptionService, Sets.newHashSet("EURUSD"),
                 this.messageCount, this.senderCompId, this.fixMessageSender);
         this.quotesExecutorService.submit(quoteSupplier);
 
