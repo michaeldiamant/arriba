@@ -18,7 +18,6 @@ import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
 import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.FixMessageEventFactory;
-import arriba.disruptor.FixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
@@ -29,9 +28,9 @@ import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
-import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.NewOrderSingle;
+import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
@@ -64,7 +63,9 @@ public class MarketMakerClient {
     private final ExecutorService quotesExecutorService = Executors.newSingleThreadExecutor();
     private final SubscriptionService subscriptionService = new InMemorySubscriptionService();
 
-    private final RingBufferSender<InboundFixMessage, FixMessageEvent> fixMessageSender = new RingBufferSender<InboundFixMessage, FixMessageEvent>(null, new FixMessageToRingBufferEntryAdapter());;
+    // FIXME Need to rename existing FixMessageToRingBufferEntryAdapter to Inbound*."
+    // FIXME Introduce Outbound* versions of disruptor Inbound*.
+    private final RingBufferSender<OutboundFixMessage, FixMessageEvent> fixMessageSender = null;
     private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
             new SerializedFixMessageToRingBufferEntryAdapter());
 
@@ -74,7 +75,7 @@ public class MarketMakerClient {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);
         final Map<String, Handler<?>> messageIdentifierToHandlers = Maps.newHashMap();
         messageIdentifierToHandlers.put("A",
-                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, this.inboundFixMessageBuilder(),
+                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword,
                         this.fixMessageSender, this.messageCount, this.channels, this.channelRepository));
         messageIdentifierToHandlers.put("V",
                 new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService));
