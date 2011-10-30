@@ -9,16 +9,11 @@ import arriba.fix.fields.MessageType;
 
 public final class InboundFixMessageFactory {
 
-    public InboundFixMessageFactory() {
-
-    }
-
-
-    public static InboundFixMessage create(final FixChunk headerChunk,
-            final FixChunk bodyChunk, final FixChunk trailerChunk,
-            final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-
+    public static InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk,
+            final FixChunk trailerChunk, final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
         final byte[] messageType = headerChunk.getSerializedValue(Tags.MESSAGE_TYPE);
+
+        // TODO Make constant time.
 
         if (Arrays.equals(MessageType.NEW_ORDER_SINGLE, messageType)) {
             return new NewOrderSingle(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
@@ -31,15 +26,6 @@ public final class InboundFixMessageFactory {
         } else {
             throw new IllegalArgumentException("Message type " + messageType + " does not map to a known FIX message.");
         }
-    }
-
-    private enum MessageTypeFactory {
-        LOGON,
-        NEW_ORDER_SINGLE,
-        MARKET_DATA_SNAPSHOT_FULL_REFRESH,
-        MARKET_DATA_REQUEST
-
-        //        public abstract InboundFixMessage create();
     }
 }
 
