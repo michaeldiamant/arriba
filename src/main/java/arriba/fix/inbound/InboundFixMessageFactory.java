@@ -3,6 +3,7 @@ package arriba.fix.inbound;
 import java.util.Arrays;
 import java.util.Map;
 
+import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.fields.MessageType;
 
@@ -13,11 +14,12 @@ public final class InboundFixMessageFactory {
     }
 
 
-    public static InboundFixMessage create(final byte[] messageType, final FixChunk headerChunk,
+    public static InboundFixMessage create(final FixChunk headerChunk,
             final FixChunk bodyChunk, final FixChunk trailerChunk,
             final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
 
-        // TODO Replace literals with constants and try to move to switch statements (e.g. Java 7).
+        final byte[] messageType = headerChunk.getSerializedValue(Tags.MESSAGE_TYPE);
+
         if (Arrays.equals(MessageType.NEW_ORDER_SINGLE, messageType)) {
             return new NewOrderSingle(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
         } else if (Arrays.equals(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, messageType)) {
