@@ -5,9 +5,14 @@ import java.util.Arrays;
 public final class RichByteArray {
 
     private final byte[] bytes;
+    private final int hashCode;
 
     public RichByteArray(final byte[] bytes) {
         this.bytes = bytes;
+
+        final int prime = 31;
+        final int result = 1;
+        this.hashCode = prime * result + Arrays.hashCode(this.bytes);
     }
 
     public byte[] getBytes() {
@@ -19,10 +24,7 @@ public final class RichByteArray {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + Arrays.hashCode(this.bytes);
-        return result;
+        return this.hashCode;
     }
 
     @Override
