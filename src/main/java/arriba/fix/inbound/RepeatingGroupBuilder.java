@@ -1,8 +1,6 @@
 package arriba.fix.inbound;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 
 import arriba.fix.RepeatingGroups;
 import arriba.fix.chunk.FixChunk;
@@ -10,73 +8,63 @@ import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
 
-import com.google.common.collect.Maps;
-
 public final class RepeatingGroupBuilder {
 
-    private static final int MAX_REPEATING_GROUP_COUNT = 1000;
+    private static final int MAX_REPEATING_GROUP_COUNT = 10;
+    private static final int MAX_FIELD_COUNT = 100;
 
-    private final int[] tags = new int[MAX_REPEATING_GROUP_COUNT];
-    private final byte[][] values = new byte[MAX_REPEATING_GROUP_COUNT][];
-    private final Map<Integer, FixChunk[]> groupCountToGroupChunk = Maps.newHashMap();
+    private final FixChunk[][] repeatingGroups = new FixChunk[MAX_REPEATING_GROUP_COUNT][];
+    private final int[] tags = new int[MAX_FIELD_COUNT];
+    private final byte[][] values = new byte[MAX_FIELD_COUNT][];
 
     // FIXME Provided TagIndexResolver is incorrect.  Supplied so unit tests will pass.
     private final FixChunkBuilder chunkBuilder = new ArrayFixChunkBuilder(new StandardHeaderTagIndexResolver());
 
     private int[] repeatingGroupTags = null;
-    private int tagValueIndex = 0;
-    private int numberOfRepeatingGroupsTag;
-    private int numberOfRepeatingGroups;
-    private int builtTagIndex = 0;
+    private int fieldsReadIndex = 0;
+    private int fieldsWrittenIndex = 0;
+    private int repeatingGroupsCreatedCount = 0;
+    private final FixChunkBuilder builder = null; // TODO How will be FixChunkBuilderSupplier be provided?
 
-    public RepeatingGroupBuilder setNumberOfRepeatingGroupsTag(final int tag) {
+    public RepeatingGroupBuilder setNumberOfRepeatingGroupsField(final int tag, final int count) {
         if (null == (this.repeatingGroupTags = RepeatingGroups.NUMBER_IN_GROUP_TAGS[tag])) {
             throw new IllegalArgumentException("Tag " + tag + " is not a repeating group count tag.");
         }
 
-        this.numberOfRepeatingGroupsTag = tag;
-
-        return this;
-    }
-
-    public RepeatingGroupBuilder setNumberOfRepeatingGroups(final int value) {
         this.buildGroup();
 
-        this.numberOfRepeatingGroups = value;
+        this.repeatingGroups[this.repeatingGroupsCreatedCount] = new FixChunk[count];
+        ++this.repeatingGroupsCreatedCount;
 
         return this;
     }
 
     private void buildGroup() {
-        if (0 == this.tagValueIndex) {
+        if (0 == this.fieldsReadIndex) {
             return;
         }
 
-        final FixChunk[] groupChunks = new FixChunk[this.numberOfRepeatingGroups];
+        final FixChunk[] groupChunks = this.repeatingGroups[this.repeatingGroupsCreatedCount - 1];
         int groupChunkIndex = 0;
         int firstRepeatingGroupTag = -1;
 
-        for (; this.builtTagIndex < this.tagValueIndex; this.builtTagIndex++) {
+        while (this.fieldsWrittenIndex < this.fieldsReadIndex) {
             if (firstRepeatingGroupTag == -1) {
-                firstRepeatingGroupTag = this.tags[this.builtTagIndex];
-            } else if (firstRepeatingGroupTag == this.tags[this.builtTagIndex]) {
+                firstRepeatingGroupTag = this.tags[this.fieldsWrittenIndex];
+            } else if (firstRepeatingGroupTag == this.tags[this.fieldsWrittenIndex]) {
                 groupChunks[groupChunkIndex] = this.chunkBuilder.build();
                 this.chunkBuilder.clear();
                 ++groupChunkIndex;
             }
 
-            this.chunkBuilder.addField(this.tags[this.builtTagIndex], this.values[this.builtTagIndex]);
+            this.chunkBuilder.addField(this.tags[this.fieldsWrittenIndex], this.values[this.fieldsWrittenIndex]);
             // TODO Consider resetting the value of each tags / values index.
+
+            ++this.fieldsWrittenIndex;
         }
 
         groupChunks[groupChunkIndex] = this.chunkBuilder.build();
         this.chunkBuilder.clear();
-        this.groupCountToGroupChunk.put(this.numberOfRepeatingGroupsTag, groupChunks);
-    }
-
-    @Deprecated
-    public RepeatingGroupBuilder addField(final int tag, final String value) {
-        return this.addField(tag, value.getBytes());
     }
 
     public RepeatingGroupBuilder addField(final int tag, final byte[] value) {
@@ -84,28 +72,26 @@ public final class RepeatingGroupBuilder {
             throw new IllegalArgumentException("Tag " + tag + " is not a known repeating group tag (" + this.repeatingGroupTags + ").");
         }
 
-        this.tags[this.tagValueIndex] = tag;
-        this.values[this.tagValueIndex] = value;
-        ++this.tagValueIndex;
+        this.tags[this.fieldsReadIndex] = tag;
+        this.values[this.fieldsReadIndex] = value;
+        ++this.fieldsReadIndex;
 
         return this;
     }
 
-    public Map<Integer, FixChunk[]> build() {
+    public FixChunk[][] build() {
         this.buildGroup();
 
-        final Map<Integer, FixChunk[]> mapToReturn =
-                Collections.unmodifiableMap(Maps.newHashMap(this.groupCountToGroupChunk));
+        // TODO Return deep copy.
+        //        final FixChunk[][] repeatingGroupsCopy = new FixChunk[repeatingGroupsCreatedCount - 1][];
 
-        return mapToReturn;
+        return this.repeatingGroups;
     }
 
     public void clear() {
-        this.tagValueIndex = 0;
-        this.numberOfRepeatingGroupsTag = 0;
-        this.numberOfRepeatingGroups = 0;
-        this.builtTagIndex = 0;
+        this.fieldsReadIndex = 0;
+        this.fieldsWrittenIndex = 0;
+        this.repeatingGroupsCreatedCount = 0;
         this.repeatingGroupTags = null;
-        this.groupCountToGroupChunk.clear();
     }
 }

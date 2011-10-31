@@ -12,6 +12,7 @@ public final class InboundFixMessageBuilder {
 
     private static final int[] HEADER_TAGS = Tags.getHeaders();
     private static final int[] TRAILER_TAGS = Tags.getTrailers();
+    private static final int MAX_REPEATING_GROUP_COUNT = 10;
 
     private final FixChunkBuilder headerChunkBuilder;
     private final FixChunkBuilder bodyChunkBuilder;

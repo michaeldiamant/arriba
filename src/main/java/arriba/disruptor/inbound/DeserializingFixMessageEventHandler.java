@@ -70,7 +70,6 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                     if (null != (this.repeatingGroupTags = RepeatingGroups.NUMBER_IN_GROUP_TAGS[this.lastDeserializedTag])) {
                         this.parsingState = ParsingState.REPEATING_GROUP;
                         this.hasFoundNumberOfRepeatingGroupsTag = true;
-                        this.groupBuilder.setNumberOfRepeatingGroupsTag(this.lastDeserializedTag);
                     }
 
                     break;
@@ -87,7 +86,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
 
                         // TODO Optimize this conversion.  Consider caching String-to-int values.
                         final int numberOfRepeatingGroups = Integer.parseInt(new String(value));
-                        this.groupBuilder.setNumberOfRepeatingGroups(numberOfRepeatingGroups);
+                        this.groupBuilder.setNumberOfRepeatingGroupsField(this.lastDeserializedTag, numberOfRepeatingGroups);
                     } else {
                         this.groupBuilder.addField(this.lastDeserializedTag, value);
                     }
