@@ -63,10 +63,10 @@ public abstract class InboundFixMessage {
     }
 
     public FixChunk[] getGroup(final int numberOfEntriesTag) {
-        //        return this.groupCountToGroupChunk.get(numberOfEntriesTag);
+        // TODO Optimize string to int conversion.
+        final int repeatingGroupIndex = Integer.parseInt(this.bodyChunk.getValue(numberOfEntriesTag));
 
-        // FIXME
-        return null;
+        return this.repeatingGroups[repeatingGroupIndex];
     }
 
     public String getValue(final int tag) {
