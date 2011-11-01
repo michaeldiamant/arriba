@@ -1,15 +1,13 @@
 package arriba.fix.inbound;
 
-import java.util.Map;
-
 import arriba.fix.chunk.FixChunk;
 
 public final class NewOrderSingle extends InboundFixMessage {
 
     protected NewOrderSingle(final FixChunk headerChunk,
             final FixChunk bodyChunk, final FixChunk trailerChunk,
-            final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
+            final FixChunk[][] repeatingGroups) {
+        super(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
     }
 
     public String getSymbol() {

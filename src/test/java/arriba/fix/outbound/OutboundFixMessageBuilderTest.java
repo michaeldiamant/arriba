@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import arriba.disruptor.FixMessageEvent;
@@ -20,6 +21,7 @@ import arriba.utils.OutboundFixMessageFieldCapturer;
 
 import com.lmax.disruptor.EventHandler;
 
+@Ignore
 public class OutboundFixMessageBuilderTest {
 
     private OutboundFixMessageFieldCapturer capturer;

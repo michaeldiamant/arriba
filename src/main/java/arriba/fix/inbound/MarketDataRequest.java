@@ -1,15 +1,13 @@
 package arriba.fix.inbound;
 
-import java.util.Map;
-
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 
 public final class MarketDataRequest extends InboundFixMessage {
 
     public MarketDataRequest(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk,
-            final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
-        super(headerChunk, bodyChunk, trailerChunk, groupCountToGroupChunk);
+            final FixChunk[][] repeatingGroups) {
+        super(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
     }
 
     public String getMdReqId() {
