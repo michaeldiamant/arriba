@@ -20,14 +20,14 @@ public abstract class InboundFixMessage {
     private final FixChunk headerChunk;
     private final FixChunk bodyChunk;
     private final FixChunk trailerChunk;
-    private final Map<Integer, FixChunk[]> groupCountToGroupChunk;
+    private final FixChunk[][] repeatingGroups;
 
     public InboundFixMessage(final FixChunk headerChunk, final FixChunk bodyChunk,
-            final FixChunk trailerChunk, final Map<Integer, FixChunk[]> groupCountToGroupChunk) {
+            final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
         this.headerChunk = headerChunk;
         this.bodyChunk = bodyChunk;
         this.trailerChunk = trailerChunk;
-        this.groupCountToGroupChunk = groupCountToGroupChunk;
+        this.repeatingGroups = repeatingGroups;
     }
 
     public SessionId getSessionId() {
@@ -63,7 +63,10 @@ public abstract class InboundFixMessage {
     }
 
     public FixChunk[] getGroup(final int numberOfEntriesTag) {
-        return this.groupCountToGroupChunk.get(numberOfEntriesTag);
+        //        return this.groupCountToGroupChunk.get(numberOfEntriesTag);
+
+        // FIXME
+        return null;
     }
 
     public String getValue(final int tag) {
@@ -80,7 +83,7 @@ public abstract class InboundFixMessage {
         try {
             // TODO Create ByteArrayOutputStream implementation sans synchronization.
             final ByteArrayOutputStream bodyBytes = new ByteArrayOutputStream();
-            writeBody(bodyBytes, this.bodyChunk, this.groupCountToGroupChunk);
+            //            writeBody(bodyBytes, this.bodyChunk, this.groupCountToGroupChunk);
 
             final ByteArrayOutputStream messageBytes =
                     new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());

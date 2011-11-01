@@ -100,7 +100,9 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                     if (this.hasFoundFinalDelimiter) {
                         this.hasFoundFinalDelimiter = false;
 
-                        final InboundFixMessage inboundFixMessage = this.inboundFixMessageBuilder.build();
+                        final InboundFixMessage inboundFixMessage =
+                                this.inboundFixMessageBuilder.build(this.groupBuilder.build(),
+                                        this.groupBuilder.getNumberOfRepeatingGroupTags());
                         this.reset();
 
                         return inboundFixMessage;
