@@ -19,7 +19,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
 
     private final InboundFixMessageBuilder inboundFixMessageBuilder;
-    private final RepeatingGroupBuilder groupBuilder = new RepeatingGroupBuilder();
+    private final RepeatingGroupBuilder repeatingGroupBuilder;
 
     private byte nextFlagByte;
     private int nextFlagIndex;
@@ -30,8 +30,11 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     private int[] repeatingGroupTags;
     private boolean hasFoundNumberOfRepeatingGroupsTag;
 
-    public DeserializingFixMessageEventHandler(final InboundFixMessageBuilder inboundFixMessageBuilder) {
+    public DeserializingFixMessageEventHandler(final InboundFixMessageBuilder inboundFixMessageBuilder,
+            final RepeatingGroupBuilder repeatingGroupBuilder) {
         this.inboundFixMessageBuilder = inboundFixMessageBuilder;
+        this.repeatingGroupBuilder = repeatingGroupBuilder;
+
         this.reset();
     }
 
@@ -86,10 +89,10 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
 
                         // TODO Optimize this conversion.  Consider caching String-to-int values.
                         final int numberOfRepeatingGroups = Integer.parseInt(new String(value));
-                        this.groupBuilder.setNumberOfRepeatingGroupsField(this.lastDeserializedTag, numberOfRepeatingGroups);
+                        this.repeatingGroupBuilder.setNumberOfRepeatingGroupsField(this.lastDeserializedTag, numberOfRepeatingGroups);
                         // TODO Still need to map the number of repeating groups field to the original message.
                     } else {
-                        this.groupBuilder.addField(this.lastDeserializedTag, value);
+                        this.repeatingGroupBuilder.addField(this.lastDeserializedTag, value);
 
                         // TODO Hook in repeating groups into inbound FIX message builder.
                     }
@@ -101,8 +104,8 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                         this.hasFoundFinalDelimiter = false;
 
                         final InboundFixMessage inboundFixMessage =
-                                this.inboundFixMessageBuilder.build(this.groupBuilder.build(),
-                                        this.groupBuilder.getNumberOfRepeatingGroupTags());
+                                this.inboundFixMessageBuilder.build(this.repeatingGroupBuilder.build(),
+                                        this.repeatingGroupBuilder.getNumberOfRepeatingGroupTags());
                         this.reset();
 
                         return inboundFixMessage;
@@ -124,7 +127,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
         this.lastDeserializedTag = -1;
         this.repeatingGroupTags = null;
         this.inboundFixMessageBuilder.clear();
-        this.groupBuilder.clear();
+        this.repeatingGroupBuilder.clear();
     }
 
     public void onEndOfBatch() throws Exception {

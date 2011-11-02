@@ -20,6 +20,12 @@ public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupp
     }
 
     @Override
+    public FixChunkBuilder getRepeatingGroupBuilder(final int numberOfRepeatingGroupsTag) {
+        // TODO Caching strategy.
+        return this.supplier.getRepeatingGroupBuilder(numberOfRepeatingGroupsTag);
+    }
+
+    @Override
     public FixChunkBuilder getHeaderBuilder() {
         if (null == this.headerBuilder) {
             this.headerBuilder = this.supplier.getHeaderBuilder();

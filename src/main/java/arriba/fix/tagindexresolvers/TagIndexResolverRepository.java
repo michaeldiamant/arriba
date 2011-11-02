@@ -1,5 +1,6 @@
 package arriba.fix.tagindexresolvers;
 
+
 public interface TagIndexResolverRepository {
 
     TagIndexResolver findBodyResolver(byte[] messageType);
@@ -7,4 +8,6 @@ public interface TagIndexResolverRepository {
     TagIndexResolver findHeaderResolver();
 
     TagIndexResolver findTrailerResolver();
+
+    TagIndexResolver findRepeatingGroupResolver(int numberOfRepeatingGroupsTag);
 }
