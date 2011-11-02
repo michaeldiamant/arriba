@@ -30,6 +30,7 @@ import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.NewOrderSingle;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
@@ -132,7 +133,8 @@ public class MarketMakerClient {
     }
 
     private EventHandler<FixMessageEvent> deserializingConsumer() {
-        return new DeserializingFixMessageEventHandler(this.inboundFixMessageBuilder());
+        return new DeserializingFixMessageEventHandler(this.inboundFixMessageBuilder(),
+                new RepeatingGroupBuilder(null)); // FIXME
     }
 
     private ChannelHandler deserializedFixMessageHandler() {

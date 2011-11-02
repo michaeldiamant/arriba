@@ -11,8 +11,10 @@ import org.junit.Test;
 
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.fix.chunk.FixChunkBuilder;
+import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.transport.netty.util.FixMessages;
 import arriba.utils.Field;
 
@@ -28,8 +30,11 @@ public class DeserializingFixMessageEventHandlerTest {
         final InboundFixMessageBuilder inboundFixMessageBuilder =
                 new InboundFixMessageBuilder(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
                         mock(FixChunkBuilder.class));
+        final RepeatingGroupBuilder repeatingGroupBuilder =
+                new RepeatingGroupBuilder(mock(FixChunkBuilderSupplier.class));
+
         this.handler =
-                new DeserializingFixMessageEventHandler(inboundFixMessageBuilder);
+                new DeserializingFixMessageEventHandler(inboundFixMessageBuilder, repeatingGroupBuilder);
     }
 
     @Ignore

@@ -18,6 +18,11 @@ public final class ArrayFixChunkBuilderSupplier implements FixChunkBuilderSuppli
     }
 
     @Override
+    public FixChunkBuilder getRepeatingGroupBuilder(final int numberOfRepeatingGroupsTag) {
+        return new ArrayFixChunkBuilder(this.resolverRepository.findRepeatingGroupResolver(numberOfRepeatingGroupsTag));
+    }
+
+    @Override
     public FixChunkBuilder getHeaderBuilder() {
         return new ArrayFixChunkBuilder(this.resolverRepository.findHeaderResolver());
     }

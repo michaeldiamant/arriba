@@ -23,6 +23,7 @@ import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.NewOrderSingle;
+import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
@@ -75,7 +76,8 @@ public class FixServer {
                                 new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
                                 new ArrayFixChunkBuilder(null),
                                 new ArrayFixChunkBuilder(null)
-                                )));
+                                ),
+                                new RepeatingGroupBuilder(null))); // FIXME
 
         final DependencyBarrier sessionNotificationConsumerBarrier = ringBuffer.newDependencyBarrier(deserializingConsumer);
         final BatchEventProcessor<FixMessageEvent> sessionNotifyingConsumer = new BatchEventProcessor<FixMessageEvent>(ringBuffer, sessionNotificationConsumerBarrier,
