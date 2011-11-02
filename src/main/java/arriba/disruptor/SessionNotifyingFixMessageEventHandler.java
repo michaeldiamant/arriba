@@ -3,6 +3,7 @@ package arriba.disruptor;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionResolver;
+
 import com.lmax.disruptor.EventHandler;
 
 public final class SessionNotifyingFixMessageEventHandler implements EventHandler<FixMessageEvent> {
@@ -13,8 +14,8 @@ public final class SessionNotifyingFixMessageEventHandler implements EventHandle
         this.sessionResolver = sessionResolver;
     }
 
-  @Override
-  public void onEvent(FixMessageEvent entry, boolean b) throws Exception {
+    @Override
+    public void onEvent(final FixMessageEvent entry, final boolean endOfBatch) throws Exception {
         final InboundFixMessage inboundFixMessage = entry.getFixMessage();
 
         final Session session = this.sessionResolver.resolve(inboundFixMessage.getSessionId());
