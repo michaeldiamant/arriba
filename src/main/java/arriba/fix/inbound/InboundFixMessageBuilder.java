@@ -37,14 +37,7 @@ public final class InboundFixMessageBuilder {
     }
 
     public InboundFixMessage build(final FixChunk[][] repeatingGroups, final int[] numberOfRepeatingGroupTags) {
-        if (null == numberOfRepeatingGroupTags && null != repeatingGroups ||
-                null != numberOfRepeatingGroupTags && null == repeatingGroups) {
-            throw new IllegalArgumentException("numberOfRepeatingGroupTags and repeatingGroups must either be null or not null.");
-        }
-
-        if (null != numberOfRepeatingGroupTags) {
-            this.populateNumberOfRepeatingGroupTagMappings(numberOfRepeatingGroupTags);
-        }
+        this.populateNumberOfRepeatingGroupTagMappings(numberOfRepeatingGroupTags);
 
         // TODO Check for existence of checksum and actually compute it.
         this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337".getBytes());
