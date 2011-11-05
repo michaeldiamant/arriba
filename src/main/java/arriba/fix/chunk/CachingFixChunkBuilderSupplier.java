@@ -1,5 +1,6 @@
 package arriba.fix.chunk;
 
+import arriba.bytearrays.ByteArrayKeyedMap;
 import arriba.bytearrays.ConcurrentByteArrayKeyedMap;
 import cern.colt.map.AbstractIntObjectMap;
 
@@ -7,7 +8,7 @@ import cern.colt.map.AbstractIntObjectMap;
 public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupplier {
 
     private final FixChunkBuilderSupplier supplier;
-    private final ConcurrentByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache;
+    private final ByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache;
 
     private FixChunkBuilder headerBuilder;
     private FixChunkBuilder trailerBuilder;
@@ -27,7 +28,7 @@ public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupp
 
         if (null == cachedBuilder) {
             final FixChunkBuilder builder = this.supplier.getBodyBuilder(messageType);
-            this.bodyBuilderCache.putIfAbsent(messageType, builder);
+            this.bodyBuilderCache.put(messageType, builder);
 
             return builder;
         }
