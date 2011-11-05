@@ -30,7 +30,7 @@ import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
-import arriba.senders.RingBufferSender;
+import arriba.senders.DisruptorSender;
 import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.SerializedFixMessageHandler;
@@ -90,7 +90,7 @@ public class FixServer {
 
         final DependencyBarrier inboundProducerBarrier = ringBuffer.newDependencyBarrier(deserializingConsumer, sessionNotifyingConsumer);
 
-        return new RingBufferSender<ChannelBuffer, InboundFixMessageEvent>(ringBuffer,
+        return new DisruptorSender<ChannelBuffer, InboundFixMessageEvent>(ringBuffer,
                 new SerializedFixMessageToDisruptorAdapter());
     }
 
@@ -110,7 +110,7 @@ public class FixServer {
         executorService.submit(channelSubmittingConsumer);
 
         final DependencyBarrier outboundProducerBarrier = ringBuffer.newDependencyBarrier(channelSubmittingConsumer);
-        return new RingBufferSender<InboundFixMessage, InboundFixMessageEvent>(ringBuffer,
+        return new DisruptorSender<InboundFixMessage, InboundFixMessageEvent>(ringBuffer,
                 new InboundFixMessageToDisruptorAdapter());
     }
 

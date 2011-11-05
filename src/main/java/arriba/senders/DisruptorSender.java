@@ -8,12 +8,12 @@ import arriba.disruptor.MessageToDisruptorAdapter;
 import com.lmax.disruptor.AbstractEvent;
 import com.lmax.disruptor.RingBuffer;
 
-public final class RingBufferSender<M, E extends AbstractEvent> implements Sender<M> {
+public final class DisruptorSender<M, E extends AbstractEvent> implements Sender<M> {
 
     private RingBuffer<E> outboundRingBuffer;
     private final MessageToDisruptorAdapter<M, E> messageToDisruptorAdapter;
 
-    public RingBufferSender(final RingBuffer<E> producerBarrier,
+    public DisruptorSender(final RingBuffer<E> producerBarrier,
             final MessageToDisruptorAdapter<M, E> messageToRingBufferEntryAdapter) {
         this.outboundRingBuffer = producerBarrier;
         this.messageToDisruptorAdapter = messageToRingBufferEntryAdapter;
