@@ -1,22 +1,34 @@
 package arriba.fix.chunk;
 
+import arriba.bytearrays.ConcurrentByteArrayKeyedMap;
+
 
 public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupplier {
 
     private final FixChunkBuilderSupplier supplier;
+    private final ConcurrentByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache;
 
     private FixChunkBuilder headerBuilder;
     private FixChunkBuilder trailerBuilder;
 
-
-    public CachingFixChunkBuilderSupplier(final FixChunkBuilderSupplier supplier) {
+    public CachingFixChunkBuilderSupplier(final FixChunkBuilderSupplier supplier,
+            final ConcurrentByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache) {
         this.supplier = supplier;
+        this.bodyBuilderCache = bodyBuilderCache;
     }
 
     @Override
     public FixChunkBuilder getBodyBuilder(final byte[] messageType) {
-        // TODO Implement body builder caching strategy.
-        return this.supplier.getBodyBuilder(messageType);
+        final FixChunkBuilder cachedBuilder = this.bodyBuilderCache.get(messageType);
+
+        if (null == cachedBuilder) {
+            final FixChunkBuilder builder = this.supplier.getBodyBuilder(messageType);
+            this.bodyBuilderCache.putIfAbsent(messageType, builder);
+
+            return builder;
+        }
+
+        return cachedBuilder;
     }
 
     @Override
