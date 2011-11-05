@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Handler;
@@ -16,6 +17,7 @@ import arriba.disruptor.FixMessageEventFactory;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.examples.handlers.LogonOnConnectHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
@@ -28,10 +30,10 @@ import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
-import arriba.transport.channels.ChannelRepository;
-import arriba.transport.channels.InMemoryChannelRepository;
-import arriba.transport.netty.ChannelWritingFixMessageEventHandler;
+import arriba.transport.InMemoryTransportRepository;
+import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
+import arriba.transport.netty.NettyTransportRepository;
 import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.servers.FixClientBootstrap;
 
@@ -47,7 +49,8 @@ public class MarketTakerClient {
 
     private final Map<SessionId, Session> sessionIdToSessions = Maps.newHashMap();
     private final AtomicInteger messageCount = new AtomicInteger();
-    private final ChannelRepository<String> channelRepository = new InMemoryChannelRepository<String>();
+    private final TransportRepository<String, Channel> transportRepository =
+            new NettyTransportRepository<String>(new InMemoryTransportRepository<String, Channel>());
     private final String senderCompId = "MT";
     private final String targetCompId = "MM";
     private final String username = "tr8der";
@@ -107,7 +110,7 @@ public class MarketTakerClient {
     }
 
     private EventHandler<FixMessageEvent> channelWritingConsumer() {
-        return new ChannelWritingFixMessageEventHandler(this.channelRepository);
+        return new TransportWritingFixMessageEventHandler(this.transportRepository);
     }
 
     private EventHandler<FixMessageEvent> sessionNotifyingConsumer() {
@@ -125,7 +128,7 @@ public class MarketTakerClient {
 
     private ChannelHandler logonOnConnectHandler() {
         return new LogonOnConnectHandler(this.messageCount, this.senderCompId, this.targetCompId, this.username, this.password,
-                this.fixMessageSender, this.channelRepository);
+                this.fixMessageSender, this.transportRepository);
     }
 
     public static void main(final String[] args) {

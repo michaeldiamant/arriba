@@ -12,7 +12,9 @@ public final class NettyTransportRepository<ID> implements TransportRepository<I
     private final TransportRepository<ID, Channel> backingRepository;
     private final ChannelFutureListener removeChannelListener = new ChannelFutureListener() {
         public void operationComplete(final ChannelFuture future) throws Exception {
-            NettyTransportRepository.this.remove(new Transport<Channel>(future.getChannel()));
+
+            // TODO Consider creating a read-only Transport implementation
+            NettyTransportRepository.this.remove(new NettyTransport(future.getChannel()));
         }
     };
 

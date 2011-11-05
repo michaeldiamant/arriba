@@ -16,7 +16,7 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessageBuilder;
-import arriba.transport.channels.ChannelRepository;
+import arriba.transport.TransportRepository;
 
 public class LogonOnConnectHandler extends SimpleChannelHandler {
 
@@ -28,20 +28,20 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
     private final String username;
     private final String password;
     private final Sender<OutboundFixMessage> fixMessageSender;
-    private final ChannelRepository<String> channelRepository;
+    private final TransportRepository<String, ?> TransportRepository;
 
     private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
 
     public LogonOnConnectHandler(final AtomicInteger messageCount,
             final String senderCompId, final String targetCompId, final String username, final String password,
-            final Sender<OutboundFixMessage> fixMessageSender, final ChannelRepository<String> channelRepository) {
+            final Sender<OutboundFixMessage> fixMessageSender, final TransportRepository<String, ?> transportRepository) {
         this.messageCount = messageCount;
         this.senderCompId = senderCompId;
         this.targetCompId = targetCompId;
         this.username = username;
         this.password = password;
         this.fixMessageSender = fixMessageSender;
-        this.channelRepository = channelRepository;
+        this.TransportRepository = transportRepository;
     }
 
     @Override
@@ -60,7 +60,8 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
         .addField(Tags.PASSWORD, this.password);
 
         try {
-            this.channelRepository.add(this.targetCompId, e.getChannel());
+            // FIXME
+            //            this.TransportRepository.add(this.targetCompId, e.getChannel());
 
             this.fixMessageSender.send(this.builder.build());
         } catch (final IOException ioe) {

@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Handler;
@@ -19,6 +20,7 @@ import arriba.disruptor.FixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
@@ -29,8 +31,7 @@ import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
-import arriba.transport.channels.InMemoryChannelRepository;
-import arriba.transport.netty.ChannelWritingFixMessageEventHandler;
+import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.SerializedFixMessageHandler;
 
@@ -101,7 +102,8 @@ public class FixServer {
 
         final DependencyBarrier channelSubmissionConsumerBarrier = ringBuffer.newDependencyBarrier();
         final BatchEventProcessor<FixMessageEvent> channelSubmittingConsumer = new BatchEventProcessor<FixMessageEvent>(ringBuffer, channelSubmissionConsumerBarrier,
-                new ChannelWritingFixMessageEventHandler(new InMemoryChannelRepository<String>()));
+                // TODO Use Netty transport repo.
+                new TransportWritingFixMessageEventHandler(new InMemoryTransportRepository<String, Channel>()));
         // TODO Populate the in-memory channel repository.
 
         final ExecutorService executorService = Executors.newFixedThreadPool(1);

@@ -21,6 +21,7 @@ import arriba.disruptor.FixMessageEventFactory;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.examples.handlers.AuthenticatingLogonHandler;
 import arriba.examples.handlers.NewClientSessionHandler;
 import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
@@ -37,10 +38,10 @@ import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
-import arriba.transport.channels.ChannelRepository;
-import arriba.transport.channels.InMemoryChannelRepository;
-import arriba.transport.netty.ChannelWritingFixMessageEventHandler;
+import arriba.transport.InMemoryTransportRepository;
+import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
+import arriba.transport.netty.NettyTransportRepository;
 import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.servers.FixServerBootstrap;
 
@@ -56,7 +57,8 @@ public class MarketMakerClient {
 
     private final Map<SessionId, Session> sessionIdToSessions = Maps.newHashMap();
     private final AtomicInteger messageCount = new AtomicInteger();
-    private final ChannelRepository<String> channelRepository = new InMemoryChannelRepository<String>();
+    private final TransportRepository<String, Channel> transportRepository =
+            new NettyTransportRepository<String>(new InMemoryTransportRepository<String, Channel>());
     private final String senderCompId = "MM";
     private final String targetCompId = "MT";
     private final String expectedUsername = "tr8der";
@@ -77,7 +79,7 @@ public class MarketMakerClient {
         final Map<String, Handler<?>> messageIdentifierToHandlers = Maps.newHashMap();
         messageIdentifierToHandlers.put("A",
                 new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword,
-                        this.fixMessageSender, this.messageCount, this.channels, this.channelRepository));
+                        this.fixMessageSender, this.messageCount, this.channels, this.transportRepository));
         messageIdentifierToHandlers.put("V",
                 new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService));
         messageIdentifierToHandlers.put("D",
@@ -125,7 +127,7 @@ public class MarketMakerClient {
     }
 
     private EventHandler<FixMessageEvent> channelWritingConsumer() {
-        return new ChannelWritingFixMessageEventHandler(this.channelRepository);
+        return new TransportWritingFixMessageEventHandler(this.transportRepository);
     }
 
     private EventHandler<FixMessageEvent> sessionNotifyingConsumer() {

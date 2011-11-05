@@ -1,8 +1,8 @@
 package arriba.transport;
 
-public final class Transport<T> {
+public abstract class Transport<T> {
 
-    private final T underlying;
+    protected final T underlying;
 
     public Transport(final T underlying) {
         this.underlying = underlying;
@@ -11,6 +11,8 @@ public final class Transport<T> {
     public T getUnderlying() {
         return this.underlying;
     }
+
+    public abstract void write(byte[] bytes);
 
     @Override
     public int hashCode() {
