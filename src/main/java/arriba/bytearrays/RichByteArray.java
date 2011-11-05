@@ -1,4 +1,4 @@
-package arriba.common;
+package arriba.bytearrays;
 
 import java.util.Arrays;
 
