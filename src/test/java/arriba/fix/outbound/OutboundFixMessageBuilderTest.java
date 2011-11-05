@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import arriba.disruptor.FixMessageEvent;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;
@@ -94,7 +94,7 @@ public class OutboundFixMessageBuilderTest {
     }
 
     private InboundFixMessage deserialize(final byte[] message) throws Exception {
-        final EventHandler<FixMessageEvent> deserializer =
+        final EventHandler<InboundFixMessageEvent> deserializer =
                 new DeserializingFixMessageEventHandler(
                         new InboundFixMessageBuilder(
                                 new ArrayFixChunkBuilder(new StandardHeaderTagIndexResolver()),
@@ -105,7 +105,7 @@ public class OutboundFixMessageBuilderTest {
                         );
 
 
-        final FixMessageEvent event = new FixMessageEvent();
+        final InboundFixMessageEvent event = new InboundFixMessageEvent();
         event.setSerializedFixMessage(ChannelBuffers.copiedBuffer(message));
         deserializer.onEvent(event, true);
 

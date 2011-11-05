@@ -16,11 +16,11 @@ import org.jboss.netty.channel.ChannelHandler;
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
-import arriba.disruptor.FixMessageEvent;
-import arriba.disruptor.FixMessageEventFactory;
 import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
-import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.inbound.InboundFixMessageEvent;
+import arriba.disruptor.inbound.InboundFixMessageEventFactory;
+import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
 import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.examples.handlers.AuthenticatingLogonHandler;
 import arriba.examples.handlers.NewClientSessionHandler;
@@ -68,8 +68,8 @@ public class MarketMakerClient {
 
     // FIXME Need to rename existing FixMessageToRingBufferEntryAdapter to Inbound*."
     // FIXME Introduce Outbound* versions of disruptor Inbound*.
-    private final RingBufferSender<OutboundFixMessage, FixMessageEvent> fixMessageSender = null;
-    private final RingBufferSender<ChannelBuffer, FixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, FixMessageEvent>(null,
+    private final RingBufferSender<OutboundFixMessage, InboundFixMessageEvent> fixMessageSender = null;
+    private final RingBufferSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, InboundFixMessageEvent>(null,
             new SerializedFixMessageToRingBufferEntryAdapter());
 
     private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
@@ -96,11 +96,11 @@ public class MarketMakerClient {
         this.quotesExecutorService.submit(quoteSupplier);
 
         // Incoming
-        final DisruptorWizard<FixMessageEvent> incomingDisruptor = new DisruptorWizard<FixMessageEvent>(new FixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
+        final DisruptorWizard<InboundFixMessageEvent> incomingDisruptor = new DisruptorWizard<InboundFixMessageEvent>(new InboundFixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
                 ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.YIELDING);
 
         incomingDisruptor.handleEventsWith(this.deserializingConsumer()).then(this.sessionNotifyingConsumer());
-        final RingBuffer<FixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
+        final RingBuffer<InboundFixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
 
         this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer);
 
@@ -108,11 +108,11 @@ public class MarketMakerClient {
 
 
         // Outgoing
-        final DisruptorWizard<FixMessageEvent> outgoingDisruptor = new DisruptorWizard<FixMessageEvent>(new FixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
+        final DisruptorWizard<InboundFixMessageEvent> outgoingDisruptor = new DisruptorWizard<InboundFixMessageEvent>(new InboundFixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
                 ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.YIELDING);
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
-        final RingBuffer<FixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
+        final RingBuffer<InboundFixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
         this.fixMessageSender.setOutboundRingBuffer(outgoingRingBuffer);
 
         server.bind(new InetSocketAddress("localhost", 8080));
@@ -126,15 +126,15 @@ public class MarketMakerClient {
                 );
     }
 
-    private EventHandler<FixMessageEvent> channelWritingConsumer() {
+    private EventHandler<InboundFixMessageEvent> channelWritingConsumer() {
         return new TransportWritingFixMessageEventHandler(this.transportRepository);
     }
 
-    private EventHandler<FixMessageEvent> sessionNotifyingConsumer() {
-        return new SessionNotifyingFixMessageEventHandler(new InMemorySessionResolver(this.sessionIdToSessions));
+    private EventHandler<InboundFixMessageEvent> sessionNotifyingConsumer() {
+        return new SessionNotifyingInboundFixMessageEventHandler(new InMemorySessionResolver(this.sessionIdToSessions));
     }
 
-    private EventHandler<FixMessageEvent> deserializingConsumer() {
+    private EventHandler<InboundFixMessageEvent> deserializingConsumer() {
         return new DeserializingFixMessageEventHandler(this.inboundFixMessageBuilder(),
                 new RepeatingGroupBuilder(null)); // FIXME
     }
