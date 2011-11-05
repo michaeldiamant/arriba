@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.disruptor.FixMessageEvent;
 import arriba.fix.Fields;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
@@ -14,7 +13,7 @@ import arriba.fix.inbound.RepeatingGroupBuilder;
 
 import com.lmax.disruptor.EventHandler;
 
-public final class DeserializingFixMessageEventHandler implements EventHandler<FixMessageEvent> {
+public final class DeserializingFixMessageEventHandler implements EventHandler<InboundFixMessageEvent> {
 
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
 
@@ -39,7 +38,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
     }
 
     @Override
-    public void onEvent(final FixMessageEvent entry, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundFixMessageEvent entry, final boolean endOfBatch) throws Exception {
         final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
         this.parsingState = ParsingState.NON_REPEATING_GROUP;

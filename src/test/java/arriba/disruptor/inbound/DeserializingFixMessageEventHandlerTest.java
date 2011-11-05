@@ -1,4 +1,4 @@
-package arriba.disruptor;
+package arriba.disruptor.inbound;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
@@ -10,6 +10,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.inbound.InboundFixMessage;
@@ -23,7 +24,7 @@ import com.lmax.disruptor.EventHandler;
 
 public class DeserializingFixMessageEventHandlerTest {
 
-    private EventHandler<FixMessageEvent> handler;
+    private EventHandler<InboundFixMessageEvent> handler;
 
     @Before
     public void before() {
@@ -40,7 +41,7 @@ public class DeserializingFixMessageEventHandlerTest {
     @Ignore
     @Test
     public void testFixMessageDeserialization() throws Exception {
-        final FixMessageEvent fixMessageEntry = createPreloadedFixMessageEntry();
+        final InboundFixMessageEvent fixMessageEntry = createPreloadedFixMessageEntry();
 
         this.handler.onEvent(fixMessageEntry, false);
 
@@ -55,8 +56,8 @@ public class DeserializingFixMessageEventHandlerTest {
         }
     }
 
-    private static FixMessageEvent createPreloadedFixMessageEntry() {
-        final FixMessageEvent fixMessageEntry = new FixMessageEvent();
+    private static InboundFixMessageEvent createPreloadedFixMessageEntry() {
+        final InboundFixMessageEvent fixMessageEntry = new InboundFixMessageEvent();
         fixMessageEntry.setSerializedFixMessage(FixMessages.toChannelBuffer(FixMessages.EXAMPLE_NEW_ORDER_SINGLE));
 
         return fixMessageEntry;
