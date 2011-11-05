@@ -18,7 +18,7 @@ import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
 import arriba.disruptor.SessionNotifyingFixMessageEventHandler;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
-import arriba.examples.handlers.LogonOnConnectHandler;
+import arriba.examples.handlers.LogonOnConnectApplication;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
@@ -31,8 +31,10 @@ import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 import arriba.senders.RingBufferSender;
 import arriba.transport.InMemoryTransportRepository;
+import arriba.transport.TransportConnectHandler;
 import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
+import arriba.transport.netty.NettyConnectHandlerAdapter;
 import arriba.transport.netty.NettyTransportRepository;
 import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.servers.FixClientBootstrap;
@@ -81,7 +83,11 @@ public class MarketTakerClient {
 
         this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer); // FIXME Major hack
 
-        final ClientBootstrap client = FixClientBootstrap.create(new FixMessageFrameDecoder(), this.logonOnConnectHandler(), this.deserializedFixMessageHandler());
+        final ClientBootstrap client = FixClientBootstrap.create(
+                new FixMessageFrameDecoder(),
+                new NettyConnectHandlerAdapter(this.logonOnConnectApplication()),
+                this.deserializedFixMessageHandler()
+                );
 
 
         // Outgoing
@@ -126,8 +132,8 @@ public class MarketTakerClient {
         return new SerializedFixMessageHandler(this.inboundRingBufferSender);
     }
 
-    private ChannelHandler logonOnConnectHandler() {
-        return new LogonOnConnectHandler(this.messageCount, this.senderCompId, this.targetCompId, this.username, this.password,
+    private TransportConnectHandler logonOnConnectApplication() {
+        return new LogonOnConnectApplication(this.messageCount, this.senderCompId, this.targetCompId, this.username, this.password,
                 this.fixMessageSender, this.transportRepository);
     }
 
