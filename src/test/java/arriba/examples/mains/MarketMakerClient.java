@@ -16,7 +16,7 @@ import org.jboss.netty.channel.ChannelHandler;
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
-import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
+import arriba.disruptor.SerializedFixMessageToDisruptorAdapter;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.disruptor.inbound.InboundFixMessageEventFactory;
@@ -70,7 +70,7 @@ public class MarketMakerClient {
     // FIXME Introduce Outbound* versions of disruptor Inbound*.
     private final RingBufferSender<OutboundFixMessage, InboundFixMessageEvent> fixMessageSender = null;
     private final RingBufferSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, InboundFixMessageEvent>(null,
-            new SerializedFixMessageToRingBufferEntryAdapter());
+            new SerializedFixMessageToDisruptorAdapter());
 
     private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
 

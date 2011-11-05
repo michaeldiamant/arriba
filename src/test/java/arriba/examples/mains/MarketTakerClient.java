@@ -12,7 +12,7 @@ import org.jboss.netty.channel.ChannelHandler;
 
 import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
-import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
+import arriba.disruptor.SerializedFixMessageToDisruptorAdapter;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.disruptor.inbound.InboundFixMessageEventFactory;
@@ -60,7 +60,7 @@ public class MarketTakerClient {
 
     private final RingBufferSender<OutboundFixMessage, InboundFixMessageEvent> fixMessageSender = null;
     private final RingBufferSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, InboundFixMessageEvent>(null,
-            new SerializedFixMessageToRingBufferEntryAdapter());
+            new SerializedFixMessageToDisruptorAdapter());
 
     public MarketTakerClient() {
         final SessionId sessionId = new SimpleSessionId(this.targetCompId);

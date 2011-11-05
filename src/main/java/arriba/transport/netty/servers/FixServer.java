@@ -14,7 +14,7 @@ import arriba.common.Handler;
 import arriba.common.MapHandlerRepository;
 import arriba.common.PrintingHandler;
 import arriba.common.Sender;
-import arriba.disruptor.SerializedFixMessageToRingBufferEntryAdapter;
+import arriba.disruptor.SerializedFixMessageToDisruptorAdapter;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.disruptor.inbound.InboundFixMessageEventFactory;
@@ -91,7 +91,7 @@ public class FixServer {
         final DependencyBarrier inboundProducerBarrier = ringBuffer.newDependencyBarrier(deserializingConsumer, sessionNotifyingConsumer);
 
         return new RingBufferSender<ChannelBuffer, InboundFixMessageEvent>(ringBuffer,
-                new SerializedFixMessageToRingBufferEntryAdapter());
+                new SerializedFixMessageToDisruptorAdapter());
     }
 
     private Sender<InboundFixMessage> createOutboundFixMessageRingBuffer() {
