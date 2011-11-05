@@ -1,35 +1,27 @@
 package arriba.fix.inbound;
 
-import java.util.Map;
-
 import arriba.bytearrays.ByteArrayKeyedMap;
-import arriba.bytearrays.ImmutableByteArrayKeyedMap;
-import arriba.bytearrays.RichByteArray;
+import arriba.bytearrays.ImmutableByteArrayKeyedMapBuilder;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.fields.MessageType;
-
-import com.google.common.collect.Maps;
 
 public final class InboundFixMessageFactory {
 
     private static final ByteArrayKeyedMap<MessageTypeFactory> messageTypeToFixMessageCreator;
 
     static {
-        // TODO Create a ByteArrayKeyedMap builder.
-        final Map<RichByteArray, MessageTypeFactory> backingMap = initializeMessageTypeFactory();
-
-        messageTypeToFixMessageCreator = new ImmutableByteArrayKeyedMap<MessageTypeFactory>(backingMap);
+        messageTypeToFixMessageCreator = initializeMessageTypeFactories();
     }
 
-    private static Map<RichByteArray, MessageTypeFactory> initializeMessageTypeFactory() {
-        final Map<RichByteArray, MessageTypeFactory> initializedFactoryMap = Maps.newHashMap();
+    private static ByteArrayKeyedMap<MessageTypeFactory> initializeMessageTypeFactories() {
+        final ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory> builder = new ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory>();
 
         for (final MessageTypeFactory factory : MessageTypeFactory.values()) {
-            initializedFactoryMap.put(new RichByteArray(factory.getSerializedValue()), factory);
+            builder.put(factory.getSerializedValue(), factory);
         }
 
-        return initializedFactoryMap;
+        return builder.build();
     }
 
     public static InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk,
