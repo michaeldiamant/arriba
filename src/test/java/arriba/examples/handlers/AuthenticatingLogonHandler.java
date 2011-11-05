@@ -16,7 +16,7 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessageBuilder;
-import arriba.transport.channels.ChannelRepository;
+import arriba.transport.TransportRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
@@ -27,19 +27,19 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
     private final Sender<OutboundFixMessage> fixMessageSender;
     private final AtomicInteger messageCount;
     private final List<Channel> channels;
-    private final ChannelRepository<String> channelRepository;
+    private final TransportRepository<String, ?> transportRepository;
     private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
 
     public AuthenticatingLogonHandler(final String expectedUsername, final String expectedPassword,
             final Sender<OutboundFixMessage> fixMessageSender,
             final AtomicInteger messageCount, final List<Channel> channels,
-            final ChannelRepository<String> channelRepository) {
+            final TransportRepository<String, ?> transportRepository) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
         this.fixMessageSender = fixMessageSender;
         this.messageCount = messageCount;
         this.channels = channels;
-        this.channelRepository = channelRepository;
+        this.transportRepository = transportRepository;
     }
 
     @Override
@@ -68,8 +68,9 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         try {
             // TODO Need to figure out right way to negotiate channel registration server-side.
             // Assuming first channel entry is the 'right' one.
-            final Channel channelToAdd = this.channels.remove(0);
-            this.channelRepository.add(message.getSenderCompId(), channelToAdd);
+
+            //            final Channel channelToAdd = this.channels.remove(0);
+            //            this.transportRepository.add(message.getSenderCompId(), channelToAdd);
 
             this.fixMessageSender.send(this.builder.build());
         } catch (final IOException e) {
