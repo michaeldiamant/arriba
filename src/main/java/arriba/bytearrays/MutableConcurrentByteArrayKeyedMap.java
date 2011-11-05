@@ -1,8 +1,11 @@
 package arriba.bytearrays;
 
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public final class MutableConcurrentByteArrayKeyedMap<V> implements ConcurrentByteArrayKeyedMap<V> {
 
@@ -24,5 +27,15 @@ public final class MutableConcurrentByteArrayKeyedMap<V> implements ConcurrentBy
     @Override
     public void clear() {
         this.bytesToValue.clear();
+    }
+
+    @Override
+    public Set<ByteArrayEntry<V>> entrySet() {
+        final Set<ByteArrayEntry<V>> entries = Sets.newHashSet();
+        for (final Entry<RichByteArray, V> richEntry : this.bytesToValue.entrySet()) {
+            entries.add(new ByteArrayEntry<V>(richEntry.getKey(), richEntry.getValue()));
+        }
+
+        return entries;
     }
 }

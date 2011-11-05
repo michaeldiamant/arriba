@@ -1,5 +1,7 @@
 package arriba.bytearrays;
 
+import java.util.Set;
+
 
 public interface ByteArrayKeyedMap<V> {
 
@@ -8,4 +10,6 @@ public interface ByteArrayKeyedMap<V> {
     V get(final byte[] key);
 
     void clear();
+
+    Set<ByteArrayEntry<V>> entrySet();
 }
