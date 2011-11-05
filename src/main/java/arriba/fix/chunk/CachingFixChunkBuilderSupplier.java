@@ -1,6 +1,7 @@
 package arriba.fix.chunk;
 
 import arriba.bytearrays.ConcurrentByteArrayKeyedMap;
+import cern.colt.map.AbstractIntObjectMap;
 
 
 public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupplier {
@@ -10,18 +11,20 @@ public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupp
 
     private FixChunkBuilder headerBuilder;
     private FixChunkBuilder trailerBuilder;
+    private final AbstractIntObjectMap repeatingGroupBuilderCache;
 
     public CachingFixChunkBuilderSupplier(final FixChunkBuilderSupplier supplier,
-            final ConcurrentByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache) {
+            final ConcurrentByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache,
+            final AbstractIntObjectMap repeatingGroupBuilderCache) {
         this.supplier = supplier;
         this.bodyBuilderCache = bodyBuilderCache;
+        this.repeatingGroupBuilderCache = repeatingGroupBuilderCache;
     }
 
     @Override
     public FixChunkBuilder getBodyBuilder(final byte[] messageType) {
         final FixChunkBuilder cachedBuilder = this.bodyBuilderCache.get(messageType);
 
-        // TODO Either implement a Cache interface or use Guave Cache interface to hide caching.
         if (null == cachedBuilder) {
             final FixChunkBuilder builder = this.supplier.getBodyBuilder(messageType);
             this.bodyBuilderCache.putIfAbsent(messageType, builder);
@@ -34,8 +37,16 @@ public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupp
 
     @Override
     public FixChunkBuilder getRepeatingGroupBuilder(final int numberOfRepeatingGroupsTag) {
-        // TODO Caching strategy.
-        return this.supplier.getRepeatingGroupBuilder(numberOfRepeatingGroupsTag);
+        final FixChunkBuilder cachedBuilder = (FixChunkBuilder) this.repeatingGroupBuilderCache.get(numberOfRepeatingGroupsTag);
+
+        if (null == cachedBuilder) {
+            final FixChunkBuilder builder = this.supplier.getRepeatingGroupBuilder(numberOfRepeatingGroupsTag);
+            this.repeatingGroupBuilderCache.put(numberOfRepeatingGroupsTag, builder);
+
+            return builder;
+        }
+
+        return cachedBuilder;
     }
 
     @Override
