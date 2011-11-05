@@ -5,8 +5,6 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import arriba.disruptor.outbound.OutboundFixMessageEvent;
-import arriba.disruptor.outbound.OutboundFixMessageToDisruptorAdapter;
 import arriba.fix.outbound.OutboundFixMessage;
 
 public class OutboundFixMessageToDisruptorAdapterTest {
@@ -19,6 +17,6 @@ public class OutboundFixMessageToDisruptorAdapterTest {
 
         adapter.adapt(message, event);
 
-        assertThat(event.getMessage(), is(message));
+        assertThat(event.getFixMessage(), is(message));
     }
 }

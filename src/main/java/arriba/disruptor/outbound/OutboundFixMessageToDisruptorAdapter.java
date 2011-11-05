@@ -7,6 +7,6 @@ public final class OutboundFixMessageToDisruptorAdapter implements MessageToDisr
 
     @Override
     public void adapt(final OutboundFixMessage message, final OutboundFixMessageEvent event) {
-        event.setMessage(message);
+        event.setFixMessage(message);
     }
 }
