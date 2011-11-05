@@ -17,4 +17,9 @@ public final class MutableByteArrayKeyedMap<V> implements ByteArrayKeyedMap<V> {
     public V get(final byte[] key) {
         return this.bytesToValue.get(new RichByteArray(key));
     }
+
+    @Override
+    public void clear() {
+        this.bytesToValue.clear();
+    }
 }
