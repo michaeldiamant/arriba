@@ -21,4 +21,9 @@ public final class ImmutableByteArrayKeyedMap<V> implements ByteArrayKeyedMap<V>
     public V get(final byte[] key) {
         return this.bytesToValue.get(new RichByteArray(key));
     }
+
+    @Override
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
 }

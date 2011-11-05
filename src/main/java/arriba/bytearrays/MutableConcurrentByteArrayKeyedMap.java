@@ -20,4 +20,9 @@ public final class MutableConcurrentByteArrayKeyedMap<V> implements ConcurrentBy
     public V get(final byte[] key) {
         return this.bytesToValue.get(key);
     }
+
+    @Override
+    public void clear() {
+        this.bytesToValue.clear();
+    }
 }
