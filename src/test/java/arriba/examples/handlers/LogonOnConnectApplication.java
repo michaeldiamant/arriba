@@ -6,19 +6,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessageBuilder;
+import arriba.transport.Transport;
+import arriba.transport.TransportConnectHandler;
 import arriba.transport.TransportRepository;
 
-public class LogonOnConnectHandler extends SimpleChannelHandler {
+public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> {
 
     private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
@@ -28,24 +26,24 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
     private final String username;
     private final String password;
     private final Sender<OutboundFixMessage> fixMessageSender;
-    private final TransportRepository<String, ?> TransportRepository;
+    private final TransportRepository<String, T> transportRepository;
 
     private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
 
-    public LogonOnConnectHandler(final AtomicInteger messageCount,
+    public LogonOnConnectApplication(final AtomicInteger messageCount,
             final String senderCompId, final String targetCompId, final String username, final String password,
-            final Sender<OutboundFixMessage> fixMessageSender, final TransportRepository<String, ?> transportRepository) {
+            final Sender<OutboundFixMessage> fixMessageSender, final TransportRepository<String, T> transportRepository) {
         this.messageCount = messageCount;
         this.senderCompId = senderCompId;
         this.targetCompId = targetCompId;
         this.username = username;
         this.password = password;
         this.fixMessageSender = fixMessageSender;
-        this.TransportRepository = transportRepository;
+        this.transportRepository = transportRepository;
     }
 
     @Override
-    public void channelConnected(final ChannelHandlerContext ctx, final ChannelStateEvent e) throws Exception {
+    public void onConnect(final Transport<T> transport) {
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
         this.builder
@@ -60,8 +58,7 @@ public class LogonOnConnectHandler extends SimpleChannelHandler {
         .addField(Tags.PASSWORD, this.password);
 
         try {
-            // FIXME
-            //            this.TransportRepository.add(this.targetCompId, e.getChannel());
+            this.transportRepository.add(this.targetCompId, transport);
 
             this.fixMessageSender.send(this.builder.build());
         } catch (final IOException ioe) {
