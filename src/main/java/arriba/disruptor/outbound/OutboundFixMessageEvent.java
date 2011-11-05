@@ -10,11 +10,11 @@ public final class OutboundFixMessageEvent extends AbstractEvent {
 
     public OutboundFixMessageEvent() {}
 
-    public OutboundFixMessage getMessage() {
+    public OutboundFixMessage getFixMessage() {
         return this.message;
     }
 
-    public void setMessage(final OutboundFixMessage message) {
+    public void setFixMessage(final OutboundFixMessage message) {
         this.message = message;
     }
 }
