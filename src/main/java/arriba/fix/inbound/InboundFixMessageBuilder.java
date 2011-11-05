@@ -14,12 +14,14 @@ public final class InboundFixMessageBuilder {
     private final FixChunkBuilder headerChunkBuilder;
     private final FixChunkBuilder bodyChunkBuilder;
     private final FixChunkBuilder trailerChunkBuilder;
+    private final InboundFixMessageFactory factory;
 
     public InboundFixMessageBuilder(final FixChunkBuilder headerChunkBuilder, final FixChunkBuilder bodyChunkBuilder,
-            final FixChunkBuilder trailerChunkBuilder) {
+            final FixChunkBuilder trailerChunkBuilder, final InboundFixMessageFactory factory) {
         this.headerChunkBuilder = headerChunkBuilder;
         this.bodyChunkBuilder = bodyChunkBuilder;
         this.trailerChunkBuilder = trailerChunkBuilder;
+        this.factory = factory;
     }
 
     public InboundFixMessageBuilder addField(final int tag, final byte[] value) {
@@ -42,7 +44,7 @@ public final class InboundFixMessageBuilder {
         // TODO Check for existence of checksum and actually compute it.
         this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337".getBytes());
 
-        final InboundFixMessage inboundFixMessage = InboundFixMessageFactory.create(this.headerChunkBuilder.build(), this.bodyChunkBuilder
+        final InboundFixMessage inboundFixMessage = this.factory.create(this.headerChunkBuilder.build(), this.bodyChunkBuilder
                 .build(), this.trailerChunkBuilder.build(), repeatingGroups);
 
         return inboundFixMessage;

@@ -14,6 +14,7 @@ import arriba.fix.Tags;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.tagindexresolvers.NewOrderSingleTagIndexResolver;
 import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
@@ -99,7 +100,8 @@ public class OutboundFixMessageBuilderTest {
                         new InboundFixMessageBuilder(
                                 new ArrayFixChunkBuilder(new StandardHeaderTagIndexResolver()),
                                 new ArrayFixChunkBuilder(new NewOrderSingleTagIndexResolver()),
-                                new ArrayFixChunkBuilder(new StandardTrailerTagIndexResolver())
+                                new ArrayFixChunkBuilder(new StandardTrailerTagIndexResolver()),
+                                new InboundFixMessageFactory()
                                 ),
                                 new RepeatingGroupBuilder(null) // FIXME
                         );

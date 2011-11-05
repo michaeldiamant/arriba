@@ -32,6 +32,7 @@ import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
@@ -124,7 +125,8 @@ public class MarketMakerClient {
         return new InboundFixMessageBuilder(
                 new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
                 new ArrayFixChunkBuilder(null),
-                new ArrayFixChunkBuilder(null)
+                new ArrayFixChunkBuilder(null),
+                new InboundFixMessageFactory()
                 );
     }
 
