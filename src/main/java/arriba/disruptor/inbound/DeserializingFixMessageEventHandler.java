@@ -90,7 +90,6 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<F
                         // TODO Optimize this conversion.  Consider caching String-to-int values.
                         final int numberOfRepeatingGroups = Integer.parseInt(new String(value));
                         this.repeatingGroupBuilder.setNumberOfRepeatingGroupsField(this.lastDeserializedTag, numberOfRepeatingGroups);
-                        // TODO Still need to map the number of repeating groups field to the original message.
                     } else {
                         this.repeatingGroupBuilder.addField(this.lastDeserializedTag, value);
 
