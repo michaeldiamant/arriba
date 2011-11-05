@@ -24,6 +24,7 @@ import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
+import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.session.InMemorySessionResolver;
@@ -76,7 +77,8 @@ public class FixServer {
                         new InboundFixMessageBuilder(
                                 new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
                                 new ArrayFixChunkBuilder(null),
-                                new ArrayFixChunkBuilder(null)
+                                new ArrayFixChunkBuilder(null),
+                                new InboundFixMessageFactory()
                                 ),
                                 new RepeatingGroupBuilder(null))); // FIXME
 

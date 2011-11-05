@@ -8,13 +8,13 @@ import arriba.fix.fields.MessageType;
 
 public final class InboundFixMessageFactory {
 
-    private static final ByteArrayKeyedMap<MessageTypeFactory> messageTypeToFixMessageCreator;
+    private final ByteArrayKeyedMap<MessageTypeFactory> messageTypeToFixMessageCreator;
 
-    static {
-        messageTypeToFixMessageCreator = initializeMessageTypeFactories();
+    public InboundFixMessageFactory() {
+        this.messageTypeToFixMessageCreator = this.initializeMessageTypeFactories();
     }
 
-    private static ByteArrayKeyedMap<MessageTypeFactory> initializeMessageTypeFactories() {
+    private ByteArrayKeyedMap<MessageTypeFactory> initializeMessageTypeFactories() {
         final ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory> builder = new ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory>();
 
         for (final MessageTypeFactory factory : MessageTypeFactory.values()) {
@@ -24,11 +24,11 @@ public final class InboundFixMessageFactory {
         return builder.build();
     }
 
-    public static InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk,
+    public InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk,
             final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
         final byte[] messageType = headerChunk.getSerializedValue(Tags.MESSAGE_TYPE);
 
-        final MessageTypeFactory messageTypeFactory = messageTypeToFixMessageCreator.get(messageType);
+        final MessageTypeFactory messageTypeFactory = this.messageTypeToFixMessageCreator.get(messageType);
         if (null == messageTypeFactory) {
             throw new IllegalArgumentException();
         }
