@@ -21,6 +21,7 @@ public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupp
     public FixChunkBuilder getBodyBuilder(final byte[] messageType) {
         final FixChunkBuilder cachedBuilder = this.bodyBuilderCache.get(messageType);
 
+        // TODO Either implement a Cache interface or use Guave Cache interface to hide caching.
         if (null == cachedBuilder) {
             final FixChunkBuilder builder = this.supplier.getBodyBuilder(messageType);
             this.bodyBuilderCache.putIfAbsent(messageType, builder);
