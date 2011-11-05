@@ -21,6 +21,8 @@ import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.disruptor.inbound.InboundFixMessageEventFactory;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
+import arriba.disruptor.outbound.OutboundFixMessageEvent;
+import arriba.disruptor.outbound.OutboundFixMessageEventFactory;
 import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.examples.handlers.AuthenticatingLogonHandler;
 import arriba.examples.handlers.NewClientSessionHandler;
@@ -68,7 +70,7 @@ public class MarketMakerClient {
 
     // FIXME Need to rename existing FixMessageToRingBufferEntryAdapter to Inbound*."
     // FIXME Introduce Outbound* versions of disruptor Inbound*.
-    private final DisruptorSender<OutboundFixMessage, InboundFixMessageEvent> fixMessageSender = null;
+    private final DisruptorSender<OutboundFixMessage, OutboundFixMessageEvent> fixMessageSender = null;
     private final DisruptorSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new DisruptorSender<ChannelBuffer, InboundFixMessageEvent>(null,
             new SerializedFixMessageToDisruptorAdapter());
 
@@ -108,11 +110,11 @@ public class MarketMakerClient {
 
 
         // Outgoing
-        final DisruptorWizard<InboundFixMessageEvent> outgoingDisruptor = new DisruptorWizard<InboundFixMessageEvent>(new InboundFixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
+        final DisruptorWizard<OutboundFixMessageEvent> outgoingDisruptor = new DisruptorWizard<OutboundFixMessageEvent>(new OutboundFixMessageEventFactory(), 1024, Executors.newCachedThreadPool() ,
                 ClaimStrategy.Option.SINGLE_THREADED, WaitStrategy.Option.YIELDING);
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
-        final RingBuffer<InboundFixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
+        final RingBuffer<OutboundFixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
         this.fixMessageSender.setOutboundRingBuffer(outgoingRingBuffer);
 
         server.bind(new InetSocketAddress("localhost", 8080));
@@ -126,8 +128,8 @@ public class MarketMakerClient {
                 );
     }
 
-    private EventHandler<InboundFixMessageEvent> channelWritingConsumer() {
-        return new TransportWritingFixMessageEventHandler(this.transportRepository);
+    private EventHandler<OutboundFixMessageEvent> channelWritingConsumer() {
+        return new TransportWritingFixMessageEventHandler<Channel>(this.transportRepository);
     }
 
     private EventHandler<InboundFixMessageEvent> sessionNotifyingConsumer() {
