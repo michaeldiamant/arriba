@@ -37,7 +37,7 @@ import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
-import arriba.senders.RingBufferSender;
+import arriba.senders.DisruptorSender;
 import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
@@ -68,8 +68,8 @@ public class MarketMakerClient {
 
     // FIXME Need to rename existing FixMessageToRingBufferEntryAdapter to Inbound*."
     // FIXME Introduce Outbound* versions of disruptor Inbound*.
-    private final RingBufferSender<OutboundFixMessage, InboundFixMessageEvent> fixMessageSender = null;
-    private final RingBufferSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new RingBufferSender<ChannelBuffer, InboundFixMessageEvent>(null,
+    private final DisruptorSender<OutboundFixMessage, InboundFixMessageEvent> fixMessageSender = null;
+    private final DisruptorSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new DisruptorSender<ChannelBuffer, InboundFixMessageEvent>(null,
             new SerializedFixMessageToDisruptorAdapter());
 
     private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
