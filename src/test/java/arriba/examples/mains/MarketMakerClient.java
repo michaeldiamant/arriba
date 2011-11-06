@@ -21,6 +21,7 @@ import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
+import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.transport.InMemoryTransportRepository;
@@ -65,9 +66,9 @@ public class MarketMakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
-        .registerMessageHandler("A", new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, this.messageCount, this.channels, repository))
-        .registerMessageHandler("V", new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))
-        .registerMessageHandler("D", new PrintingHandler<NewOrderSingle>())
+        .registerMessageHandler(MessageType.LOGON, new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, this.messageCount, this.channels, repository))
+        .registerMessageHandler(MessageType.MARKET_DATA_REQUEST, new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))
+        .registerMessageHandler(MessageType.NEW_ORDER_SINGLE, new PrintingHandler<NewOrderSingle>())
 
         .registerTargetComponentIds(this.targetCompId);
 
