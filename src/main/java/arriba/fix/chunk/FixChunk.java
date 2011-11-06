@@ -1,7 +1,5 @@
 package arriba.fix.chunk;
 
-import java.io.IOException;
-import java.io.OutputStream;
 
 public interface FixChunk {
 
@@ -10,10 +8,4 @@ public interface FixChunk {
     String getValue(int tag);
 
     byte[] getSerializedValue(int tag);
-
-    @Deprecated
-    byte[] toByteArray();
-
-    @Deprecated
-    void write(OutputStream outputStream) throws IOException;
 }
