@@ -55,7 +55,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
         this.builder
-        .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+        .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
         .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()))
         .addField(Tags.MESSAGE_TYPE, MessageType.LOGON.getValue())
         .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())

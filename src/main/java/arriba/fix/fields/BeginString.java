@@ -1,7 +1,20 @@
 package arriba.fix.fields;
 
-public final class BeginString {
+public enum BeginString {
 
-    public static byte[] FIXT11 = "FIXT.1.1".getBytes();
-    public static byte[] FIX44 = "FIXT.4.4".getBytes();
+    FIXT11 {
+        @Override
+        public String getValue() {
+            return "FIXT.1.1";
+        }
+
+        @Override
+        public byte[] getSerializedValue() {
+            return this.getValue().getBytes();
+        }
+    };
+
+    public abstract String getValue();
+
+    public abstract byte[] getSerializedValue();
 }

@@ -46,7 +46,7 @@ public final class RandomQuoteSupplier implements Runnable {
 
             for (final String subscriberCompId : this.subscriptionService.findSubscribers(symbol)) {
                 this.builder
-                .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+                .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
                 .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()))
                 .addField(Tags.MESSAGE_TYPE, "W")
                 .addField(Tags.SENDER_COMP_ID, this.senderCompId)

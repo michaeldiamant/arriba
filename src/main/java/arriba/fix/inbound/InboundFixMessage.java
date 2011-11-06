@@ -87,7 +87,7 @@ public abstract class InboundFixMessage {
 
             final ByteArrayOutputStream messageBytes =
                     new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());
-            write(messageBytes, Tags.BEGIN_STRING, BeginString.FIXT11);
+            write(messageBytes, Tags.BEGIN_STRING, BeginString.FIXT11.getSerializedValue());
             // TODO Optimize integer serialization.
             write(messageBytes, Tags.BODY_LENGTH, String.valueOf(bodyBytes.size()).getBytes());
 

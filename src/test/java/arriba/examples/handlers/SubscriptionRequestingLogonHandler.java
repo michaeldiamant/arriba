@@ -40,7 +40,7 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
         this.builder
-        .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+        .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
         .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()))
         .addField(Tags.MESSAGE_TYPE, MessageType.MARKET_DATA_REQUEST.getValue())
         .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
