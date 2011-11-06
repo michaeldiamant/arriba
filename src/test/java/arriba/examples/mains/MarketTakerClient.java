@@ -84,7 +84,7 @@ public class MarketTakerClient {
         incomingDisruptor.handleEventsWith(this.deserializingConsumer()).then(this.sessionNotifyingConsumer());
         final RingBuffer<InboundFixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
 
-        this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer); // FIXME Major hack
+        this.inboundRingBufferSender.setDisruptor(inboundRingBuffer); // FIXME Major hack
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
@@ -99,7 +99,7 @@ public class MarketTakerClient {
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
         final RingBuffer<OutboundFixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
-        this.fixMessageSender.setOutboundRingBuffer(outgoingRingBuffer);  // FIXME This is a major hack.
+        this.fixMessageSender.setDisruptor(outgoingRingBuffer);  // FIXME This is a major hack.
 
         client.connect(new InetSocketAddress("localhost", 8080));
 
