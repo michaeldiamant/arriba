@@ -105,7 +105,7 @@ public class MarketMakerClient {
         incomingDisruptor.handleEventsWith(this.deserializingConsumer()).then(this.sessionNotifyingConsumer());
         final RingBuffer<InboundFixMessageEvent> inboundRingBuffer = incomingDisruptor.start();
 
-        this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer);
+        this.inboundRingBufferSender.setDisruptor(inboundRingBuffer);
 
         final ServerBootstrap server = FixServerBootstrap.create(
                 new FixMessageFrameDecoder(),
@@ -120,7 +120,7 @@ public class MarketMakerClient {
         outgoingDisruptor.handleEventsWith(this.channelWritingConsumer());
 
         final RingBuffer<OutboundFixMessageEvent> outgoingRingBuffer = outgoingDisruptor.start();
-        this.fixMessageSender.setOutboundRingBuffer(outgoingRingBuffer);
+        this.fixMessageSender.setDisruptor(outgoingRingBuffer);
 
         server.bind(new InetSocketAddress("localhost", 8080));
     }
