@@ -40,7 +40,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
             this.builder
             .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
             .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()))
-            .addField(Tags.MESSAGE_TYPE, new String(MessageType.NEW_ORDER_SINGLE))
+            .addField(Tags.MESSAGE_TYPE, MessageType.NEW_ORDER_SINGLE.getValue())
             .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
             .addField(Tags.TARGET_COMP_ID, message.getSenderCompId())
             .addField(Tags.SENDING_TIME, sdf.format(new Date()))

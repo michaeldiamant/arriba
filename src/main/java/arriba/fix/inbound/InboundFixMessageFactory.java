@@ -45,7 +45,7 @@ public final class InboundFixMessageFactory {
 
             @Override
             byte[] getSerializedValue() {
-                return MessageType.LOGON;
+                return MessageType.LOGON.getSerializedValue();
             }
         },
         NEW_ORDER_SINGLE {
@@ -56,7 +56,7 @@ public final class InboundFixMessageFactory {
 
             @Override
             byte[] getSerializedValue() {
-                return MessageType.NEW_ORDER_SINGLE;
+                return MessageType.NEW_ORDER_SINGLE.getSerializedValue();
             }
         },
         MARKET_DATA_REQUEST {
@@ -67,7 +67,7 @@ public final class InboundFixMessageFactory {
 
             @Override
             byte[] getSerializedValue() {
-                return MessageType.MARKET_DATA_REQUEST;
+                return MessageType.MARKET_DATA_REQUEST.getSerializedValue();
             }
         },
         MARKET_DATA_SNAPSHOT_FULL_REFRESH {
@@ -78,7 +78,7 @@ public final class InboundFixMessageFactory {
 
             @Override
             byte[] getSerializedValue() {
-                return MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH;
+                return MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.getSerializedValue();
             }
         };
 
