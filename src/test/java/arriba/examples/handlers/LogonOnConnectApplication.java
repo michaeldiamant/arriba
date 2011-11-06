@@ -47,7 +47,7 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
         final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
 
         this.builder
-        .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+        .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
         .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()))
         .addField(Tags.MESSAGE_TYPE, MessageType.LOGON.getValue())
         .addField(Tags.SENDER_COMP_ID, this.senderCompId)

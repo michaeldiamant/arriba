@@ -38,7 +38,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
 
         if (this.messageCount.getAndIncrement() % 2 == 0) {
             this.builder
-            .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
+            .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
             .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()))
             .addField(Tags.MESSAGE_TYPE, MessageType.NEW_ORDER_SINGLE.getValue())
             .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
