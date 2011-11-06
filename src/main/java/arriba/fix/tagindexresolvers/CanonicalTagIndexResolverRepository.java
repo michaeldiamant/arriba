@@ -1,14 +1,19 @@
 package arriba.fix.tagindexresolvers;
 
+import arriba.bytearrays.ByteArrayKeyedMap;
+import arriba.bytearrays.ImmutableByteArrayKeyedMapBuilder;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
+import arriba.fix.fields.MessageType;
 
 public final class CanonicalTagIndexResolverRepository implements TagIndexResolverRepository {
 
     private final TagIndexResolver[] repeatingGroupResolvers = new TagIndexResolver[RepeatingGroups.NUMBER_IN_GROUP_TAGS.length];
+    private final ByteArrayKeyedMap<TagIndexResolver> bodyResolvers;
 
     public CanonicalTagIndexResolverRepository() {
         this.initializeRepeatingGroupResolvers();
+        this.bodyResolvers = this.initializeBodyResolvers();
     }
 
     private void initializeRepeatingGroupResolvers() {
@@ -16,10 +21,16 @@ public final class CanonicalTagIndexResolverRepository implements TagIndexResolv
         this.repeatingGroupResolvers[Tags.NUMBER_MD_ENTRIES] = new MdEntriesTagIndexResolver();
     }
 
+    private ByteArrayKeyedMap<TagIndexResolver> initializeBodyResolvers() {
+        return new ImmutableByteArrayKeyedMapBuilder<TagIndexResolver>()
+                .put(MessageType.NEW_ORDER_SINGLE.getSerializedValue(), new NewOrderSingleTagIndexResolver())
+
+                .build();
+    }
+
     @Override
     public TagIndexResolver findBodyResolver(final byte[] messageType) {
-        // TODO
-        return null;
+        return this.bodyResolvers.get(messageType);
     }
 
     @Override
