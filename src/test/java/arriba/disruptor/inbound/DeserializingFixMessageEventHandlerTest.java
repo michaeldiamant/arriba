@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
@@ -27,9 +26,10 @@ public class DeserializingFixMessageEventHandlerTest {
 
     @Before
     public void before() {
-        final InboundFixMessageBuilder inboundFixMessageBuilder =
-                new InboundFixMessageBuilder(mock(FixChunkBuilder.class), mock(FixChunkBuilder.class),
-                        mock(FixChunkBuilder.class), new InboundFixMessageFactory());
+        final InboundFixMessageBuilder inboundFixMessageBuilder = new InboundFixMessageBuilder(
+                mock(FixChunkBuilderSupplier.class),
+                new InboundFixMessageFactory()
+                );
         final RepeatingGroupBuilder repeatingGroupBuilder =
                 new RepeatingGroupBuilder(mock(FixChunkBuilderSupplier.class));
 

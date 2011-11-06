@@ -21,7 +21,7 @@ import arriba.disruptor.inbound.InboundFixMessageEventFactory;
 import arriba.disruptor.inbound.InboundFixMessageToDisruptorAdapter;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
 import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
-import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessageFactory;
@@ -75,9 +75,7 @@ public class FixServer {
         final EventProcessor deserializingConsumer = new BatchEventProcessor<InboundFixMessageEvent>(ringBuffer, deserializationConsumerBarrier,
                 new DeserializingFixMessageEventHandler(
                         new InboundFixMessageBuilder(
-                                new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
-                                new ArrayFixChunkBuilder(null),
-                                new ArrayFixChunkBuilder(null),
+                                new ArrayFixChunkBuilderSupplier(null),
                                 new InboundFixMessageFactory()
                                 ),
                                 new RepeatingGroupBuilder(null))); // FIXME

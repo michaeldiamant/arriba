@@ -5,33 +5,38 @@ import java.util.Arrays;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.FixChunkBuilder;
+import arriba.fix.chunk.FixChunkBuilderSupplier;
 
 public final class InboundFixMessageBuilder {
 
     private static final int[] HEADER_TAGS = Tags.getHeaders();
     private static final int[] TRAILER_TAGS = Tags.getTrailers();
 
-    private final FixChunkBuilder headerChunkBuilder;
-    private final FixChunkBuilder bodyChunkBuilder;
-    private final FixChunkBuilder trailerChunkBuilder;
     private final InboundFixMessageFactory factory;
+    private final FixChunkBuilderSupplier supplier;
+    private final FixChunkBuilder headerChunkBuilder;
+    private final FixChunkBuilder trailerChunkBuilder;
 
-    public InboundFixMessageBuilder(final FixChunkBuilder headerChunkBuilder, final FixChunkBuilder bodyChunkBuilder,
-            final FixChunkBuilder trailerChunkBuilder, final InboundFixMessageFactory factory) {
-        this.headerChunkBuilder = headerChunkBuilder;
-        this.bodyChunkBuilder = bodyChunkBuilder;
-        this.trailerChunkBuilder = trailerChunkBuilder;
+    private FixChunkBuilder bodyChunkBuilder;
+
+    public InboundFixMessageBuilder(final FixChunkBuilderSupplier supplier, final InboundFixMessageFactory factory) {
+        this.supplier = supplier;
+        this.headerChunkBuilder = this.supplier.getHeaderBuilder();
+        this.trailerChunkBuilder = this.supplier.getTrailerBuilder();
         this.factory = factory;
     }
 
     public InboundFixMessageBuilder addField(final int tag, final byte[] value) {
         // TODO Make search constant time.
-
         if (Arrays.binarySearch(HEADER_TAGS, tag) >= 0) {
             this.headerChunkBuilder.addField(tag, value);
         } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {
             this.trailerChunkBuilder.addField(tag, value);
         } else {
+            if (Tags.MESSAGE_TYPE == tag) {
+                this.bodyChunkBuilder = this.supplier.getBodyBuilder(value);
+            }
+
             this.bodyChunkBuilder.addField(tag, value);
         }
 
@@ -64,7 +69,7 @@ public final class InboundFixMessageBuilder {
 
     public void clear() {
         this.headerChunkBuilder.clear();
-        this.bodyChunkBuilder.clear();
         this.trailerChunkBuilder.clear();
+        this.bodyChunkBuilder.clear();
     }
 }

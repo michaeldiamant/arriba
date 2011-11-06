@@ -30,7 +30,7 @@ import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
-import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.NewOrderSingle;
@@ -107,7 +107,11 @@ public class MarketMakerClient {
 
         this.inboundRingBufferSender.setOutboundRingBuffer(inboundRingBuffer);
 
-        final ServerBootstrap server = FixServerBootstrap.create(new FixMessageFrameDecoder(), new NewClientSessionHandler(this.channels), this.deserializedFixMessageHandler());
+        final ServerBootstrap server = FixServerBootstrap.create(
+                new FixMessageFrameDecoder(),
+                new NewClientSessionHandler(this.channels),
+                this.deserializedFixMessageHandler()
+                );
 
 
         // Outgoing
@@ -123,9 +127,7 @@ public class MarketMakerClient {
 
     private InboundFixMessageBuilder inboundFixMessageBuilder() {
         return new InboundFixMessageBuilder(
-                new ArrayFixChunkBuilder(null), // FIXME Replace null TagIndexResolver.
-                new ArrayFixChunkBuilder(null),
-                new ArrayFixChunkBuilder(null),
+                new ArrayFixChunkBuilderSupplier(null), // FIXME
                 new InboundFixMessageFactory()
                 );
     }

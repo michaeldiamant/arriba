@@ -11,14 +11,12 @@ import org.junit.Test;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.fix.Tags;
-import arriba.fix.chunk.arrays.ArrayFixChunkBuilder;
+import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.RepeatingGroupBuilder;
-import arriba.fix.tagindexresolvers.NewOrderSingleTagIndexResolver;
-import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
-import arriba.fix.tagindexresolvers.StandardTrailerTagIndexResolver;
+import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.utils.OutboundFixMessageFieldCapturer;
 
 import com.lmax.disruptor.EventHandler;
@@ -98,9 +96,7 @@ public class OutboundFixMessageBuilderTest {
         final EventHandler<InboundFixMessageEvent> deserializer =
                 new DeserializingFixMessageEventHandler(
                         new InboundFixMessageBuilder(
-                                new ArrayFixChunkBuilder(new StandardHeaderTagIndexResolver()),
-                                new ArrayFixChunkBuilder(new NewOrderSingleTagIndexResolver()),
-                                new ArrayFixChunkBuilder(new StandardTrailerTagIndexResolver()),
+                                new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository()),
                                 new InboundFixMessageFactory()
                                 ),
                                 new RepeatingGroupBuilder(null) // FIXME
