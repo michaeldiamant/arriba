@@ -51,18 +51,28 @@ public final class OutboundFixMessageBuilder {
             // TODO Extend to allow underlying array to be resized.  This will enable
             // reuse of one ByteArrayOutputStream instance.
             final ByteArrayOutputStream out = new ByteArrayOutputStream(this.messageLength);
+            int checksum = 0;
 
             for (int writeIndex = 0; writeIndex < this.readIndex; writeIndex++) {
                 out.write(this.tags[writeIndex]);
+                checksum += calculateSum(this.tags[writeIndex]);
 
                 final String value = this.values[writeIndex];
                 final int valueLength = value.length();
                 for (int valueIndex = 0; valueIndex < valueLength; valueIndex++) {
-                    out.write((byte) value.charAt(valueIndex));
+                    final byte byteValue = (byte) value.charAt(valueIndex);
+
+                    out.write(byteValue);
+                    checksum += byteValue;
                 }
 
                 out.write(Fields.DELIMITER);
+                checksum += Fields.DELIMITER;
             }
+
+            checksum = checksum % 256;
+            out.write(String.valueOf(checksum).getBytes()); // TODO Create lookup table.
+            out.write(Fields.DELIMITER);
 
             // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
             // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
@@ -76,9 +86,35 @@ public final class OutboundFixMessageBuilder {
         }
     }
 
+    private static int calculateSum(final byte[] bytes) {
+        int sum = 0;
+        final int bytesLength = bytes.length;
+        for (int bytesIndex = 0; bytesIndex < bytesLength; bytesIndex++) {
+            sum += bytes[bytesIndex];
+        }
+
+        return sum;
+    }
+
     private void reset() {
         this.readIndex = 0;
         this.messageLength = 0;
         this.targetCompId = null;
+    }
+
+    public static void main(final String[] args) {
+        final int lol = 22 % 256;
+
+        System.out.println(lol);
+
+        final String msg = "35=D\00149=MIKEYDIAMONDS\001";
+
+        int sum = 0;
+        for (int i = 0; i < msg.length(); i++) {
+            sum += msg.charAt(i);
+            System.out.println("> " + sum);
+        }
+        sum = sum % 256;
+        System.out.println(sum);
     }
 }
