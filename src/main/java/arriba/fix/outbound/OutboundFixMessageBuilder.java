@@ -101,20 +101,4 @@ public final class OutboundFixMessageBuilder {
         this.messageLength = 0;
         this.targetCompId = null;
     }
-
-    public static void main(final String[] args) {
-        final int lol = 22 % 256;
-
-        System.out.println(lol);
-
-        final String msg = "35=D\00149=MIKEYDIAMONDS\001";
-
-        int sum = 0;
-        for (int i = 0; i < msg.length(); i++) {
-            sum += msg.charAt(i);
-            System.out.println("> " + sum);
-        }
-        sum = sum % 256;
-        System.out.println(sum);
-    }
 }
