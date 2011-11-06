@@ -46,7 +46,7 @@ import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.NettyTransportRepository;
 import arriba.transport.netty.SerializedFixMessageHandler;
-import arriba.transport.netty.servers.FixServerBootstrap;
+import arriba.transport.netty.bootstraps.FixServerBootstrap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -61,7 +61,7 @@ public class MarketMakerClient {
     private final Map<SessionId, Session> sessionIdToSessions = Maps.newHashMap();
     private final AtomicInteger messageCount = new AtomicInteger();
     private final TransportRepository<String, Channel> transportRepository =
-            new NettyTransportRepository<String>(new InMemoryTransportRepository<String, Channel>());
+            new NettyTransportRepository<>(new InMemoryTransportRepository<String, Channel>());
     private final String senderCompId = "MM";
     private final String targetCompId = "MT";
     private final String expectedUsername = "tr8der";
@@ -72,7 +72,7 @@ public class MarketMakerClient {
     // FIXME Need to rename existing FixMessageToRingBufferEntryAdapter to Inbound*."
     // FIXME Introduce Outbound* versions of disruptor Inbound*.
     private final DisruptorSender<OutboundFixMessage, OutboundFixMessageEvent> fixMessageSender = null;
-    private final DisruptorSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new DisruptorSender<ChannelBuffer, InboundFixMessageEvent>(null,
+    private final DisruptorSender<ChannelBuffer, InboundFixMessageEvent> inboundRingBufferSender = new DisruptorSender<>(null,
             new SerializedFixMessageToDisruptorAdapter());
 
     private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
