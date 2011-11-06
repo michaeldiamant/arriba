@@ -1,21 +1,11 @@
 package arriba.fix.inbound;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import arriba.fix.Fields;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
-import arriba.fix.fields.BeginString;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SimpleSessionId;
 
 public abstract class InboundFixMessage {
-
-    private static final int DEFAULT_BYTE_ARRAY_SIZE = 32;
 
     private final FixChunk headerChunk;
     private final FixChunk bodyChunk;
@@ -77,50 +67,5 @@ public abstract class InboundFixMessage {
         }
 
         return this.getTrailerValue(tag);
-    }
-
-    public byte[] toByteArray() {
-        try {
-            // TODO Create ByteArrayOutputStream implementation sans synchronization.
-            final ByteArrayOutputStream bodyBytes = new ByteArrayOutputStream();
-            //            writeBody(bodyBytes, this.bodyChunk, this.groupCountToGroupChunk);
-
-            final ByteArrayOutputStream messageBytes =
-                    new ByteArrayOutputStream(DEFAULT_BYTE_ARRAY_SIZE + bodyBytes.size());
-            write(messageBytes, Tags.BEGIN_STRING, BeginString.FIXT11.getSerializedValue());
-            // TODO Optimize integer serialization.
-            write(messageBytes, Tags.BODY_LENGTH, String.valueOf(bodyBytes.size()).getBytes());
-
-            this.headerChunk.write(messageBytes);
-            // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
-            // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
-            messageBytes.write(bodyBytes.toByteArray());
-            this.trailerChunk.write(messageBytes);
-
-            return messageBytes.toByteArray();
-        } catch (final IOException e) {
-            return new byte[0];
-        }
-    }
-
-    private static void writeBody(final OutputStream bodyBytes, final FixChunk bodyChunk,
-            final Map<Integer, FixChunk[]> groupCountToGroupChunk) throws IOException {
-        bodyChunk.write(bodyBytes);
-
-        for (final Entry<Integer, FixChunk[]> numberOfRepeatingGroupsTagToFixChunks : groupCountToGroupChunk.entrySet()) {
-            final byte[] numberOfRepeatingGroupsBytes = String.valueOf(numberOfRepeatingGroupsTagToFixChunks.getValue().length).getBytes();
-            write(bodyBytes, numberOfRepeatingGroupsTagToFixChunks.getKey(), numberOfRepeatingGroupsBytes);
-
-            for (final FixChunk repeatingGroupChunk : numberOfRepeatingGroupsTagToFixChunks.getValue()) {
-                repeatingGroupChunk.write(bodyBytes);
-            }
-        }
-    }
-
-    private static void write(final OutputStream outputStream, final int tag, final byte[] value) throws IOException {
-        outputStream.write(Tags.toByteArray(tag));
-        outputStream.write(Fields.EQUAL_SIGN);
-        outputStream.write(value);
-        outputStream.write(Fields.DELIMITER);
     }
 }
