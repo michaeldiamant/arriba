@@ -1,7 +1,6 @@
 package arriba.fix.chunk;
 
 import arriba.bytearrays.ByteArrayKeyedMap;
-import arriba.bytearrays.ConcurrentByteArrayKeyedMap;
 import cern.colt.map.AbstractIntObjectMap;
 
 
@@ -15,7 +14,7 @@ public final class CachingFixChunkBuilderSupplier implements FixChunkBuilderSupp
     private final AbstractIntObjectMap repeatingGroupBuilderCache;
 
     public CachingFixChunkBuilderSupplier(final FixChunkBuilderSupplier supplier,
-            final ConcurrentByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache,
+            final ByteArrayKeyedMap<FixChunkBuilder> bodyBuilderCache,
             final AbstractIntObjectMap repeatingGroupBuilderCache) {
         this.supplier = supplier;
         this.bodyBuilderCache = bodyBuilderCache;
