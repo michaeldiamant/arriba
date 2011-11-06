@@ -42,7 +42,7 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
         this.builder
         .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
         .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()))
-        .addField(Tags.MESSAGE_TYPE, new String(MessageType.MARKET_DATA_REQUEST))
+        .addField(Tags.MESSAGE_TYPE, MessageType.MARKET_DATA_REQUEST.getValue())
         .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
         .addField(Tags.TARGET_COMP_ID, message.getSenderCompId())
         .addField(Tags.SENDING_TIME, sdf.format(new Date()))

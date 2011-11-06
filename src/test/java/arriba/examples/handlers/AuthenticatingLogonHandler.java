@@ -57,7 +57,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         this.builder
         .addField(Tags.BEGIN_STRING, new String(BeginString.FIXT11))
         .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()))
-        .addField(Tags.MESSAGE_TYPE, new String(MessageType.LOGON))
+        .addField(Tags.MESSAGE_TYPE, MessageType.LOGON.getValue())
         .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
         .addField(Tags.TARGET_COMP_ID, message.getSenderCompId())
         .addField(Tags.SENDING_TIME, sdf.format(new Date()))
