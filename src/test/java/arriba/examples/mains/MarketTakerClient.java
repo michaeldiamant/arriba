@@ -14,6 +14,7 @@ import arriba.configuration.DisruptorConfiguration;
 import arriba.examples.handlers.LogonOnConnectApplication;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
+import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.TransportRepository;
@@ -55,8 +56,8 @@ public class MarketTakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
-        .registerMessageHandler("A", new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, this.messageCount))
-        .registerMessageHandler("W", new NewOrderGeneratingMarketDataHandler(outboundSender, this.messageCount))
+        .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, this.messageCount))
+        .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, this.messageCount))
 
         .registerTargetComponentIds(this.targetCompId);
 

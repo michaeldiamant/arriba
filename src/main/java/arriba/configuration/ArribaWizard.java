@@ -24,6 +24,7 @@ import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
+import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.RepeatingGroupBuilder;
@@ -80,12 +81,14 @@ public final class ArribaWizard<T> {
         return this.outboundSender;
     }
 
-    public ArribaWizard<T> registerMessageHandler(final String messageType, final Handler<?> handler) {
-        if (this.messageTypeToHandler.containsKey(messageType)) {
-            throw new IllegalArgumentException("Message type " + messageType + " already has a message handler.");
+    public ArribaWizard<T> registerMessageHandler(final MessageType messageType, final Handler<?> handler) {
+        final String fixValue = messageType.getValue();
+
+        if (this.messageTypeToHandler.containsKey(fixValue)) {
+            throw new IllegalArgumentException("Message type " + fixValue + " already has a message handler.");
         }
 
-        this.messageTypeToHandler.put(messageType, handler);
+        this.messageTypeToHandler.put(fixValue, handler);
 
         return this;
     }
