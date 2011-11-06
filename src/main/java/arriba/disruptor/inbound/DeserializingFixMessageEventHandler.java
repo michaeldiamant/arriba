@@ -59,6 +59,8 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
                 if (Arrays.equals(CHECKSUM_BYTES, tag)) {
                     this.hasFoundFinalDelimiter = true;
                 }
+
+                // TODO Make lookup table.
                 this.lastDeserializedTag = Integer.parseInt(new String(tag));
 
                 switch (this.parsingState) {
