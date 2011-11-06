@@ -1,8 +1,8 @@
-package arriba.disruptor;
+package arriba.disruptor.inbound;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.disruptor.inbound.InboundFixMessageEvent;
+import arriba.disruptor.MessageToDisruptorAdapter;
 
 public final class SerializedFixMessageToDisruptorAdapter implements MessageToDisruptorAdapter<ChannelBuffer, InboundFixMessageEvent>{
 
