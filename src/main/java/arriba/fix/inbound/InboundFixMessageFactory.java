@@ -15,7 +15,7 @@ public final class InboundFixMessageFactory {
     }
 
     private ByteArrayKeyedMap<MessageTypeFactory> initializeMessageTypeFactories() {
-        final ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory> builder = new ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory>();
+        final ImmutableByteArrayKeyedMapBuilder<MessageTypeFactory> builder = new ImmutableByteArrayKeyedMapBuilder<>();
 
         for (final MessageTypeFactory factory : MessageTypeFactory.values()) {
             builder.put(factory.getSerializedValue(), factory);
