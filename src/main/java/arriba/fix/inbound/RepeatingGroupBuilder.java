@@ -67,7 +67,8 @@ public final class RepeatingGroupBuilder {
             return;
         }
 
-        final FixChunk[] repeatingGroup = this.repeatingGroups[this.repeatingGroupCount];
+        // Add one to repeatingGroups allocations for END_OF_CHUNK.
+        final FixChunk[] repeatingGroup = this.repeatingGroups[this.repeatingGroupCount + 1];
         int repeatingGroupIndex = 0;
         int firstRepeatingGroupTag = -1;
 
