@@ -40,7 +40,7 @@ import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.NettyConnectHandlerAdapter;
 import arriba.transport.netty.NettyTransportRepository;
 import arriba.transport.netty.SerializedFixMessageHandler;
-import arriba.transport.netty.servers.FixClientBootstrap;
+import arriba.transport.netty.bootstraps.FixClientBootstrap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
