@@ -1,9 +1,8 @@
-package arriba.senders;
+package arriba.disruptor;
 
 import java.io.IOException;
 
 import arriba.common.Sender;
-import arriba.disruptor.MessageToDisruptorAdapter;
 
 import com.lmax.disruptor.AbstractEvent;
 import com.lmax.disruptor.RingBuffer;
