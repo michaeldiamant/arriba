@@ -24,7 +24,7 @@ public final class RepeatingGroupBuilder {
     private int[] repeatingGroupTags = null;
     private int fieldsReadIndex = 0;
     private int fieldsWrittenIndex = 0;
-    private int repeatingGroupCount = -1;
+    private int repeatingGroupCount = 0;
     private FixChunkBuilder builder = null;
 
     public RepeatingGroupBuilder(final FixChunkBuilderSupplier supplier) {
@@ -39,16 +39,16 @@ public final class RepeatingGroupBuilder {
         }
     }
 
-    public RepeatingGroupBuilder setNumberOfRepeatingGroupsField(final int tag, final int count) {
+    public RepeatingGroupBuilder setNumberOfRepeatingGroupsTag(final int tag) {
         if (null == (this.repeatingGroupTags = RepeatingGroups.NUMBER_IN_GROUP_TAGS[tag])) {
             throw new IllegalArgumentException("Tag " + tag + " is not a repeating group count tag.");
         }
 
-        this.buildGroup();
+        if (this.fieldsReadIndex > 0) {
+            this.buildGroup();
+        }
         this.updateBuilder(tag);
 
-        ++this.repeatingGroupCount;
-        this.repeatingGroups[this.repeatingGroupCount] = new FixChunk[count];
         this.numberOfRepeatingGroupTags[this.repeatingGroupCount] = tag;
 
         return this;
@@ -63,12 +63,7 @@ public final class RepeatingGroupBuilder {
     }
 
     private void buildGroup() {
-        if (0 == this.fieldsReadIndex) {
-            return;
-        }
-
-        // Add one to repeatingGroups allocations for END_OF_CHUNK.
-        final FixChunk[] repeatingGroup = this.repeatingGroups[this.repeatingGroupCount + 1];
+        final FixChunk[] repeatingGroup = this.repeatingGroups[this.repeatingGroupCount];
         int repeatingGroupIndex = 0;
         int firstRepeatingGroupTag = -1;
 
@@ -90,6 +85,8 @@ public final class RepeatingGroupBuilder {
         repeatingGroup[repeatingGroupIndex] = this.builder.build();
         repeatingGroup[++repeatingGroupIndex] = END_OF_CHUNK;
         this.builder.clear();
+
+        ++this.repeatingGroupCount;
     }
 
     public RepeatingGroupBuilder addField(final int tag, final byte[] value) {
@@ -119,14 +116,22 @@ public final class RepeatingGroupBuilder {
 
     private FixChunk[][] copyRepeatingGroups() {
         final FixChunk[][] repeatingGroupsCopy = new FixChunk[this.repeatingGroupCount][];
-        for (final FixChunk[] repeatingGroup : this.repeatingGroups) {
+
+        for (int repeatingGroupIndex = 0; repeatingGroupIndex < this.repeatingGroupCount; repeatingGroupIndex++) {
+            final FixChunk[] repeatingGroup = this.repeatingGroups[repeatingGroupIndex];
             final int numberOfRepeatingGroups = this.getNumberOfRepeatingGroups(repeatingGroup);
 
-            final FixChunk[] repeatingGroupCopy = new FixChunk[numberOfRepeatingGroups];
-            System.arraycopy(repeatingGroup, 0, repeatingGroupCopy, 0, numberOfRepeatingGroups);
+            repeatingGroupsCopy[repeatingGroupIndex] = RepeatingGroupBuilder.copyRepeatingGroup(numberOfRepeatingGroups, repeatingGroup);
         }
 
         return repeatingGroupsCopy;
+    }
+
+    private static FixChunk[] copyRepeatingGroup(final int numberOfRepeatingGroups, final FixChunk[] repeatingGroup) {
+        final FixChunk[] repeatingGroupCopy = new FixChunk[numberOfRepeatingGroups];
+        System.arraycopy(repeatingGroup, 0, repeatingGroupCopy, 0, numberOfRepeatingGroups);
+
+        return repeatingGroupCopy;
     }
 
     private int getNumberOfRepeatingGroups(final FixChunk[] repeatingGroup) {
@@ -139,7 +144,7 @@ public final class RepeatingGroupBuilder {
     public void clear() {
         this.fieldsReadIndex = 0;
         this.fieldsWrittenIndex = 0;
-        this.repeatingGroupCount = -1;
+        this.repeatingGroupCount = 0;
         this.repeatingGroupTags = null;
         this.builder = null;
     }
