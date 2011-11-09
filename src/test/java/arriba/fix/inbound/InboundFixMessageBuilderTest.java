@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import arriba.fix.Tags;
+import arriba.fix.chunk.FixChunk;
+import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
 import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
@@ -26,9 +28,11 @@ public class InboundFixMessageBuilderTest {
     private static final String SYMBOL = "EURUSD";
     private static final String ORDER_QUANTITY = "100";
 
+    private final FixChunkBuilderSupplier supplier = new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository());
+
     private final InboundFixMessageBuilder builder =
             new InboundFixMessageBuilder(
-                    new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository()),
+                    this.supplier,
                     new InboundFixMessageFactory()
                     );
 
@@ -70,6 +74,53 @@ public class InboundFixMessageBuilderTest {
         final InboundFixMessage message = this.buildNewOrderSingle();
 
         assertNotNull(message.getTrailerValue(Tags.CHECKSUM));
+    }
+
+    @Test
+    public void testBuildingWithRepeatingGroups() {
+        final MessageType messageType = MessageType.MARKET_DATA_REQUEST;
+        final String mdRequestId = "mdReqId";
+        final String mdStreamId = "mdStreamId";
+        final String mdEntrySize = "100";
+        final String mdEntryType = "1";
+        final String mdEntryPrice = "1.2332";
+        final String eurUsd = "EURUSD";
+        final String usdJpy = "USDJPY";
+        final String audCad = "AUDCAD";
+
+        final RepeatingGroupBuilder groupBuilder = new RepeatingGroupBuilder(this.supplier);
+
+        final FixChunk[][] repeatingGroups = groupBuilder
+                .setNumberOfRepeatingGroupsTag(Tags.NUMBER_MD_ENTRIES)
+                .addField(Tags.MD_ENTRY_SIZE, mdEntrySize.getBytes())
+                .addField(Tags.MD_ENTRY_TYPE, mdEntryType.getBytes())
+                .addField(Tags.MD_ENTRY_PRICE, mdEntryPrice.getBytes())
+
+                .setNumberOfRepeatingGroupsTag(Tags.NUMBER_RELATED_SYMBOLS)
+                .addField(Tags.SYMBOL, eurUsd.getBytes())
+                .addField(Tags.SYMBOL, usdJpy.getBytes())
+                .addField(Tags.SYMBOL, audCad.getBytes())
+
+                .build();
+
+        final InboundFixMessage message = this.builder
+                .addField(Tags.BEGIN_STRING, BEGIN_STRING.getSerializedValue())
+                .addField(Tags.MESSAGE_SEQUENCE_NUMBER, MESSAGE_SEQUENCE_NUMBER.getBytes())
+                .addField(Tags.MESSAGE_TYPE, messageType.getSerializedValue())
+
+                .addField(Tags.MD_REQUEST_ID, mdRequestId.getBytes())
+                .addField(Tags.MD_STREAM_ID, mdStreamId.getBytes())
+
+
+                .build(repeatingGroups, groupBuilder.getNumberOfRepeatingGroupTags());
+
+        final FixChunk[] entries = message.getGroup(Tags.NUMBER_MD_ENTRIES);
+        assertNotNull(entries);
+        assertThat(entries.length, is(1));
+
+        final FixChunk[] symbols = message.getGroup(Tags.NUMBER_RELATED_SYMBOLS);
+        assertNotNull(symbols);
+        assertThat(symbols.length, is(3));
     }
 
     private InboundFixMessage buildNewOrderSingle() {
