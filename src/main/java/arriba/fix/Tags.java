@@ -2,7 +2,7 @@ package arriba.fix;
 
 public final class Tags {
 
-    private static final int MAXIMUM_TAG = 1000;
+    private static final int MAXIMUM_TAG = 2000;
     private static final int HEADER_COUNT = 7;
     private static final int TRAILER_COUNT = 1;
     private static final byte[][] DELIMITED_BYTE_ARRAY_TAGS = new byte[MAXIMUM_TAG][];
@@ -39,6 +39,7 @@ public final class Tags {
     public static final int MD_ENTRY_SIZE = 271;
     public static final int USERNAME = 553;
     public static final int PASSWORD = 554;
+    public static final int MD_STREAM_ID = 1500;
     // End body tags
 
     // Trailer tags
