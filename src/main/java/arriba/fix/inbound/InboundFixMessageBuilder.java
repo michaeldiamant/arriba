@@ -29,14 +29,14 @@ public final class InboundFixMessageBuilder {
     public InboundFixMessageBuilder addField(final int tag, final byte[] value) {
         // TODO Make search constant time.
         if (Arrays.binarySearch(HEADER_TAGS, tag) >= 0) {
-            this.headerChunkBuilder.addField(tag, value);
-        } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {
-            this.trailerChunkBuilder.addField(tag, value);
-        } else {
             if (Tags.MESSAGE_TYPE == tag) {
                 this.bodyChunkBuilder = this.supplier.getBodyBuilder(value);
             }
 
+            this.headerChunkBuilder.addField(tag, value);
+        } else if (Arrays.binarySearch(TRAILER_TAGS, tag) >= 0) {
+            this.trailerChunkBuilder.addField(tag, value);
+        } else {
             this.bodyChunkBuilder.addField(tag, value);
         }
 
@@ -64,12 +64,14 @@ public final class InboundFixMessageBuilder {
     }
 
     public InboundFixMessage build() {
-        return this.build(null, null);
+        return this.build(null, new int[0]);
     }
 
     public void clear() {
         this.headerChunkBuilder.clear();
         this.trailerChunkBuilder.clear();
-        this.bodyChunkBuilder.clear();
+        if (null != this.bodyChunkBuilder) {
+            this.bodyChunkBuilder.clear();
+        }
     }
 }
