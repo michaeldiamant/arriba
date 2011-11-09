@@ -2,7 +2,7 @@ package arriba.fix.tagindexresolvers;
 
 import arriba.fix.Tags;
 
-public class MarketDataRequestTagIndexResolver extends TagIndexResolver {
+public final class MarketDataRequestTagIndexResolver extends TagIndexResolver {
 
     @Override
     protected int[] getRequiredTags() {
