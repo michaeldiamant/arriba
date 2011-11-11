@@ -1,18 +1,36 @@
 package arriba.fix.session;
 
-public interface SessionId {
+public final class SessionId {
 
-    String getBeginString();
+    private final String senderCompId;
+    private final String targetCompId;
 
-    String getSenderCompId();
+    public SessionId(final String senderCompId, final String targetCompId) {
+        this.senderCompId = senderCompId;
+        this.targetCompId = targetCompId;
+    }
 
-    String getSenderSubId();
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.senderCompId.hashCode();
+        result = prime * result + this.targetCompId.hashCode();
+        return result;
+    }
 
-    String getSenderLocationId();
-
-    String getTargetCompId();
-
-    String getTargetSubId();
-
-    String getTargetLocationId();
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        final SessionId other = (SessionId) obj;
+        return this.senderCompId.equals(other.senderCompId) && this.targetCompId.equals(other.targetCompId);
+    }
 }

@@ -32,7 +32,6 @@ import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
-import arriba.fix.session.SimpleSessionId;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.transport.TransportRepository;
 import cern.colt.map.OpenIntObjectHashMap;
@@ -93,9 +92,13 @@ public final class ArribaWizard<T> {
         return this;
     }
 
-    public ArribaWizard<T> registerTargetComponentIds(final String... targetCompIds) {
+    public SessionWizard register(final String senderCompId) {
+        return new SessionWizard(senderCompId, this);
+    }
+
+    ArribaWizard<T> registerSessions(final String senderCompId, final String[] targetCompIds) {
         for (final String targetCompId : targetCompIds) {
-            this.sessionIds.add(new SimpleSessionId(targetCompId));
+            this.sessionIds.add(new SessionId(senderCompId, targetCompId));
         }
 
         return this;
