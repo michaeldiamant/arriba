@@ -7,7 +7,7 @@ import arriba.fix.Fields;
 import arriba.fix.Tags;
 
 /**
- * An outbound FIX message builder constructs messages to be sent in byte[] format.
+ * A raw outbound FIX message builder constructs messages to be sent in byte[] format.
  */
 public final class RawOutboundFixMessageBuilder {
 
