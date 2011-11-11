@@ -1,16 +1,11 @@
 package arriba.fix.outbound;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.sequencenumbers.SequenceNumberGenerator;
 
 public final class RichOutboundFixMessageBuilder {
-
-    private static final String UTC_TIMESTAMP_FORMAT = "yyyyMMdd-HH:mm:ss";
 
     private final RawOutboundFixMessageBuilder rawBuilder;
     private final SequenceNumberGenerator generator;
@@ -31,7 +26,7 @@ public final class RichOutboundFixMessageBuilder {
 
     public RichOutboundFixMessageBuilder addUtcTimestamp(final int tag) {
         // TODO Improve efficiency final of date writing.
-        this.rawBuilder.addField(tag, new SimpleDateFormat(UTC_TIMESTAMP_FORMAT).format(new Date()));
+        this.rawBuilder.addField(tag, DateSupplier.getUtcTimestamp());
 
         return this;
     }
