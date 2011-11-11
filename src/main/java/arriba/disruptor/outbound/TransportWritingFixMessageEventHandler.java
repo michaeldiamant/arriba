@@ -29,15 +29,16 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
 
         final Transport<T> transport = this.transportRepository.find(fixMessage.getTargetCompId());
         if (null == transport) {
-            throw new IOException("");
+            throw new IOException("Cannot find transport for target comp ID" + fixMessage.getTargetCompId() + ".");
         }
 
         // TODO Can SessionId be cached?
         final Session session = this.sessionResolver.resolve(new SessionId("", fixMessage.getTargetCompId()));
+        if (null == session) {
+            throw new IOException("Cannot find session for sender comp ID " + fixMessage.getSenderCompId() +
+                    " and target comp ID " + fixMessage.getSenderCompId() + ".");
+        }
 
-        // TODO Find session associated with message to get correct sequence number.
-        final int messageSequenceNumber = 0;
-
-        transport.write(fixMessage.toBytes(messageSequenceNumber, DateSupplier.getUtcTimestamp()));
+        transport.write(fixMessage.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp()));
     }
 }

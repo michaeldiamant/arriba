@@ -9,6 +9,7 @@ public class Session {
 
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
+    private int sequenceNumber = 0;
 
     public Session(final SessionId sessionId,
             final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository) {
@@ -30,5 +31,13 @@ public class Session {
 
     public SessionId getSessionId() {
         return this.sessionId;
+    }
+
+    public int getNextSequenceNumber() {
+        return this.sequenceNumber++;
+    }
+
+    public void resetSequenceNumber() {
+        this.sequenceNumber = 0;
     }
 }
