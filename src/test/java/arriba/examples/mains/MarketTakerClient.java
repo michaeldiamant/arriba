@@ -56,14 +56,14 @@ public class MarketTakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
-        .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, this.messageCount))
-        .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, this.messageCount))
+        .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, wizard.createOutboundBuilder()))
+        .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, wizard.createOutboundBuilder()))
 
         .register(this.senderCompId).with(this.targetCompId);
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NettyConnectHandlerAdapter(new LogonOnConnectApplication<Channel>(this.messageCount, this.senderCompId, this.targetCompId, this.username, this.password, outboundSender, repository)),
+                new NettyConnectHandlerAdapter(new LogonOnConnectApplication<Channel>(this.senderCompId, this.targetCompId, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder())),
                 new SerializedFixMessageHandler(inboundSender)
                 );
 

@@ -1,57 +1,46 @@
 package arriba.examples.quotes;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import arriba.common.Sender;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
+import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.RawOutboundFixMessageBuilder;
+import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 
 public final class RandomQuoteSupplier implements Runnable {
 
-    private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
-
     private final SubscriptionService subscriptionService;
     private final Set<String> symbols;
-    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
-
-    private final AtomicInteger messageCount;
     private final String senderCompId;
     private final Random random = new Random();
     private final Sender<OutboundFixMessage> fixMessageSender;
+    private final RichOutboundFixMessageBuilder builder;
 
-    public RandomQuoteSupplier(final SubscriptionService subscriptionService, final Set<String> symbols,
-            final AtomicInteger messageCount,
-            final String senderCompId, final Sender<OutboundFixMessage> fixMessageSender) {
+    public RandomQuoteSupplier(final SubscriptionService subscriptionService,
+            final Set<String> symbols,
+            final String senderCompId,
+            final Sender<OutboundFixMessage> fixMessageSender,
+            final RichOutboundFixMessageBuilder builder) {
         this.subscriptionService = subscriptionService;
         this.symbols = symbols;
-        this.messageCount = messageCount;
         this.senderCompId = senderCompId;
         this.fixMessageSender = fixMessageSender;
+        this.builder = builder;
     }
 
     @Override
     public void run() {
-        final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
-
         for (final String symbol : this.symbols) {
             final double symbolBidPrice = this.random.nextDouble() * this.random.nextInt(25);
 
             for (final String subscriberCompId : this.subscriptionService.findSubscribers(symbol)) {
                 this.builder
-                .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
-                .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.incrementAndGet()))
-                .addField(Tags.MESSAGE_TYPE, "W")
-                .addField(Tags.SENDER_COMP_ID, this.senderCompId)
-                .addField(Tags.TARGET_COMP_ID, subscriberCompId)
-                .addField(Tags.SENDING_TIME, sdf.format(new Date()))
+                .addStandardHeader(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, BeginString.FIXT11.getValue(), this.senderCompId, subscriberCompId)
 
                 .addField(Tags.SYMBOL, symbol)
 
