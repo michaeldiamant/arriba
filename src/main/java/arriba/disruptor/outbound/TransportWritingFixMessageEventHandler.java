@@ -31,7 +31,4 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
 
         transport.write(fixMessage.toBytes(messageSequenceNumber, DateSupplier.getUtcTimestamp()));
     }
-
-    public void onEndOfBatch() throws Exception {}
-
 }

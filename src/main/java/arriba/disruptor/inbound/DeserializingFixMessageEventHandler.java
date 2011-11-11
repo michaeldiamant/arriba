@@ -128,9 +128,6 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
         this.repeatingGroupBuilder.clear();
     }
 
-    public void onEndOfBatch() throws Exception {
-    }
-
     private static enum ParsingState {
         REPEATING_GROUP, NON_REPEATING_GROUP
     }

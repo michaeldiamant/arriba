@@ -22,7 +22,4 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
 
         session.onMessage(inboundFixMessage);
     }
-
-    public void onEndOfBatch() throws Exception {}
-
 }
