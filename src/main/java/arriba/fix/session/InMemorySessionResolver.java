@@ -10,12 +10,7 @@ public final class InMemorySessionResolver implements SessionResolver {
         this.sessionIdToSession = sessionIdToSession;
     }
 
-    public Session resolve(final SessionId sessionId) throws UnknownSessionIdException {
-        final Session session = this.sessionIdToSession.get(sessionId);
-        if (session == null) {
-            throw new UnknownSessionIdException("Unknown session ID:  " + sessionId + ".");
-        }
-
-        return session;
+    public Session resolve(final SessionId sessionId) {
+        return this.sessionIdToSession.get(sessionId);
     }
 }
