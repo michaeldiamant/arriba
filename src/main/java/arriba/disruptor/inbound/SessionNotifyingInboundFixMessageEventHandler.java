@@ -19,6 +19,9 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
         final InboundFixMessage inboundFixMessage = event.getFixMessage();
 
         final Session session = this.sessionResolver.resolve(inboundFixMessage.getSessionId());
+        if (null == session) {
+            throw new IllegalArgumentException("No session found for " + inboundFixMessage.getSessionId());
+        }
 
         session.onMessage(inboundFixMessage);
     }
