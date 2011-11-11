@@ -22,13 +22,13 @@ import arriba.utils.OutboundFixMessageFieldCapturer;
 import com.lmax.disruptor.EventHandler;
 
 @Ignore
-public class OutboundFixMessageBuilderTest {
+public class RawOutboundFixMessageBuilderTest {
 
     private OutboundFixMessageFieldCapturer capturer;
 
     @Before
     public void before() {
-        this.capturer = new OutboundFixMessageFieldCapturer(new OutboundFixMessageBuilder());
+        this.capturer = new OutboundFixMessageFieldCapturer(new RawOutboundFixMessageBuilder());
     }
 
     @Test(expected=IllegalStateException.class)

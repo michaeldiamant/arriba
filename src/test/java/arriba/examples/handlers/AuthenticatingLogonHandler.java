@@ -15,7 +15,7 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessageBuilder;
+import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.transport.TransportRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
@@ -28,7 +28,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
     private final AtomicInteger messageCount;
     private final List<Channel> channels;
     private final TransportRepository<String, ?> transportRepository;
-    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
+    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
 
     public AuthenticatingLogonHandler(final String expectedUsername, final String expectedPassword,
             final Sender<OutboundFixMessage> fixMessageSender,

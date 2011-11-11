@@ -12,7 +12,7 @@ import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessageBuilder;
+import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 
 public final class RandomQuoteSupplier implements Runnable {
 
@@ -20,7 +20,7 @@ public final class RandomQuoteSupplier implements Runnable {
 
     private final SubscriptionService subscriptionService;
     private final Set<String> symbols;
-    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
+    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
 
     private final AtomicInteger messageCount;
     private final String senderCompId;
