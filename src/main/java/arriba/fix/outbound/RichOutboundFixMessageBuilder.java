@@ -18,7 +18,7 @@ public final class RichOutboundFixMessageBuilder {
     public RichOutboundFixMessageBuilder addStandardHeader(final MessageType messageType, final InboundFixMessage message) {
         this.rawBuilder
         .addField(Tags.MESSAGE_TYPE, messageType.getValue())
-        .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
+        .setSenderCompId(message.getTargetCompId())
         .setTargetCompId(message.getSenderCompId());
 
         return this;
