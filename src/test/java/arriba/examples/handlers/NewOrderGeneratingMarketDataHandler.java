@@ -1,19 +1,16 @@
 package arriba.examples.handlers;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
-import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.RawOutboundFixMessageBuilder;
+import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 
 public final class NewOrderGeneratingMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
 
@@ -21,31 +18,24 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
     private static final String BID = "0";
     private static final String BUY = "1";
     private static final String SELL = "2";
-    private static final String SENDING_TIME_FORMAT = "yyyyMMdd-HH:mm:ss";
 
-    private final AtomicInteger messageCount;
     private final Sender<OutboundFixMessage> sender;
-    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
+    private final RichOutboundFixMessageBuilder builder;
+    private final AtomicLong clOrdIdGenerator = new AtomicLong();
 
-    public NewOrderGeneratingMarketDataHandler(final Sender<OutboundFixMessage> sender, final AtomicInteger messageCount) {
+    public NewOrderGeneratingMarketDataHandler(final Sender<OutboundFixMessage> sender,
+            final RichOutboundFixMessageBuilder builder) {
         this.sender = sender;
-        this.messageCount = messageCount;
+        this.builder = builder;
     }
 
     @Override
     public void handle(final MarketDataSnapshotFullRefresh message) {
-        final SimpleDateFormat sdf = new SimpleDateFormat(SENDING_TIME_FORMAT);
-
-        if (this.messageCount.getAndIncrement() % 2 == 0) {
+        if (Integer.parseInt(message.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER)) % 2 == 0) {
             this.builder
-            .addField(Tags.BEGIN_STRING, BeginString.FIXT11.getValue())
-            .addField(Tags.MESSAGE_SEQUENCE_NUMBER, String.valueOf(this.messageCount.get()))
-            .addField(Tags.MESSAGE_TYPE, MessageType.NEW_ORDER_SINGLE.getValue())
-            .addField(Tags.SENDER_COMP_ID, message.getTargetCompId())
-            .addField(Tags.TARGET_COMP_ID, message.getSenderCompId())
-            .addField(Tags.SENDING_TIME, sdf.format(new Date()))
+            .addStandardHeader(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, message)
 
-            .addField(Tags.CLIENT_ORDER_ID, String.valueOf(this.messageCount.get()))
+            .addField(Tags.CLIENT_ORDER_ID, String.valueOf(this.clOrdIdGenerator.getAndIncrement()))
             .addField(Tags.SYMBOL, message.getSymbol());
 
             final FixChunk[] mdEntries = message.getGroup(Tags.NUMBER_MD_ENTRIES);

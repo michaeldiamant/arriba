@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -24,6 +23,7 @@ import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.NewOrderSingle;
 import arriba.fix.outbound.OutboundFixMessage;
+import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
@@ -37,7 +37,6 @@ import com.lmax.disruptor.WaitStrategy;
 
 public class MarketMakerClient {
 
-    private final AtomicInteger messageCount = new AtomicInteger();
     private final String senderCompId = "MM";
     private final String targetCompId = "MT";
     private final String expectedUsername = "tr8der";
@@ -66,13 +65,13 @@ public class MarketMakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
-        .registerMessageHandler(MessageType.LOGON, new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, this.messageCount, this.channels, repository))
+        .registerMessageHandler(MessageType.LOGON, new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder(), this.channels, repository))
         .registerMessageHandler(MessageType.MARKET_DATA_REQUEST, new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))
         .registerMessageHandler(MessageType.NEW_ORDER_SINGLE, new PrintingHandler<NewOrderSingle>())
 
         .register(this.senderCompId).with(this.targetCompId);
 
-        this.initializeQuotes(outboundSender);
+        this.initializeQuotes(outboundSender, wizard.createOutboundBuilder());
 
         final ServerBootstrap server = FixServerBootstrap.create(
                 new FixMessageFrameDecoder(),
@@ -83,9 +82,9 @@ public class MarketMakerClient {
         server.bind(new InetSocketAddress("localhost", 8080));
     }
 
-    private void initializeQuotes(final Sender<OutboundFixMessage> outboundSender) {
+    private void initializeQuotes(final Sender<OutboundFixMessage> sender, final RichOutboundFixMessageBuilder builder) {
         final Runnable quoteSupplier = new RandomQuoteSupplier(this.subscriptionService, Sets.newHashSet("EURUSD"),
-                this.messageCount, this.senderCompId, outboundSender);
+                this.senderCompId, sender, builder);
         this.quotesExecutorService.submit(quoteSupplier);
     }
 
