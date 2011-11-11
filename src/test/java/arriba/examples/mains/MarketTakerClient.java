@@ -59,7 +59,7 @@ public class MarketTakerClient {
         .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, this.messageCount))
         .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, this.messageCount))
 
-        .registerTargetComponentIds(this.targetCompId);
+        .register(this.senderCompId).with(this.targetCompId);
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
