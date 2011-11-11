@@ -13,7 +13,7 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessageBuilder;
+import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 
 public final class SubscriptionRequestingLogonHandler implements Handler<Logon> {
 
@@ -25,7 +25,7 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
     private final Sender<OutboundFixMessage> fixMessageSender;
     private final AtomicInteger messageCount;
 
-    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
+    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
 
     public SubscriptionRequestingLogonHandler(final Set<String> symbolsToSubscribe,
             final Sender<OutboundFixMessage> fixMessageSender,

@@ -9,7 +9,7 @@ import arriba.fix.Tags;
 /**
  * An outbound FIX message builder constructs messages to be sent in byte[] format.
  */
-public final class OutboundFixMessageBuilder {
+public final class RawOutboundFixMessageBuilder {
 
     private static final int MAX_MESSAGE_FIELDS_COUNT = 1000;
     private static final int FIELD_DELIMITER_LENGTH = 1;
@@ -22,7 +22,7 @@ public final class OutboundFixMessageBuilder {
     private int readIndex = 0;
     private int messageLength = 0;
 
-    public OutboundFixMessageBuilder addField(final int tag, final String value) {
+    public RawOutboundFixMessageBuilder addField(final int tag, final String value) {
         final byte[] tagBytes = Tags.toDelimitedByteArray(tag);
         this.tags[this.readIndex] = tagBytes;
         this.values[this.readIndex] = value;
@@ -36,7 +36,7 @@ public final class OutboundFixMessageBuilder {
         return this;
     }
 
-    public OutboundFixMessageBuilder setTargetCompId(final String targetCompId) {
+    public RawOutboundFixMessageBuilder setTargetCompId(final String targetCompId) {
         this.targetCompId = targetCompId;
 
         return this.addField(Tags.TARGET_COMP_ID, targetCompId);

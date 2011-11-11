@@ -11,7 +11,7 @@ import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessageBuilder;
+import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.transport.Transport;
 import arriba.transport.TransportConnectHandler;
 import arriba.transport.TransportRepository;
@@ -28,7 +28,7 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
     private final Sender<OutboundFixMessage> fixMessageSender;
     private final TransportRepository<String, T> transportRepository;
 
-    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
+    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
 
     public LogonOnConnectApplication(final AtomicInteger messageCount,
             final String senderCompId, final String targetCompId, final String username, final String password,

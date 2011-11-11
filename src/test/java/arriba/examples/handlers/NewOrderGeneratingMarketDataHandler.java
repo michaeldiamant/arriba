@@ -13,7 +13,7 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
 import arriba.fix.outbound.OutboundFixMessage;
-import arriba.fix.outbound.OutboundFixMessageBuilder;
+import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 
 public final class NewOrderGeneratingMarketDataHandler implements Handler<MarketDataSnapshotFullRefresh> {
 
@@ -25,7 +25,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
 
     private final AtomicInteger messageCount;
     private final Sender<OutboundFixMessage> sender;
-    private final OutboundFixMessageBuilder builder = new OutboundFixMessageBuilder();
+    private final RawOutboundFixMessageBuilder builder = new RawOutboundFixMessageBuilder();
 
     public NewOrderGeneratingMarketDataHandler(final Sender<OutboundFixMessage> sender, final AtomicInteger messageCount) {
         this.sender = sender;
