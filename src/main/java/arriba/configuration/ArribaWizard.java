@@ -32,6 +32,7 @@ import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
+import arriba.fix.session.SessionResolver;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.transport.TransportRepository;
 import cern.colt.map.OpenIntObjectHashMap;
@@ -53,6 +54,7 @@ public final class ArribaWizard<T> {
             new MutableByteArrayKeyedMap<FixChunkBuilder>(),
             new OpenIntObjectHashMap()
             );
+    private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<ChannelBuffer> inboundSender;
 
@@ -124,7 +126,7 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<OutboundFixMessageEvent> transportWritingConsumer() {
-        return new TransportWritingFixMessageEventHandler<T>(this.transportRepository);
+        return new TransportWritingFixMessageEventHandler<T>(this.transportRepository, this.sessionResolver);
     }
 
     @SuppressWarnings("unchecked")
@@ -158,7 +160,7 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<InboundFixMessageEvent> sessionNotifyingConsumer() {
-        return new SessionNotifyingInboundFixMessageEventHandler(new InMemorySessionResolver(this.sessionIdToSession));
+        return new SessionNotifyingInboundFixMessageEventHandler(this.sessionResolver);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
