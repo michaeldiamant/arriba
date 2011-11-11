@@ -14,18 +14,24 @@ public final class OutboundFixMessage {
     private final ByteArrayOutputStream headerOut;
     private final ByteArrayOutputStream nonHeaderOut;
     private int messageBytesSum;
+    private final String senderCompId;
     private final String targetCompId;
 
     public OutboundFixMessage(final ByteArrayOutputStream headerOut, final ByteArrayOutputStream nonHeaderOut,
-            final int messageBytesSum, final String targetCompId) {
+            final int messageBytesSum, final String senderCompId, final String targetCompId) {
         this.headerOut = headerOut;
         this.nonHeaderOut = nonHeaderOut;
         this.messageBytesSum = messageBytesSum;
+        this.senderCompId = senderCompId;
         this.targetCompId = targetCompId;
     }
 
     public String getTargetCompId() {
         return this.targetCompId;
+    }
+
+    public String getSenderCompId() {
+        return this.getSenderCompId();
     }
 
     public byte[] toBytes(final int messageSequenceNumber, final String sendingTime) {
