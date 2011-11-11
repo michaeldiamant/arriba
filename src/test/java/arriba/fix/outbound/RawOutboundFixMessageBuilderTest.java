@@ -25,6 +25,8 @@ import com.lmax.disruptor.EventHandler;
 public class RawOutboundFixMessageBuilderTest {
 
     private OutboundFixMessageFieldCapturer capturer;
+    private final int messageSequenceNumber = 0;
+    private final String sendingTime = DateSupplier.getUtcTimestamp();
 
     @Before
     public void before() {
@@ -51,7 +53,7 @@ public class RawOutboundFixMessageBuilderTest {
 
         final OutboundFixMessage outboundMessage = this.capturer.build();
 
-        final InboundFixMessage message = this.deserialize(outboundMessage.getMessage());
+        final InboundFixMessage message = this.deserialize(outboundMessage.toBytes(this.messageSequenceNumber, this.sendingTime));
 
         this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
@@ -87,7 +89,7 @@ public class RawOutboundFixMessageBuilderTest {
 
         final OutboundFixMessage outboundMessage = this.capturer.build();
 
-        final InboundFixMessage message = this.deserialize(outboundMessage.getMessage());
+        final InboundFixMessage message = this.deserialize(outboundMessage.toBytes(this.messageSequenceNumber, this.sendingTime));
         this.capturer.assertFieldsAreSet(message);
         assertThat(message.getValue(Tags.TARGET_COMP_ID), is(outboundMessage.getTargetCompId()));
     }

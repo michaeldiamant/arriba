@@ -24,10 +24,6 @@ public final class OutboundFixMessage {
         this.targetCompId = targetCompId;
     }
 
-    public byte[] getMessage() {
-        return null;
-    }
-
     public String getTargetCompId() {
         return this.targetCompId;
     }

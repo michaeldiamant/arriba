@@ -2,6 +2,7 @@ package arriba.disruptor.outbound;
 
 import java.io.IOException;
 
+import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
@@ -17,7 +18,7 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
     }
 
     @Override
-    public void onEvent(final OutboundFixMessageEvent entry, final boolean b) throws Exception {
+    public void onEvent(final OutboundFixMessageEvent entry, final boolean endOfBatch) throws Exception {
         final OutboundFixMessage fixMessage = entry.getFixMessage();
 
         final Transport<T> transport = this.transportRepository.find(fixMessage.getTargetCompId());
@@ -25,7 +26,10 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
             throw new IOException("");
         }
 
-        transport.write(fixMessage.getMessage());
+        // TODO Find session associated with message to get correct sequence number.
+        final int messageSequenceNumber = 0;
+
+        transport.write(fixMessage.toBytes(messageSequenceNumber, DateSupplier.getUtcTimestamp()));
     }
 
     public void onEndOfBatch() throws Exception {}
