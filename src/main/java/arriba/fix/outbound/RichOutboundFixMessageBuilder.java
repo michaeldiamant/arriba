@@ -12,14 +12,24 @@ public final class RichOutboundFixMessageBuilder {
         this.rawBuilder = rawBuilder;
     }
 
-    public RichOutboundFixMessageBuilder addStandardHeader(final MessageType messageType, final InboundFixMessage message) {
+    public RichOutboundFixMessageBuilder addStandardHeader(final MessageType messageType, final String beginString,
+            final String senderCompId, final String targetCompId) {
         this.rawBuilder
-        .addField(Tags.BEGIN_STRING, message.getHeaderValue(Tags.BEGIN_STRING))
+        .addField(Tags.BEGIN_STRING, beginString)
         .addField(Tags.MESSAGE_TYPE, messageType.getValue())
-        .setSenderCompId(message.getTargetCompId())
-        .setTargetCompId(message.getSenderCompId());
+        .setSenderCompId(senderCompId)
+        .setTargetCompId(targetCompId);
 
         return this;
+    }
+
+    public RichOutboundFixMessageBuilder addStandardHeader(final MessageType messageType, final InboundFixMessage message) {
+        return this.addStandardHeader(
+                messageType,
+                message.getHeaderValue(Tags.BEGIN_STRING),
+                message.getTargetCompId(),
+                message.getSenderCompId()
+                );
     }
 
     public RichOutboundFixMessageBuilder addUtcTimestamp(final int tag) {
