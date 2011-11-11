@@ -31,7 +31,7 @@ public final class OutboundFixMessage {
     }
 
     public String getSenderCompId() {
-        return this.getSenderCompId();
+        return this.senderCompId;
     }
 
     public byte[] toBytes(final int messageSequenceNumber, final String sendingTime) {
