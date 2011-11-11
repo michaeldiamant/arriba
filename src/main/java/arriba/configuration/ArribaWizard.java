@@ -29,6 +29,8 @@ import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
+import arriba.fix.outbound.RawOutboundFixMessageBuilder;
+import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
@@ -80,6 +82,10 @@ public final class ArribaWizard<T> {
 
     public Sender<OutboundFixMessage> getOutboundSender() {
         return this.outboundSender;
+    }
+
+    public RichOutboundFixMessageBuilder createOutboundBuilder() {
+        return new RichOutboundFixMessageBuilder(new RawOutboundFixMessageBuilder());
     }
 
     public ArribaWizard<T> registerMessageHandler(final MessageType messageType, final Handler<?> handler) {
