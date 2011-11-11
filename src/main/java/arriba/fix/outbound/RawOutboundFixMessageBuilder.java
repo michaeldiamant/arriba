@@ -56,6 +56,8 @@ public final class RawOutboundFixMessageBuilder {
     }
 
     public OutboundFixMessage build() {
+        // FIXME Need to write BodyLength to header.
+
         if (null == this.targetCompId) {
             throw new IllegalStateException("Target component ID must be specified.");
         }
