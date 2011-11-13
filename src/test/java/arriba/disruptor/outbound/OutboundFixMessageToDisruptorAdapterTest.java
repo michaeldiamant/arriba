@@ -13,7 +13,7 @@ public class OutboundFixMessageToDisruptorAdapterTest {
     public void testAdapt() {
         final OutboundFixMessageToDisruptorAdapter adapter = new OutboundFixMessageToDisruptorAdapter();
         final OutboundFixMessageEvent event = new OutboundFixMessageEvent();
-        final OutboundFixMessage message = new OutboundFixMessage(null, null, 0, "", "");
+        final OutboundFixMessage message = new OutboundFixMessage(null, null, 0, "", "", "");
 
         adapter.adapt(message, event);
 
