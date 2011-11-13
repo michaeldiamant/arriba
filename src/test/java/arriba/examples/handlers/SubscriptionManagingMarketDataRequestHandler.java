@@ -24,9 +24,11 @@ public final class SubscriptionManagingMarketDataRequestHandler implements Handl
     @Override
     public void handle(final MarketDataRequest message) {
         if (SUBSCRIPTION_REQUEST_TYPE.equals(message.getSubscriptionRequestType())) {
+            System.out.println("Adding subscription");
             final Set<String> symbols = this.toSymbols(message.getRelatedSymbols());
             this.subscriptionService.addSubscriptions(message.getSenderCompId(), symbols);
         } else if (UNSUBSCRIPTION_REQUEST_TYPE.equals(message.getSubscriptionRequestType())) {
+            System.out.println("Removing subscription");
             this.subscriptionService.removeSubscription(message.getSenderCompId());
         } else {
             System.out.println("Unknown request type:  " + message.getSubscriptionRequestType());
