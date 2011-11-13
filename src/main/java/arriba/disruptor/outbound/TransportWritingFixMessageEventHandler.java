@@ -29,7 +29,7 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
 
         final Transport<T> transport = this.transportRepository.find(fixMessage.getTargetCompId());
         if (null == transport) {
-            throw new IOException("Cannot find transport for target comp ID" + fixMessage.getTargetCompId() + ".");
+            throw new IOException("Cannot find transport for target comp ID " + fixMessage.getTargetCompId() + ".");
         }
 
         // TODO Can SessionId be cached?
