@@ -102,6 +102,10 @@ public final class RepeatingGroupBuilder {
     }
 
     public FixChunk[][] build() {
+        if (null == this.builder) {
+            return null;
+        }
+
         this.buildGroup();
 
         return this.copyRepeatingGroups();
