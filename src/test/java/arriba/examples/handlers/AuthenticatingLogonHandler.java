@@ -13,14 +13,17 @@ import arriba.fix.inbound.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.transport.TransportRepository;
+import arriba.transport.netty.NettyTransport;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
+
+    // FIXME Transport repository should not explicitly reference Channel.
 
     private final String expectedUsername;
     private final String expectedPassword;
     private final Sender<OutboundFixMessage> fixMessageSender;
     private final List<Channel> channels;
-    private final TransportRepository<String, ?> transportRepository;
+    private final TransportRepository<String, Channel> transportRepository;
     private final RichOutboundFixMessageBuilder builder;
 
     public AuthenticatingLogonHandler(final String expectedUsername,
@@ -28,7 +31,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
             final Sender<OutboundFixMessage> fixMessageSender,
             final RichOutboundFixMessageBuilder builder,
             final List<Channel> channels,
-            final TransportRepository<String, ?> transportRepository) {
+            final TransportRepository<String, Channel> transportRepository) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
         this.fixMessageSender = fixMessageSender;
@@ -57,8 +60,8 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
             // TODO Need to figure out right way to negotiate channel registration server-side.
             // Assuming first channel entry is the 'right' one.
 
-            //            final Channel channelToAdd = this.channels.remove(0);
-            //            this.transportRepository.add(message.getSenderCompId(), channelToAdd);
+            final Channel channelToAdd = this.channels.remove(0);
+            this.transportRepository.add(message.getSenderCompId(), new NettyTransport(channelToAdd));
 
             this.fixMessageSender.send(this.builder.build());
         } catch (final IOException e) {
