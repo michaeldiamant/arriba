@@ -20,7 +20,7 @@ public final class InMemoryTransportRepository<ID, T> implements TransportReposi
     public boolean remove(final Transport<T> transport) {
         final Iterator<Entry<ID, Transport<T>>> iterator = this.idToChannel.entrySet().iterator();
         while (iterator.hasNext()) {
-            if (transport == iterator.next().getValue()) {
+            if (transport.equals(iterator.next().getValue())) {
                 iterator.remove();
 
                 return true;
