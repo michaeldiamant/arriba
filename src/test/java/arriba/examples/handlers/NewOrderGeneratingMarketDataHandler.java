@@ -33,16 +33,20 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
     public void handle(final MarketDataSnapshotFullRefresh message) {
         if (Integer.parseInt(message.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER)) % 2 == 0) {
             this.builder
-            .addStandardHeader(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, message)
+            .addStandardHeader(MessageType.NEW_ORDER_SINGLE, message)
 
             .addField(Tags.CLIENT_ORDER_ID, String.valueOf(this.clOrdIdGenerator.getAndIncrement()))
             .addField(Tags.SYMBOL, message.getSymbol());
 
             final FixChunk[] mdEntries = message.getGroup(Tags.NUMBER_MD_ENTRIES);
+            final FixChunk firstEntry = mdEntries[0];
             this.builder
-            .addField(Tags.PRICE, mdEntries[0].getValue(Tags.MD_ENTRY_PRICE))
-            .addField(Tags.ORDER_TYPE, LIMIT);
-            if (mdEntries[0].getValue(Tags.MD_ENTRY_TYPE).equals(BID)) {
+            .addField(Tags.PRICE, firstEntry.getValue(Tags.MD_ENTRY_PRICE))
+            .addField(Tags.ORDER_TYPE, LIMIT)
+
+            .addField(Tags.ORDER_QUANTITY, firstEntry.getValue(Tags.MD_ENTRY_SIZE));
+
+            if (firstEntry.getValue(Tags.MD_ENTRY_TYPE).equals(BID)) {
                 this.builder.addField(Tags.SIDE, BUY);
             } else {
                 this.builder.addField(Tags.SIDE, SELL);
