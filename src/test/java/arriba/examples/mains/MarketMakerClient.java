@@ -3,8 +3,9 @@ package arriba.examples.mains;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -41,7 +42,7 @@ public class MarketMakerClient {
     private final String targetCompId = "MT";
     private final String expectedUsername = "tr8der";
     private final String expectedPassword = "liquidity";
-    private final ExecutorService quotesExecutorService = Executors.newSingleThreadExecutor();
+    private final ScheduledExecutorService quotesExecutorService = Executors.newSingleThreadScheduledExecutor();
     private final SubscriptionService subscriptionService = new InMemorySubscriptionService();
     private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
 
@@ -87,7 +88,7 @@ public class MarketMakerClient {
     private void initializeQuotes(final Sender<OutboundFixMessage> sender, final RichOutboundFixMessageBuilder builder) {
         final Runnable quoteSupplier = new RandomQuoteSupplier(this.subscriptionService, Sets.newHashSet("EURUSD"),
                 this.senderCompId, sender, builder);
-        this.quotesExecutorService.submit(quoteSupplier);
+        this.quotesExecutorService.scheduleWithFixedDelay(quoteSupplier, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
     public static void main(final String[] args) {
