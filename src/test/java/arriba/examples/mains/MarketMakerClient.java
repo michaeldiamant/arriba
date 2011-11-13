@@ -69,7 +69,9 @@ public class MarketMakerClient {
         .registerMessageHandler(MessageType.MARKET_DATA_REQUEST, new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))
         .registerMessageHandler(MessageType.NEW_ORDER_SINGLE, new PrintingHandler<NewOrderSingle>())
 
-        .register(this.senderCompId).with(this.targetCompId);
+        .register(this.senderCompId).with(this.targetCompId)
+
+        .start();
 
         this.initializeQuotes(outboundSender, wizard.createOutboundBuilder());
 

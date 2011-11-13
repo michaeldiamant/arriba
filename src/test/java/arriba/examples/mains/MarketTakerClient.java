@@ -2,7 +2,6 @@ package arriba.examples.mains;
 
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -30,7 +29,6 @@ import com.lmax.disruptor.WaitStrategy;
 
 public class MarketTakerClient {
 
-    private final AtomicInteger messageCount = new AtomicInteger();
     private final String senderCompId = "MT";
     private final String targetCompId = "MM";
     private final String username = "tr8der";
@@ -59,7 +57,9 @@ public class MarketTakerClient {
         .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, wizard.createOutboundBuilder()))
         .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, wizard.createOutboundBuilder()))
 
-        .register(this.senderCompId).with(this.targetCompId);
+        .register(this.senderCompId).with(this.targetCompId)
+
+        .start();
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
