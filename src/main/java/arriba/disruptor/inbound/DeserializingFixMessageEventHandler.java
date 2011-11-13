@@ -66,14 +66,17 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
                 switch (this.parsingState) {
                 case REPEATING_GROUP:
                     if (Arrays.binarySearch(this.repeatingGroupTags, this.lastDeserializedTag) < 0) {
-                        this.parsingState = ParsingState.NON_REPEATING_GROUP;
+                        if (this.hasFoundNumberOfRepeatingGroupsTag()) {
+                            this.handleNewRepeatingGroup();
+                        } else {
+                            this.parsingState = ParsingState.NON_REPEATING_GROUP;
+                        }
                     }
 
                     break;
                 case NON_REPEATING_GROUP:
-                    if (null != (this.repeatingGroupTags = RepeatingGroups.NUMBER_IN_GROUP_TAGS[this.lastDeserializedTag])) {
-                        this.parsingState = ParsingState.REPEATING_GROUP;
-                        this.hasFoundNumberOfRepeatingGroupsTag = true;
+                    if (this.hasFoundNumberOfRepeatingGroupsTag()) {
+                        this.handleNewRepeatingGroup();
                     }
 
                     break;
@@ -116,6 +119,16 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
 
         // TODO Consider how to better handle this situation.
         throw new DeserializationException("Unable to deserialize FIX message.");
+    }
+
+    private void handleNewRepeatingGroup() {
+        this.repeatingGroupTags = RepeatingGroups.NUMBER_IN_GROUP_TAGS[this.lastDeserializedTag];
+        this.parsingState = ParsingState.REPEATING_GROUP;
+        this.hasFoundNumberOfRepeatingGroupsTag = true;
+    }
+
+    private boolean hasFoundNumberOfRepeatingGroupsTag() {
+        return null != RepeatingGroups.NUMBER_IN_GROUP_TAGS[this.lastDeserializedTag];
     }
 
     private void reset() {
