@@ -47,8 +47,8 @@ public final class RawOutboundFixMessageBuilder {
             // reuse of one ByteArrayOutputStream instance.
             final ByteArrayOutputStream headerOut = new ByteArrayOutputStream(this.messageLength);
             int messageBytesSum = 0;
-
-            for (int writeIndex = 0; writeIndex <= this.lastHeaderFieldIndex; writeIndex++) {
+            int writeIndex = 0;
+            for (; writeIndex <= this.lastHeaderFieldIndex; writeIndex++) {
                 messageBytesSum += FieldWriter.write(this.tags[writeIndex], this.values[writeIndex], headerOut);
             }
 
@@ -56,8 +56,7 @@ public final class RawOutboundFixMessageBuilder {
             // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
             final ByteArrayOutputStream bodyAndTrailerOut = new ByteArrayOutputStream(this.messageLength);
 
-            final int remainingIndexes = this.readIndex - this.lastHeaderFieldIndex;
-            for (int writeIndex = 0; writeIndex < remainingIndexes; writeIndex++) {
+            for (; writeIndex < this.readIndex; writeIndex++) {
                 messageBytesSum += FieldWriter.write(this.tags[writeIndex], this.values[writeIndex], bodyAndTrailerOut);
             }
 
