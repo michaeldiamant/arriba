@@ -18,9 +18,6 @@ public final class RawOutboundFixMessageBuilder {
     private final byte[][] tags = new byte[MAX_MESSAGE_FIELDS_COUNT][];
     private final String[] values = new String[MAX_MESSAGE_FIELDS_COUNT];
 
-    private String targetCompId = null;
-    private String senderCompId = null;
-
     private int readIndex = 0;
     private int messageLength = 0;
     private int lastHeaderFieldIndex = 0;
@@ -43,25 +40,8 @@ public final class RawOutboundFixMessageBuilder {
         return this;
     }
 
-    public RawOutboundFixMessageBuilder setTargetCompId(final String targetCompId) {
-        this.targetCompId = targetCompId;
-
-        return this.addField(Tags.TARGET_COMP_ID, targetCompId);
-    }
-
-    public RawOutboundFixMessageBuilder setSenderCompId(final String senderCompId) {
-        this.senderCompId = senderCompId;
-
-        return this.addField(Tags.SENDER_COMP_ID, senderCompId);
-    }
-
-    public OutboundFixMessage build() {
-        // FIXME Need to write BodyLength to header.
-
-        if (null == this.targetCompId) {
-            throw new IllegalStateException("Target component ID must be specified.");
-        }
-
+    public OutboundFixMessage build(final String beginString, final String senderCompId, final String targetCompId) {
+        // TODO Find cleaner way to inject begin string, sender / target comp IDs.
         try {
             // TODO Extend to allow underlying array to be resized.  This will enable
             // reuse of one ByteArrayOutputStream instance.
@@ -74,22 +54,22 @@ public final class RawOutboundFixMessageBuilder {
 
             // TODO Create ByteArrayOutputStream implementation that skips deep copy on toByteArray().
             // See http://javatechniques.com/blog/faster-deep-copies-of-java-objects/
-            final ByteArrayOutputStream nonHeaderOut = new ByteArrayOutputStream(this.messageLength);
+            final ByteArrayOutputStream bodyAndTrailerOut = new ByteArrayOutputStream(this.messageLength);
 
             final int remainingIndexes = this.readIndex - this.lastHeaderFieldIndex;
             for (int writeIndex = 0; writeIndex < remainingIndexes; writeIndex++) {
-                messageBytesSum += FieldWriter.write(this.tags[writeIndex], this.values[writeIndex], nonHeaderOut);
+                messageBytesSum += FieldWriter.write(this.tags[writeIndex], this.values[writeIndex], bodyAndTrailerOut);
             }
 
-            final OutboundFixMessage message = new OutboundFixMessage(headerOut, nonHeaderOut,
-                    messageBytesSum, this.senderCompId, this.targetCompId);
+            final OutboundFixMessage message =
+                    new OutboundFixMessage(headerOut, bodyAndTrailerOut, messageBytesSum, beginString, senderCompId, targetCompId);
 
             this.reset();
 
             return message;
         } catch (final IOException e) {
             return new OutboundFixMessage(new ByteArrayOutputStream(), new ByteArrayOutputStream(),
-                    0, this.senderCompId, this.targetCompId);
+                    0, "", "", "");
         }
     }
 
@@ -98,7 +78,5 @@ public final class RawOutboundFixMessageBuilder {
         this.lastHeaderFieldIndex = 0;
         this.readIndex = 0;
         this.messageLength = 0;
-        this.senderCompId = null;
-        this.targetCompId = null;
     }
 }

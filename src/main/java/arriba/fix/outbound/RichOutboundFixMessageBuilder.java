@@ -7,6 +7,9 @@ import arriba.fix.inbound.InboundFixMessage;
 public final class RichOutboundFixMessageBuilder {
 
     private final RawOutboundFixMessageBuilder rawBuilder;
+    private String beginString = null;
+    private String senderCompId = null;
+    private String targetCompId = null;
 
     public RichOutboundFixMessageBuilder(final RawOutboundFixMessageBuilder rawBuilder) {
         this.rawBuilder = rawBuilder;
@@ -14,11 +17,14 @@ public final class RichOutboundFixMessageBuilder {
 
     public RichOutboundFixMessageBuilder addStandardHeader(final MessageType messageType, final String beginString,
             final String senderCompId, final String targetCompId) {
+        this.beginString = beginString;
+        this.senderCompId = senderCompId;
+        this.targetCompId = targetCompId;
+
         this.rawBuilder
-        .addField(Tags.BEGIN_STRING, beginString)
         .addField(Tags.MESSAGE_TYPE, messageType.getValue())
-        .setSenderCompId(senderCompId)
-        .setTargetCompId(targetCompId);
+        .addField(Tags.SENDER_COMP_ID, senderCompId)
+        .addField(Tags.TARGET_COMP_ID, targetCompId);
 
         return this;
     }
@@ -46,6 +52,15 @@ public final class RichOutboundFixMessageBuilder {
     }
 
     public OutboundFixMessage build() {
-        return this.rawBuilder.build();
+        final OutboundFixMessage message = this.rawBuilder.build(this.beginString, this.senderCompId, this.targetCompId);
+
+        this.reset();
+
+        return message;
+    }
+
+    private void reset() {
+        this.senderCompId = null;
+        this.targetCompId = null;
     }
 }
