@@ -46,9 +46,6 @@ public final class InboundFixMessageBuilder {
     public InboundFixMessage build(final FixChunk[][] repeatingGroups, final int[] numberOfRepeatingGroupTags) {
         this.populateNumberOfRepeatingGroupTagMappings(numberOfRepeatingGroupTags);
 
-        // TODO Check for existence of checksum and actually compute it.
-        this.trailerChunkBuilder.addField(Tags.CHECKSUM, "1337".getBytes());
-
         final InboundFixMessage inboundFixMessage = this.factory.create(this.headerChunkBuilder.build(), this.bodyChunkBuilder
                 .build(), this.trailerChunkBuilder.build(), repeatingGroups);
 
