@@ -33,10 +33,10 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
         }
 
         // TODO Can SessionId be cached?
-        final Session session = this.sessionResolver.resolve(new SessionId("", fixMessage.getTargetCompId()));
+        final Session session = this.sessionResolver.resolve(new SessionId(fixMessage.getSenderCompId(), fixMessage.getTargetCompId()));
         if (null == session) {
             throw new IOException("Cannot find session for sender comp ID " + fixMessage.getSenderCompId() +
-                    " and target comp ID " + fixMessage.getSenderCompId() + ".");
+                    " and target comp ID " + fixMessage.getTargetCompId() + ".");
         }
 
         transport.write(fixMessage.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp()));
