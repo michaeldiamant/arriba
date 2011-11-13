@@ -26,6 +26,7 @@ public final class CanonicalTagIndexResolverRepository implements TagIndexResolv
                 .put(MessageType.LOGON.getSerializedValue(), new LogonTagIndexResolver())
                 .put(MessageType.NEW_ORDER_SINGLE.getSerializedValue(), new NewOrderSingleTagIndexResolver())
                 .put(MessageType.MARKET_DATA_REQUEST.getSerializedValue(), new MarketDataRequestTagIndexResolver())
+                .put(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.getSerializedValue(), new MarketDataSnapshotFullRefreshTagIndexResolver())
 
                 .build();
     }
