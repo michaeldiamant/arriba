@@ -9,8 +9,8 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
-import arriba.transport.Transport;
 import arriba.transport.TransportConnectHandler;
+import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
 
 public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> {
@@ -40,7 +40,7 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
     }
 
     @Override
-    public void onConnect(final Transport<T> transport) {
+    public void onConnect(final TransportIdentity<T> identity) {
 
         this.builder
         .addStandardHeader(MessageType.LOGON, BeginString.FIXT11.getValue(), this.senderCompId, this.targetCompId)
@@ -49,7 +49,7 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
         .addField(Tags.PASSWORD, this.password);
 
         try {
-            this.transportRepository.add(this.targetCompId, transport);
+            this.transportRepository.add(this.targetCompId, identity);
 
             this.fixMessageSender.send(this.builder.build());
         } catch (final IOException ioe) {

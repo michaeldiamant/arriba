@@ -12,8 +12,8 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
+import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
-import arriba.transport.netty.NettyTransport;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
@@ -61,7 +61,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
             // Assuming first channel entry is the 'right' one.
 
             final Channel channelToAdd = this.channels.remove(0);
-            this.transportRepository.add(message.getSenderCompId(), new NettyTransport(channelToAdd));
+            this.transportRepository.add(message.getSenderCompId(), new TransportIdentity<>(channelToAdd));
 
             this.fixMessageSender.send(this.builder.build());
         } catch (final IOException e) {
