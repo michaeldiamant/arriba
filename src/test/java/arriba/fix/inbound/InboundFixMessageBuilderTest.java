@@ -70,13 +70,6 @@ public class InboundFixMessageBuilderTest {
     }
 
     @Test
-    public void testGettingTrailerFields() {
-        final InboundFixMessage message = this.buildNewOrderSingle();
-
-        assertNotNull(message.getTrailerValue(Tags.CHECKSUM));
-    }
-
-    @Test
     public void testBuildingWithRepeatingGroups() {
         final MessageType messageType = MessageType.MARKET_DATA_REQUEST;
         final String mdRequestId = "mdReqId";
