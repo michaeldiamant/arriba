@@ -19,6 +19,7 @@ import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.NettyConnectHandlerAdapter;
+import arriba.transport.netty.NettyTransportFactory;
 import arriba.transport.netty.NettyTransportRepository;
 import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.bootstraps.FixClientBootstrap;
@@ -43,7 +44,8 @@ public class MarketTakerClient {
                 ClaimStrategy.Option.SINGLE_THREADED,
                 WaitStrategy.Option.YIELDING
                 );
-        final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(new InMemoryTransportRepository<String, Channel>());
+        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<String, Channel>(new NettyTransportFactory());
+        final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
                 configuration,

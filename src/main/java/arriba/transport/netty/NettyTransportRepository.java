@@ -5,6 +5,7 @@ import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 
 import arriba.transport.Transport;
+import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
 
 public final class NettyTransportRepository<ID> implements TransportRepository<ID, Channel> {
@@ -14,7 +15,7 @@ public final class NettyTransportRepository<ID> implements TransportRepository<I
         public void operationComplete(final ChannelFuture future) throws Exception {
 
             // TODO Consider creating a read-only Transport implementation
-            NettyTransportRepository.this.remove(new NettyTransport(future.getChannel()));
+            NettyTransportRepository.this.remove(new TransportIdentity<>(future.getChannel()));
         }
     };
 
@@ -23,19 +24,19 @@ public final class NettyTransportRepository<ID> implements TransportRepository<I
     }
 
     @Override
-    public Transport<Channel> add(final ID id, final Transport<Channel> transport) {
-        final Transport<Channel> previousTransport = this.backingRepository.add(id, transport);
+    public Transport<Channel> add(final ID id, final TransportIdentity<Channel> identity) {
+        final Transport<Channel> previousTransport = this.backingRepository.add(id, identity);
 
         if (null == previousTransport) {
-            transport.getUnderlying().getCloseFuture().addListener(this.removeChannelListener);
+            identity.getUnderlying().getCloseFuture().addListener(this.removeChannelListener);
         }
 
         return previousTransport;
     }
 
     @Override
-    public boolean remove(final Transport<Channel> transport) {
-        return this.backingRepository.remove(transport);
+    public boolean remove(final TransportIdentity<Channel> identity) {
+        return this.backingRepository.remove(identity);
     }
 
     @Override

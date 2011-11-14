@@ -10,17 +10,23 @@ public final class InMemoryTransportRepository<ID, T> implements TransportReposi
 
     // TODO Use MapMaker
     private final ConcurrentMap<ID, Transport<T>> idToChannel = Maps.newConcurrentMap();
+    private final TransportFactory<T> factory;
 
-    @Override
-    public Transport<T> add(final ID id, final Transport<T> transport) {
-        return this.idToChannel.putIfAbsent(id, transport);
+    public InMemoryTransportRepository(final TransportFactory<T> factory) {
+        this.factory = factory;
     }
 
     @Override
-    public boolean remove(final Transport<T> transport) {
+    public Transport<T> add(final ID id, final TransportIdentity<T> identity) {
+        return this.idToChannel.putIfAbsent(id, this.factory.create(identity));
+    }
+
+    @Override
+    public boolean remove(final TransportIdentity<T> identity) {
+        // Compare using TransportIdentity to avoid creating Transport instance.
         final Iterator<Entry<ID, Transport<T>>> iterator = this.idToChannel.entrySet().iterator();
         while (iterator.hasNext()) {
-            if (transport.equals(iterator.next().getValue())) {
+            if (identity.equals(iterator.next().getValue().getIdentity())) {
                 iterator.remove();
 
                 return true;

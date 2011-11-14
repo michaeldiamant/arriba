@@ -2,14 +2,18 @@ package arriba.transport;
 
 public abstract class Transport<T> {
 
-    protected final T underlying;
+    private final TransportIdentity<T> identity;
 
-    public Transport(final T underlying) {
-        this.underlying = underlying;
+    public Transport(final TransportIdentity<T> identity) {
+        this.identity = identity;
+    }
+
+    public TransportIdentity<T> getIdentity() {
+        return this.identity;
     }
 
     public T getUnderlying() {
-        return this.underlying;
+        return this.identity.getUnderlying();
     }
 
     public abstract void write(byte[] bytes);
@@ -18,11 +22,10 @@ public abstract class Transport<T> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((this.underlying == null) ? 0 : this.underlying.hashCode());
+        result = prime * result + this.identity.hashCode();
         return result;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -35,6 +38,8 @@ public abstract class Transport<T> {
             return false;
         }
 
-        return this.underlying.equals(((Transport) obj).underlying);
+        @SuppressWarnings("rawtypes")
+        final Transport other = (Transport) obj;
+        return this.identity.equals(other.identity);
     }
 }
