@@ -6,6 +6,7 @@ import java.io.IOException;
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
+import arriba.fix.fields.EncryptMethod;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
@@ -45,6 +46,8 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
         this.builder
         .addStandardHeader(MessageType.LOGON, BeginString.FIXT11.getValue(), this.senderCompId, this.targetCompId)
 
+        .addField(Tags.ENCRYPT_METHOD, EncryptMethod.NONE.getValue())
+        .addField(Tags.HEARTBEAT_INTERVAL, Integer.toString(10))
         .addField(Tags.USERNAME, this.username)
         .addField(Tags.PASSWORD, this.password);
 
