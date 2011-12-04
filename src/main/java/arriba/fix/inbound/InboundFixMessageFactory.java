@@ -30,13 +30,35 @@ public final class InboundFixMessageFactory {
 
         final MessageTypeFactory messageTypeFactory = this.messageTypeToFixMessageCreator.get(messageType);
         if (null == messageTypeFactory) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("No message type factory for message type " + new String(messageType) + ".");
         }
 
         return messageTypeFactory.create(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
     }
 
     private enum MessageTypeFactory {
+        HEARTBEAT {
+            @Override
+            InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
+                return new Heartbeat(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
+            }
+
+            @Override
+            byte[] getSerializedValue() {
+                return MessageType.HEARTBEAT.getSerializedValue();
+            }
+        },
+        TEST_REQUEST {
+            @Override
+            InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
+                return new TestRequest(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
+            }
+
+            @Override
+            byte[] getSerializedValue() {
+                return MessageType.TEST_REQUEST.getSerializedValue();
+            }
+        },
         LOGON {
             @Override
             InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
