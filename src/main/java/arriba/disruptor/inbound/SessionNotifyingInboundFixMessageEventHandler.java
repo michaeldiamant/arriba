@@ -23,6 +23,8 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
             throw new IllegalArgumentException("No session found for " + inboundFixMessage.getSessionId());
         }
 
+        session.updateLastReceivedTimestamp();
+
         session.onMessage(inboundFixMessage);
     }
 }
