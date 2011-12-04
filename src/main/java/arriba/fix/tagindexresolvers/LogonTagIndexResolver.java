@@ -6,8 +6,10 @@ public final class LogonTagIndexResolver extends TagIndexResolver {
 
     @Override
     protected int[] getRequiredTags() {
-        // TODO Add required tags as per FIX specification.
-        return new int[0];
+        return new int[] {
+                Tags.ENCRYPT_METHOD,
+                Tags.HEARTBEAT_INTERVAL
+        };
     }
 
     @Override
