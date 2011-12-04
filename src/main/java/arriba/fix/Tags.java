@@ -31,6 +31,7 @@ public final class Tags {
     public static final int TRANSACTION_TIME = 55;
     public static final int ENCRYPT_METHOD = 98;
     public static final int HEARTBEAT_INTERVAL = 108;
+    public static final int TEST_REQUEST_ID = 112;
     public static final int NUMBER_RELATED_SYMBOLS = 146;
     public static final int MD_REQUEST_ID = 262;
     public static final int SUBSCRIPTION_REQUEST_TYPE = 263;
