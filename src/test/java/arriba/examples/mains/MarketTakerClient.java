@@ -10,6 +10,7 @@ import org.jboss.netty.channel.Channel;
 import arriba.common.Sender;
 import arriba.configuration.ArribaWizard;
 import arriba.configuration.DisruptorConfiguration;
+import arriba.examples.handlers.HeartbeatGeneratingTestRequestHandler;
 import arriba.examples.handlers.LogonOnConnectApplication;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
@@ -56,6 +57,7 @@ public class MarketTakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
+        .registerMessageHandler(MessageType.TEST_REQUEST, new HeartbeatGeneratingTestRequestHandler(wizard.createOutboundBuilder(), outboundSender))
         .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, wizard.createOutboundBuilder()))
         .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, wizard.createOutboundBuilder()))
 
