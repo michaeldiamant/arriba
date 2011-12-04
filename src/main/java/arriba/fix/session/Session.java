@@ -35,16 +35,16 @@ public class Session {
         return this.lastReceivedTimestamp;
     }
 
-    public void setLastReceivedTimestamp(final long lastReceivedTimestamp) {
-        this.lastReceivedTimestamp = lastReceivedTimestamp;
-    }
-
     public long getLastSentTimestamp() {
         return this.lastSentTimestamp;
     }
 
-    public void setLastSentTimestamp(final long lastSentTimestamp) {
-        this.lastSentTimestamp = lastSentTimestamp;
+    public void updateLastSentTimestamp() {
+        this.lastSentTimestamp = System.currentTimeMillis();
+    }
+
+    public void updateLastReceivedTimestamp() {
+        this.lastReceivedTimestamp = System.currentTimeMillis();
     }
 
     public String getSenderCompId() {

@@ -40,5 +40,7 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
         }
 
         transport.write(fixMessage.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp()));
+
+        session.updateLastSentTimestamp();
     }
 }
