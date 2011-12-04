@@ -10,6 +10,14 @@ public final class SessionId {
         this.targetCompId = targetCompId;
     }
 
+    public String getSenderCompId() {
+        return this.senderCompId;
+    }
+
+    public String getTargetCompId() {
+        return this.targetCompId;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
