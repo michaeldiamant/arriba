@@ -13,7 +13,6 @@ public enum MessageType {
             return this.getValue().getBytes();
         }
     },
-
     TEST_REQUEST {
         @Override
         public String getValue() {
@@ -25,11 +24,21 @@ public enum MessageType {
             return this.getValue().getBytes();
         }
     },
-
     LOGON {
         @Override
         public String getValue() {
             return "A";
+        }
+
+        @Override
+        public byte[] getSerializedValue() {
+            return this.getValue().getBytes();
+        }
+    },
+    LOGOUT {
+        @Override
+        public String getValue() {
+            return "5";
         }
 
         @Override

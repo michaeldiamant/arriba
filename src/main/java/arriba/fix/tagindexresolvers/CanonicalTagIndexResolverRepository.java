@@ -24,6 +24,7 @@ public final class CanonicalTagIndexResolverRepository implements TagIndexResolv
     private ByteArrayKeyedMap<TagIndexResolver> initializeBodyResolvers() {
         return new ImmutableByteArrayKeyedMapBuilder<TagIndexResolver>()
                 .put(MessageType.LOGON.getSerializedValue(), new LogonTagIndexResolver())
+                .put(MessageType.LOGOUT.getSerializedValue(), new LogoutTagIndexResolver())
                 .put(MessageType.TEST_REQUEST.getSerializedValue(), new TestRequestTagIndexResolver())
                 .put(MessageType.NEW_ORDER_SINGLE.getSerializedValue(), new NewOrderSingleTagIndexResolver())
                 .put(MessageType.MARKET_DATA_REQUEST.getSerializedValue(), new MarketDataRequestTagIndexResolver())
