@@ -70,6 +70,17 @@ public final class InboundFixMessageFactory {
                 return MessageType.LOGON.getSerializedValue();
             }
         },
+        LOGOUT {
+            @Override
+            InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
+                return new Logout(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
+            }
+
+            @Override
+            byte[] getSerializedValue() {
+                return MessageType.LOGOUT.getSerializedValue();
+            }
+        },
         NEW_ORDER_SINGLE {
             @Override
             InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
