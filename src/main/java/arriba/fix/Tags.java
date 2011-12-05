@@ -28,7 +28,7 @@ public final class Tags {
     public static final int PRICE = 44;
     public static final int SIDE = 54;
     public static final int SYMBOL = 55;
-    public static final int TRANSACTION_TIME = 55;
+    public static final int TRANSACTION_TIME = 60;
     public static final int ENCRYPT_METHOD = 98;
     public static final int HEARTBEAT_INTERVAL = 108;
     public static final int TEST_REQUEST_ID = 112;
