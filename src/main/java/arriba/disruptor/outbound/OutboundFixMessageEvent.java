@@ -1,13 +1,14 @@
 package arriba.disruptor.outbound;
 
 import arriba.fix.outbound.OutboundFixMessage;
+import arriba.fix.session.SessionId;
 
 import com.lmax.disruptor.AbstractEvent;
 
 public final class OutboundFixMessageEvent extends AbstractEvent {
 
     private OutboundFixMessage message;
-    private String targetCompId;
+    private SessionId sessionId;
 
     public OutboundFixMessageEvent() {}
 
@@ -19,11 +20,11 @@ public final class OutboundFixMessageEvent extends AbstractEvent {
         this.message = message;
     }
 
-    public String getTargetCompId() {
-        return this.targetCompId;
+    public SessionId getSessionId() {
+        return this.sessionId;
     }
 
-    public void setTargetCompId(final String targetCompId) {
-        this.targetCompId = targetCompId;
+    public void setSessionId(final SessionId sessionId) {
+        this.sessionId = sessionId;
     }
 }

@@ -29,13 +29,13 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
             this.writeFixMessage(entry.getFixMessage());
         }
 
-        if (null != entry.getTargetCompId()) {
-            this.disconnectSession(entry.getTargetCompId());
+        if (null != entry.getSessionId()) {
+            this.disconnectSession(entry.getSessionId());
         }
     }
 
-    private void disconnectSession(final String targetCompId) {
-        final Transport<T> transport = this.transportRepository.find(targetCompId);
+    private void disconnectSession(final SessionId sessionId) {
+        final Transport<T> transport = this.transportRepository.find(sessionId.getTargetCompId());
         if (null != transport) {
             transport.close();
         }
