@@ -25,15 +25,18 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
     private final Lock sessionToMonitorFutureLock = new ReentrantLock();
     private final SessionDisconnector disconnector;
     private final SessionResolver resolver;
+    private final LogoutTracker tracker;
 
     public ScheduledSessionMonitor(final Sender<OutboundFixMessage> fixMessageSender,
             final RichOutboundFixMessageBuilder builder,
             final SessionDisconnector disconnector,
-            final SessionResolver resolver) {
+            final SessionResolver resolver,
+            final LogoutTracker tracker) {
         this.fixMessageSender = fixMessageSender;
         this.builder = builder;
         this.disconnector = disconnector;
         this.resolver = resolver;
+        this.tracker = tracker;
     }
 
     @Override
@@ -95,6 +98,7 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
                                 .addStandardHeader(MessageType.LOGOUT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
                         ScheduledSessionMonitor.this.fixMessageSender.send(logout);
+                        ScheduledSessionMonitor.this.tracker.markLogout(sessionId);
                     }
 
                     private void sendHeartbeat() {
