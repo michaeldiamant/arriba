@@ -33,6 +33,7 @@ public class MarketTakerClient {
 
     private final String senderCompId = "MT";
     private final String targetCompId = "MM";
+    private final int heartbeatIntervalInMs = 1000 * 30;
     private final String username = "tr8der";
     private final String password = "liquidity";
 
@@ -67,7 +68,7 @@ public class MarketTakerClient {
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NettyConnectHandlerAdapter(new LogonOnConnectApplication<Channel>(this.senderCompId, this.targetCompId, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder())),
+                new NettyConnectHandlerAdapter(new LogonOnConnectApplication<Channel>(this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder(), wizard.getSessionMonitor())),
                 new SerializedFixMessageHandler(inboundSender)
                 );
 

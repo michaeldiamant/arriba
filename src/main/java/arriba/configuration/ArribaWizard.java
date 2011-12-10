@@ -93,8 +93,9 @@ public final class ArribaWizard<T> {
                 );
     }
 
-    public SessionDisconnector getSessionDisconnector() {
-        return this.sessionDisconnector;
+    // TODO Find a way to avoid exposing SessionMonitor.
+    public SessionMonitor getSessionMonitor() {
+        return this.sessionMonitor;
     }
 
     public Sender<ChannelBuffer> getInboundSender() {
