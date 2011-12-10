@@ -25,21 +25,36 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
 
     @Override
     public void onEvent(final OutboundFixMessageEvent entry, final boolean endOfBatch) throws Exception {
-        final OutboundFixMessage fixMessage = entry.getFixMessage();
+        if (null != entry.getFixMessage()) {
+            this.writeFixMessage(entry.getFixMessage());
+        }
 
-        final Transport<T> transport = this.transportRepository.find(fixMessage.getTargetCompId());
+        if (null != entry.getTargetCompId()) {
+            this.disconnectSession(entry.getTargetCompId());
+        }
+    }
+
+    private void disconnectSession(final String targetCompId) {
+        final Transport<T> transport = this.transportRepository.find(targetCompId);
+        if (null != transport) {
+            transport.close();
+        }
+    }
+
+    private void writeFixMessage(final OutboundFixMessage message) throws IOException {
+        final Transport<T> transport = this.transportRepository.find(message.getTargetCompId());
         if (null == transport) {
-            throw new IOException("Cannot find transport for target comp ID " + fixMessage.getTargetCompId() + ".");
+            throw new IOException("Cannot find transport for target comp ID " + message.getTargetCompId() + ".");
         }
 
         // TODO Can SessionId be cached?
-        final Session session = this.sessionResolver.resolve(new SessionId(fixMessage.getSenderCompId(), fixMessage.getTargetCompId()));
+        final Session session = this.sessionResolver.resolve(new SessionId(message.getSenderCompId(), message.getTargetCompId()));
         if (null == session) {
-            throw new IOException("Cannot find session for sender comp ID " + fixMessage.getSenderCompId() +
-                    " and target comp ID " + fixMessage.getTargetCompId() + ".");
+            throw new IOException("Cannot find session for sender comp ID " + message.getSenderCompId() +
+                    " and target comp ID " + message.getTargetCompId() + ".");
         }
 
-        transport.write(fixMessage.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp()));
+        transport.write(message.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp()));
 
         session.updateLastSentTimestamp();
     }
