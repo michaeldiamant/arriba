@@ -17,10 +17,12 @@ import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.InboundEvent;
 import arriba.disruptor.inbound.InboundFactory;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
+import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
 import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.OutboundEvent;
 import arriba.disruptor.outbound.OutboundEventFactory;
-import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
+import arriba.disruptor.outbound.OutboundEventHandler;
+import arriba.disruptor.outbound.TransportWritingFixMessageHandler;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.FixChunkBuilderSupplier;
@@ -168,12 +170,14 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<OutboundEvent> transportWritingConsumer() {
-        return new TransportWritingFixMessageEventHandler<T>(
-                this.transportRepository,
-                this.sessionResolver,
-                Sets.newHashSet(
-                        new SessionUnmonitoringDisconnectListener(this.sessionMonitor),
-                        new LogoutMarkClearingDisconnectListener(this.logoutTracker)
+        return new OutboundEventHandler<T>(
+                new TransportWritingFixMessageHandler<>(this.transportRepository, this.sessionResolver),
+                new DisconnectingSessionIdHandler<>(
+                        this.transportRepository,
+                        Sets.newHashSet(
+                                new SessionUnmonitoringDisconnectListener(this.sessionMonitor),
+                                new LogoutMarkClearingDisconnectListener(this.logoutTracker)
+                                )
                         )
                 );
     }
