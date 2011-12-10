@@ -39,6 +39,5 @@ public class DisconnectingLogoutHandler implements Handler<Logout> {
         }
 
         this.disconnector.disconnect(sessionId);
-        this.tracker.clearMark(sessionId);
     }
 }
