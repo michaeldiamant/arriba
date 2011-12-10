@@ -16,7 +16,7 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 
-public class HeartbeatMonitor {
+public class SessionMonitor {
 
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Sender<OutboundFixMessage> fixMessageSender;
@@ -24,7 +24,7 @@ public class HeartbeatMonitor {
     private final Map<Session, ScheduledFuture<?>> sessionToMonitorFuture = new HashMap<>();
     private final Lock sessionToMonitorFutureLock = new ReentrantLock();
 
-    public HeartbeatMonitor(final Sender<OutboundFixMessage> fixMessageSender,
+    public SessionMonitor(final Sender<OutboundFixMessage> fixMessageSender,
             final RichOutboundFixMessageBuilder builder) {
         this.fixMessageSender = fixMessageSender;
         this.builder = builder;
@@ -79,25 +79,25 @@ public class HeartbeatMonitor {
                     }
 
                     private void sendLogout() {
-                        final OutboundFixMessage logout = HeartbeatMonitor.this.builder
+                        final OutboundFixMessage logout = SessionMonitor.this.builder
                                 .addStandardHeader(MessageType.LOGOUT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
-                        HeartbeatMonitor.this.fixMessageSender.send(logout);
+                        SessionMonitor.this.fixMessageSender.send(logout);
                     }
 
                     private void sendHeartbeat() {
-                        final OutboundFixMessage heartbeat = HeartbeatMonitor.this.builder
+                        final OutboundFixMessage heartbeat = SessionMonitor.this.builder
                                 .addStandardHeader(MessageType.HEARTBEAT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
-                        HeartbeatMonitor.this.fixMessageSender.send(heartbeat);
+                        SessionMonitor.this.fixMessageSender.send(heartbeat);
                     }
 
                     private void sendTestRequest() {
-                        final OutboundFixMessage testRequest = HeartbeatMonitor.this.builder
+                        final OutboundFixMessage testRequest = SessionMonitor.this.builder
                                 .addStandardHeader(MessageType.TEST_REQUEST, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .addField(Tags.TEST_REQUEST_ID, Long.toString(System.currentTimeMillis()))
                                 .build();
-                        HeartbeatMonitor.this.fixMessageSender.send(testRequest);
+                        SessionMonitor.this.fixMessageSender.send(testRequest);
                     }
                 };
 
