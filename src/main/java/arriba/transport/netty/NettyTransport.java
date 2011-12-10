@@ -18,4 +18,9 @@ public final class NettyTransport extends Transport<Channel> {
         final ChannelBuffer messageBuffer = ChannelBuffers.copiedBuffer(bytes);
         this.getUnderlying().write(messageBuffer);
     }
+
+    @Override
+    public void close() {
+        this.getUnderlying().close();
+    }
 }
