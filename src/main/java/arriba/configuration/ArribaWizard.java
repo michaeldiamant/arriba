@@ -11,6 +11,7 @@ import arriba.common.HandlerRepository;
 import arriba.common.MapHandlerRepository;
 import arriba.common.Sender;
 import arriba.disruptor.DisruptorSender;
+import arriba.disruptor.DisruptorSessionDisconnector;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundFixMessageEvent;
 import arriba.disruptor.inbound.InboundFixMessageEventFactory;
@@ -33,6 +34,7 @@ import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.InMemorySessionResolver;
 import arriba.fix.session.Session;
+import arriba.fix.session.SessionDisconnector;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionResolver;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
@@ -59,6 +61,7 @@ public final class ArribaWizard<T> {
     private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<ChannelBuffer> inboundSender;
+    private final SessionDisconnector sessionDisconnector;
 
     public ArribaWizard(final DisruptorConfiguration disruptorConfiguration, final TransportRepository<String, T> transportRepository) {
         this.transportRepository = transportRepository;
@@ -74,6 +77,14 @@ public final class ArribaWizard<T> {
                 outboundDisruptor,
                 new OutboundFixMessageToDisruptorAdapter()
                 );
+        this.sessionDisconnector = new DisruptorSessionDisconnector<>(
+                outboundDisruptor,
+                new OutboundFixMessageToDisruptorAdapter()
+                );
+    }
+
+    public SessionDisconnector getSessionDisconnector() {
+        return this.sessionDisconnector;
     }
 
     public Sender<ChannelBuffer> getInboundSender() {
