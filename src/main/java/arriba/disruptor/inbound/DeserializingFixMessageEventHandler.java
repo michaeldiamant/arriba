@@ -13,7 +13,7 @@ import arriba.fix.inbound.RepeatingGroupBuilder;
 
 import com.lmax.disruptor.EventHandler;
 
-public final class DeserializingFixMessageEventHandler implements EventHandler<InboundFixMessageEvent> {
+public final class DeserializingFixMessageEventHandler implements EventHandler<InboundEvent> {
 
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
 
@@ -38,7 +38,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
     }
 
     @Override
-    public void onEvent(final InboundFixMessageEvent entry, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundEvent entry, final boolean endOfBatch) throws Exception {
         final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
 
         this.parsingState = ParsingState.NON_REPEATING_GROUP;

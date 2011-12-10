@@ -13,13 +13,13 @@ import arriba.common.Sender;
 import arriba.disruptor.DisruptorSender;
 import arriba.disruptor.DisruptorSessionDisconnector;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
-import arriba.disruptor.inbound.InboundFixMessageEvent;
-import arriba.disruptor.inbound.InboundFixMessageEventFactory;
-import arriba.disruptor.inbound.SerializedFixMessageToDisruptorAdapter;
+import arriba.disruptor.inbound.InboundEvent;
+import arriba.disruptor.inbound.InboundFactory;
+import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
-import arriba.disruptor.outbound.OutboundFixMessageEvent;
-import arriba.disruptor.outbound.OutboundFixMessageEventFactory;
-import arriba.disruptor.outbound.OutboundFixMessageToDisruptorAdapter;
+import arriba.disruptor.outbound.OutboundEvent;
+import arriba.disruptor.outbound.OutboundEventFactory;
+import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
 import arriba.fix.chunk.FixChunkBuilder;
@@ -69,20 +69,20 @@ public final class ArribaWizard<T> {
     public ArribaWizard(final DisruptorConfiguration disruptorConfiguration, final TransportRepository<String, T> transportRepository) {
         this.transportRepository = transportRepository;
 
-        final RingBuffer<InboundFixMessageEvent> inboundDisruptor = this.inboundDisruptor(disruptorConfiguration);
+        final RingBuffer<InboundEvent> inboundDisruptor = this.inboundDisruptor(disruptorConfiguration);
         this.inboundSender = new DisruptorSender<>(
                 inboundDisruptor,
-                new SerializedFixMessageToDisruptorAdapter()
+                new InboundDisruptorAdapter()
                 );
 
-        final RingBuffer<OutboundFixMessageEvent> outboundDisruptor = this.outboundDisruptor(disruptorConfiguration);
+        final RingBuffer<OutboundEvent> outboundDisruptor = this.outboundDisruptor(disruptorConfiguration);
         this.outboundSender = new DisruptorSender<>(
                 outboundDisruptor,
-                new OutboundFixMessageToDisruptorAdapter()
+                new OutboundDisruptorAdapter()
                 );
         this.sessionDisconnector = new DisruptorSessionDisconnector<>(
                 outboundDisruptor,
-                new OutboundFixMessageToDisruptorAdapter()
+                new OutboundDisruptorAdapter()
                 );
 
         this.sessionMonitor = new ScheduledSessionMonitor(
@@ -139,9 +139,9 @@ public final class ArribaWizard<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private RingBuffer<OutboundFixMessageEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
-        final DisruptorWizard<OutboundFixMessageEvent> outgoingDisruptor = new DisruptorWizard<>(
-                new OutboundFixMessageEventFactory(),
+    private RingBuffer<OutboundEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
+        final DisruptorWizard<OutboundEvent> outgoingDisruptor = new DisruptorWizard<>(
+                new OutboundEventFactory(),
                 configuration.getRingBufferSize(),
                 configuration.getExecutor(),
                 configuration.getClaimStrategy(),
@@ -152,7 +152,7 @@ public final class ArribaWizard<T> {
         return outgoingDisruptor.start();
     }
 
-    private EventHandler<OutboundFixMessageEvent> transportWritingConsumer() {
+    private EventHandler<OutboundEvent> transportWritingConsumer() {
         return new TransportWritingFixMessageEventHandler<T>(
                 this.transportRepository,
                 this.sessionResolver,
@@ -161,9 +161,9 @@ public final class ArribaWizard<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private RingBuffer<InboundFixMessageEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
-        final DisruptorWizard<InboundFixMessageEvent> inboundDisruptor = new DisruptorWizard<>(
-                new InboundFixMessageEventFactory(),
+    private RingBuffer<InboundEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
+        final DisruptorWizard<InboundEvent> inboundDisruptor = new DisruptorWizard<>(
+                new InboundFactory(),
                 configuration.getRingBufferSize(),
                 configuration.getExecutor(),
                 configuration.getClaimStrategy(),
@@ -176,7 +176,7 @@ public final class ArribaWizard<T> {
         return inboundDisruptor.start();
     }
 
-    private EventHandler<InboundFixMessageEvent> deserializingConsumer() {
+    private EventHandler<InboundEvent> deserializingConsumer() {
         return new DeserializingFixMessageEventHandler(
                 this.inboundFixMessageBuilder(),
                 new RepeatingGroupBuilder(this.fixChunkBuilderSupplier)
@@ -190,7 +190,7 @@ public final class ArribaWizard<T> {
                 );
     }
 
-    private EventHandler<InboundFixMessageEvent> sessionNotifyingConsumer() {
+    private EventHandler<InboundEvent> sessionNotifyingConsumer() {
         return new SessionNotifyingInboundFixMessageEventHandler(this.sessionResolver);
     }
 

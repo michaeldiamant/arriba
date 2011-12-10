@@ -13,7 +13,7 @@ import arriba.transport.TransportRepository;
 
 import com.lmax.disruptor.EventHandler;
 
-public final class TransportWritingFixMessageEventHandler<T> implements EventHandler<OutboundFixMessageEvent> {
+public final class TransportWritingFixMessageEventHandler<T> implements EventHandler<OutboundEvent> {
 
     private final TransportRepository<String, T> transportRepository;
     private final SessionResolver sessionResolver;
@@ -28,7 +28,7 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
     }
 
     @Override
-    public void onEvent(final OutboundFixMessageEvent entry, final boolean endOfBatch) throws Exception {
+    public void onEvent(final OutboundEvent entry, final boolean endOfBatch) throws Exception {
         if (null != entry.getFixMessage()) {
             this.writeFixMessage(entry.getFixMessage());
         }
