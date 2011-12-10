@@ -73,7 +73,7 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
                     @Override
                     public void run() {
                         if (this.hasTimedoutWaitingForLogoutResponse()) {
-                            ScheduledSessionMonitor.this.disconnector.disconnect(session.getTargetCompId());
+                            ScheduledSessionMonitor.this.disconnector.disconnect(new SessionId(session.getSenderCompId(), session.getTargetCompId()));
                         } else if (this.isLogoutRequired()) {
                             this.sendLogout();
                         } else if (this.isTestRequestRequired()) {
