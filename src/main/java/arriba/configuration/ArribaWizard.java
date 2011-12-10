@@ -33,9 +33,11 @@ import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.InMemorySessionResolver;
+import arriba.fix.session.ScheduledSessionMonitor;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionDisconnector;
 import arriba.fix.session.SessionId;
+import arriba.fix.session.SessionMonitor;
 import arriba.fix.session.SessionResolver;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.transport.TransportRepository;
@@ -62,6 +64,7 @@ public final class ArribaWizard<T> {
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<ChannelBuffer> inboundSender;
     private final SessionDisconnector sessionDisconnector;
+    private final SessionMonitor sessionMonitor;
 
     public ArribaWizard(final DisruptorConfiguration disruptorConfiguration, final TransportRepository<String, T> transportRepository) {
         this.transportRepository = transportRepository;
@@ -80,6 +83,12 @@ public final class ArribaWizard<T> {
         this.sessionDisconnector = new DisruptorSessionDisconnector<>(
                 outboundDisruptor,
                 new OutboundFixMessageToDisruptorAdapter()
+                );
+
+        this.sessionMonitor = new ScheduledSessionMonitor(
+                this.outboundSender,
+                this.createOutboundBuilder(),
+                this.sessionDisconnector
                 );
     }
 
@@ -123,7 +132,6 @@ public final class ArribaWizard<T> {
         return this;
     }
 
-
     public void start() {
         this.initializeSessions();
     }
@@ -143,7 +151,11 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<OutboundFixMessageEvent> transportWritingConsumer() {
-        return new TransportWritingFixMessageEventHandler<T>(this.transportRepository, this.sessionResolver);
+        return new TransportWritingFixMessageEventHandler<T>(
+                this.transportRepository,
+                this.sessionResolver,
+                this.sessionMonitor
+                );
     }
 
     @SuppressWarnings("unchecked")

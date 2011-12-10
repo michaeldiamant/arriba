@@ -6,6 +6,7 @@ import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
+import arriba.fix.session.SessionMonitor;
 import arriba.fix.session.SessionResolver;
 import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
@@ -16,11 +17,14 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
 
     private final TransportRepository<String, T> transportRepository;
     private final SessionResolver sessionResolver;
+    private final SessionMonitor monitor;
 
     public TransportWritingFixMessageEventHandler(final TransportRepository<String, T> transportRepository,
-            final SessionResolver sessionResolver) {
+            final SessionResolver sessionResolver,
+            final SessionMonitor monitor) {
         this.transportRepository = transportRepository;
         this.sessionResolver = sessionResolver;
+        this.monitor = monitor;
     }
 
     @Override
@@ -35,6 +39,9 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
     }
 
     private void disconnectSession(final SessionId sessionId) {
+        final Session session = this.sessionResolver.resolve(sessionId);
+        this.monitor.unmonitor(session);
+
         final Transport<T> transport = this.transportRepository.find(sessionId.getTargetCompId());
         if (null != transport) {
             transport.close();
