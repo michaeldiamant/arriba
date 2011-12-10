@@ -18,6 +18,8 @@ public abstract class Transport<T> {
 
     public abstract void write(byte[] bytes);
 
+    public abstract void close();
+
     @Override
     public int hashCode() {
         final int prime = 31;
