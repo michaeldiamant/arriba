@@ -11,6 +11,8 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
+import arriba.fix.session.SessionId;
+import arriba.fix.session.SessionMonitor;
 import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
 
@@ -24,19 +26,22 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
     private final List<Channel> channels;
     private final TransportRepository<String, Channel> transportRepository;
     private final RichOutboundFixMessageBuilder builder;
+    private final SessionMonitor monitor;
 
     public AuthenticatingLogonHandler(final String expectedUsername,
             final String expectedPassword,
             final Sender<OutboundFixMessage> fixMessageSender,
             final RichOutboundFixMessageBuilder builder,
             final List<Channel> channels,
-            final TransportRepository<String, Channel> transportRepository) {
+            final TransportRepository<String, Channel> transportRepository,
+            final SessionMonitor monitor) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
         this.fixMessageSender = fixMessageSender;
         this.builder = builder;
         this.channels = channels;
         this.transportRepository = transportRepository;
+        this.monitor = monitor;
     }
 
     @Override
@@ -53,13 +58,19 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         .addStandardHeader(MessageType.LOGON, message)
 
         .addField(Tags.USERNAME, message.getUsername())
-        .addField(Tags.PASSWORD, message.getPassword());
+        .addField(Tags.PASSWORD, message.getPassword())
+        .addField(Tags.HEARTBEAT_INTERVAL, message.getHeartbeatInterval());
 
         // TODO Need to figure out right way to negotiate channel registration server-side.
         // Assuming first channel entry is the 'right' one.
 
         final Channel channelToAdd = this.channels.remove(0);
         this.transportRepository.add(message.getSenderCompId(), new TransportIdentity<>(channelToAdd));
+
+        this.monitor.monitor(
+                new SessionId(message.getTargetCompId(), message.getSenderCompId()),
+                Integer.parseInt(message.getHeartbeatInterval())
+                );
 
         this.fixMessageSender.send(this.builder.build());
     }
