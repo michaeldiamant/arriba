@@ -52,49 +52,72 @@ public class HeartbeatMonitor {
                         return System.currentTimeMillis() - session.getLastSentTimestamp() >= heartbeatIntervalInMs;
                     }
 
-                    public boolean isTestRequestRequired() {
+                    private boolean isTestRequestRequired() {
                         return System.currentTimeMillis() - session.getLastReceivedTimestamp() >= heartbeatIntervalInMs;
+                    }
+
+                    private boolean isLogoutRequired() {
+                        // No messages received in 2+ heartbeat intervals indicates that the session did not respond to test request.
+                        return System.currentTimeMillis() - session.getLastReceivedTimestamp() >= 2 * heartbeatIntervalInMs;
+                    }
+
+                    private boolean hasTimedoutWaitingForLogoutResponse() {
+                        // No messages received in 3+ hearbeat intervals indicates that the session did not respond to logout request.
+                        return System.currentTimeMillis() - session.getLastReceivedTimestamp() >= 3 * heartbeatIntervalInMs;
                     }
 
                     @Override
                     public void run() {
-                        final OutboundFixMessage heartbeat = HeartbeatMonitor.this.builder
-                                .addStandardHeader(MessageType.HEARTBEAT,
-                                        BeginString.FIXT11.getValue(),
-                                        session.getSenderCompId(),
-                                        session.getTargetCompId())
-
-                                        .build();
-
-                        if (this.isHeartbeatRequired()) {
-                            try {
-                                HeartbeatMonitor.this.fixMessageSender.send(heartbeat);
-                            } catch (final IOException e) {
-                                e.printStackTrace(); // TODO
-                            }
+                        if (this.hasTimedoutWaitingForLogoutResponse()) {
+                            // disconnect
+                        } else if (this.isLogoutRequired()) {
+                            this.sendLogout();
+                        } else if (this.isTestRequestRequired()) {
+                            this.sendTestRequest();
+                        } else if (this.isHeartbeatRequired()) {
+                            this.sendHeartbeat();
                         }
+                    }
 
-                        if (this.isTestRequestRequired()) {
-                            final OutboundFixMessage testRequest = HeartbeatMonitor.this.builder
-                                    .addStandardHeader(MessageType.TEST_REQUEST,
-                                            BeginString.FIXT11.getValue(),
-                                            session.getSenderCompId(),
-                                            session.getTargetCompId())
+                    private void sendLogout() {
+                        final OutboundFixMessage logout = HeartbeatMonitor.this.builder
+                                .addStandardHeader(MessageType.LOGOUT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
+                                .build();
 
-                                            .addField(Tags.TEST_REQUEST_ID, Long.toString(System.currentTimeMillis()))
-                                            .build();
+                        try {
+                            HeartbeatMonitor.this.fixMessageSender.send(logout);
+                        } catch (final IOException e) {
+                            e.printStackTrace(); // TODO
+                        }
+                    }
 
-                            try {
-                                HeartbeatMonitor.this.fixMessageSender.send(testRequest);
-                            } catch (final IOException e) {
-                                e.printStackTrace(); // TODO
-                            }
+                    private void sendHeartbeat() {
+                        final OutboundFixMessage heartbeat = HeartbeatMonitor.this.builder
+                                .addStandardHeader(MessageType.HEARTBEAT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
+                                .build();
+
+                        try {
+                            HeartbeatMonitor.this.fixMessageSender.send(heartbeat);
+                        } catch (final IOException e) {
+                            e.printStackTrace(); // TODO
+                        }
+                    }
+
+                    private void sendTestRequest() {
+                        final OutboundFixMessage testRequest = HeartbeatMonitor.this.builder
+                                .addStandardHeader(MessageType.TEST_REQUEST, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
+                                .addField(Tags.TEST_REQUEST_ID, Long.toString(System.currentTimeMillis()))
+                                .build();
+
+                        try {
+                            HeartbeatMonitor.this.fixMessageSender.send(testRequest);
+                        } catch (final IOException e) {
+                            e.printStackTrace(); // TODO
                         }
                     }
                 };
 
                 final ScheduledFuture<?> monitorFuture = this.executor.scheduleAtFixedRate(monitorRunnable, 0, heartbeatIntervalInMs, TimeUnit.MILLISECONDS);
-
                 this.sessionToMonitorFuture.put(session, monitorFuture);
             }
         } finally {
@@ -102,5 +125,3 @@ public class HeartbeatMonitor {
         }
     }
 }
-
-
