@@ -1,7 +1,5 @@
 package arriba.examples.handlers;
 
-import java.io.IOException;
-
 import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
@@ -27,10 +25,6 @@ public final class HeartbeatGeneratingTestRequestHandler implements Handler<Test
                 .addField(Tags.TEST_REQUEST_ID, message.getTestRequestId())
                 .build();
 
-        try {
-            this.sender.send(heartbeat);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        this.sender.send(heartbeat);
     }
 }

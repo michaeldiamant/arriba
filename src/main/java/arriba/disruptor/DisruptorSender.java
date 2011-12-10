@@ -1,7 +1,5 @@
 package arriba.disruptor;
 
-import java.io.IOException;
-
 import arriba.common.Sender;
 
 import com.lmax.disruptor.AbstractEvent;
@@ -18,7 +16,7 @@ public final class DisruptorSender<M, E extends AbstractEvent> implements Sender
         this.messageToDisruptorAdapter = messageToDisruptorEntryAdapter;
     }
 
-    public void send(final M message) throws IOException {
+    public void send(final M message) {
         final E nextEntry = this.disruptor.nextEvent();
 
         this.messageToDisruptorAdapter.adapt(message, nextEntry);

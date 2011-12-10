@@ -1,6 +1,5 @@
 package arriba.examples.handlers;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.jboss.netty.channel.Channel;
@@ -56,17 +55,13 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         .addField(Tags.USERNAME, message.getUsername())
         .addField(Tags.PASSWORD, message.getPassword());
 
-        try {
-            // TODO Need to figure out right way to negotiate channel registration server-side.
-            // Assuming first channel entry is the 'right' one.
+        // TODO Need to figure out right way to negotiate channel registration server-side.
+        // Assuming first channel entry is the 'right' one.
 
-            final Channel channelToAdd = this.channels.remove(0);
-            this.transportRepository.add(message.getSenderCompId(), new TransportIdentity<>(channelToAdd));
+        final Channel channelToAdd = this.channels.remove(0);
+        this.transportRepository.add(message.getSenderCompId(), new TransportIdentity<>(channelToAdd));
 
-            this.fixMessageSender.send(this.builder.build());
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        this.fixMessageSender.send(this.builder.build());
     }
 
 }

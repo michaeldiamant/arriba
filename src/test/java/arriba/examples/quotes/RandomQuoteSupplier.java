@@ -1,6 +1,5 @@
 package arriba.examples.quotes;
 
-import java.io.IOException;
 import java.util.Random;
 import java.util.Set;
 
@@ -53,11 +52,7 @@ public final class RandomQuoteSupplier implements Runnable {
                 .addField(Tags.MD_ENTRY_SIZE, "200")
                 .addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice + 0.05));
 
-                try {
-                    this.fixMessageSender.send(this.builder.build());
-                } catch (final IOException e) {
-                    e.printStackTrace();
-                }
+                this.fixMessageSender.send(this.builder.build());
             }
         }
     }

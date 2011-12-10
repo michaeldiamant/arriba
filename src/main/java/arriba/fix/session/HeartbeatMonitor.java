@@ -1,6 +1,5 @@
 package arriba.fix.session;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -83,24 +82,14 @@ public class HeartbeatMonitor {
                         final OutboundFixMessage logout = HeartbeatMonitor.this.builder
                                 .addStandardHeader(MessageType.LOGOUT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
-
-                        try {
-                            HeartbeatMonitor.this.fixMessageSender.send(logout);
-                        } catch (final IOException e) {
-                            e.printStackTrace(); // TODO
-                        }
+                        HeartbeatMonitor.this.fixMessageSender.send(logout);
                     }
 
                     private void sendHeartbeat() {
                         final OutboundFixMessage heartbeat = HeartbeatMonitor.this.builder
                                 .addStandardHeader(MessageType.HEARTBEAT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
-
-                        try {
-                            HeartbeatMonitor.this.fixMessageSender.send(heartbeat);
-                        } catch (final IOException e) {
-                            e.printStackTrace(); // TODO
-                        }
+                        HeartbeatMonitor.this.fixMessageSender.send(heartbeat);
                     }
 
                     private void sendTestRequest() {
@@ -108,12 +97,7 @@ public class HeartbeatMonitor {
                                 .addStandardHeader(MessageType.TEST_REQUEST, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .addField(Tags.TEST_REQUEST_ID, Long.toString(System.currentTimeMillis()))
                                 .build();
-
-                        try {
-                            HeartbeatMonitor.this.fixMessageSender.send(testRequest);
-                        } catch (final IOException e) {
-                            e.printStackTrace(); // TODO
-                        }
+                        HeartbeatMonitor.this.fixMessageSender.send(testRequest);
                     }
                 };
 

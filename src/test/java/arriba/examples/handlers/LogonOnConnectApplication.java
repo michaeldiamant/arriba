@@ -1,8 +1,6 @@
 package arriba.examples.handlers;
 
 
-import java.io.IOException;
-
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.BeginString;
@@ -51,12 +49,8 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
         .addField(Tags.USERNAME, this.username)
         .addField(Tags.PASSWORD, this.password);
 
-        try {
-            this.transportRepository.add(this.targetCompId, identity);
+        this.transportRepository.add(this.targetCompId, identity);
 
-            this.fixMessageSender.send(this.builder.build());
-        } catch (final IOException ioe) {
-            ioe.printStackTrace();
-        }
+        this.fixMessageSender.send(this.builder.build());
     }
 }
