@@ -33,8 +33,6 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
         this.disconnector = disconnector;
     }
 
-    // TODO How to know when to unregister a session
-
     @Override
     public void unmonitor(final Session session) {
         this.sessionToMonitorFutureLock.lock();
