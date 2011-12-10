@@ -97,6 +97,15 @@ public final class ArribaWizard<T> {
                 );
     }
 
+    // TODO Should not be exposed.
+    public LogoutTracker getLogoutTracker() {
+        return this.logoutTracker;
+    }
+
+    public SessionDisconnector getSessionDisconnector() {
+        return this.sessionDisconnector;
+    }
+
     // TODO Find a way to avoid exposing SessionMonitor.
     public SessionMonitor getSessionMonitor() {
         return this.sessionMonitor;
