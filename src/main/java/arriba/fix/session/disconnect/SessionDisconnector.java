@@ -1,4 +1,6 @@
-package arriba.fix.session;
+package arriba.fix.session.disconnect;
+
+import arriba.fix.session.SessionId;
 
 public interface SessionDisconnector {
 

@@ -7,8 +7,8 @@ import arriba.fix.inbound.Logout;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.LogoutTracker;
-import arriba.fix.session.SessionDisconnector;
 import arriba.fix.session.SessionId;
+import arriba.fix.session.disconnect.SessionDisconnector;
 
 public class DisconnectingLogoutHandler implements Handler<Logout> {
 

@@ -1,7 +1,7 @@
 package arriba.disruptor;
 
-import arriba.fix.session.SessionDisconnector;
 import arriba.fix.session.SessionId;
+import arriba.fix.session.disconnect.SessionDisconnector;
 
 import com.lmax.disruptor.AbstractEvent;
 import com.lmax.disruptor.RingBuffer;

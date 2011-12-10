@@ -15,6 +15,7 @@ import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
+import arriba.fix.session.disconnect.SessionDisconnector;
 
 public final class ScheduledSessionMonitor implements SessionMonitor {
 
