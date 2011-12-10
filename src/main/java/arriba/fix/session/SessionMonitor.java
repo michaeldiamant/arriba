@@ -2,7 +2,7 @@ package arriba.fix.session;
 
 public interface SessionMonitor {
 
-    void unmonitor(final Session session);
+    void unmonitor(final SessionId sessionId);
 
-    void monitor(final Session session, final long heartbeatIntervalInMs);
+    void monitor(final SessionId sessionId, final long heartbeatIntervalInMs);
 }
