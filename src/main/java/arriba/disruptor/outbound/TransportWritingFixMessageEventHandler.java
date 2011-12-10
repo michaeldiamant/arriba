@@ -1,13 +1,14 @@
 package arriba.disruptor.outbound;
 
 import java.io.IOException;
+import java.util.Set;
 
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
-import arriba.fix.session.SessionMonitor;
 import arriba.fix.session.SessionResolver;
+import arriba.fix.session.disconnect.SessionDisconnectListener;
 import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
 
@@ -17,14 +18,14 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
 
     private final TransportRepository<String, T> transportRepository;
     private final SessionResolver sessionResolver;
-    private final SessionMonitor monitor;
+    private final Set<SessionDisconnectListener> disconnectListeners;
 
     public TransportWritingFixMessageEventHandler(final TransportRepository<String, T> transportRepository,
             final SessionResolver sessionResolver,
-            final SessionMonitor monitor) {
+            final Set<SessionDisconnectListener> disconnectListeners) {
         this.transportRepository = transportRepository;
         this.sessionResolver = sessionResolver;
-        this.monitor = monitor;
+        this.disconnectListeners = disconnectListeners;
     }
 
     @Override
@@ -39,7 +40,9 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
     }
 
     private void disconnectSession(final SessionId sessionId) {
-        this.monitor.unmonitor(sessionId);
+        for (final SessionDisconnectListener listener : this.disconnectListeners) {
+            listener.onDisconnect(sessionId);
+        }
 
         final Transport<T> transport = this.transportRepository.find(sessionId.getTargetCompId());
         if (null != transport) {

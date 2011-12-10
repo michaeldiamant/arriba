@@ -40,7 +40,9 @@ import arriba.fix.session.Session;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionMonitor;
 import arriba.fix.session.SessionResolver;
+import arriba.fix.session.disconnect.LogoutMarkClearingDisconnectListener;
 import arriba.fix.session.disconnect.SessionDisconnector;
+import arriba.fix.session.disconnect.SessionUnmonitoringDisconnectListener;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.transport.TransportRepository;
 import cern.colt.map.OpenIntObjectHashMap;
@@ -169,7 +171,10 @@ public final class ArribaWizard<T> {
         return new TransportWritingFixMessageEventHandler<T>(
                 this.transportRepository,
                 this.sessionResolver,
-                this.sessionMonitor
+                Sets.newHashSet(
+                        new SessionUnmonitoringDisconnectListener(this.sessionMonitor),
+                        new LogoutMarkClearingDisconnectListener(this.logoutTracker)
+                        )
                 );
     }
 
