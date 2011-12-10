@@ -49,10 +49,6 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
         .addField(Tags.MD_ENTRY_TYPE, "0")
         .addField(Tags.MD_ENTRY_TYPE, "1");
 
-        try {
-            this.fixMessageSender.send(this.builder.build());
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+        this.fixMessageSender.send(this.builder.build());
     }
 }

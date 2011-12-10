@@ -1,6 +1,5 @@
 package arriba.examples.handlers;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import arriba.common.Handler;
@@ -52,11 +51,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
                 this.builder.addField(Tags.SIDE, SELL);
             }
 
-            try {
-                this.sender.send(this.builder.build());
-            } catch (final IOException e) {
-                e.printStackTrace();
-            }
+            this.sender.send(this.builder.build());
         }
     }
 }
