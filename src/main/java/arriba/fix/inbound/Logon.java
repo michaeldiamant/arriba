@@ -17,4 +17,8 @@ public final class Logon extends InboundFixMessage {
     public String getPassword() {
         return this.getBodyValue(Tags.PASSWORD);
     }
+
+    public String getHeartbeatInterval() {
+        return this.getBodyValue(Tags.HEARTBEAT_INTERVAL);
+    }
 }
