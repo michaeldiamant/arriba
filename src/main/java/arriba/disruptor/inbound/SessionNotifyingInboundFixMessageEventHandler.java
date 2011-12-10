@@ -6,7 +6,7 @@ import arriba.fix.session.SessionResolver;
 
 import com.lmax.disruptor.EventHandler;
 
-public final class SessionNotifyingInboundFixMessageEventHandler implements EventHandler<InboundFixMessageEvent> {
+public final class SessionNotifyingInboundFixMessageEventHandler implements EventHandler<InboundEvent> {
 
     private final SessionResolver sessionResolver;
 
@@ -15,7 +15,7 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
     }
 
     @Override
-    public void onEvent(final InboundFixMessageEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
         final InboundFixMessage inboundFixMessage = event.getFixMessage();
 
         final Session session = this.sessionResolver.resolve(inboundFixMessage.getSessionId());

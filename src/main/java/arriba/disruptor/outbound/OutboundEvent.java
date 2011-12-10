@@ -5,12 +5,12 @@ import arriba.fix.session.SessionId;
 
 import com.lmax.disruptor.AbstractEvent;
 
-public final class OutboundFixMessageEvent extends AbstractEvent {
+public final class OutboundEvent extends AbstractEvent {
 
     private OutboundFixMessage message;
     private SessionId sessionId;
 
-    public OutboundFixMessageEvent() {}
+    public OutboundEvent() {}
 
     public OutboundFixMessage getFixMessage() {
         return this.message;

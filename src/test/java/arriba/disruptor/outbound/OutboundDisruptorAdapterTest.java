@@ -7,12 +7,12 @@ import org.junit.Test;
 
 import arriba.fix.outbound.OutboundFixMessage;
 
-public class OutboundFixMessageToDisruptorAdapterTest {
+public class OutboundDisruptorAdapterTest {
 
     @Test
     public void testAdapt() {
-        final OutboundFixMessageToDisruptorAdapter adapter = new OutboundFixMessageToDisruptorAdapter();
-        final OutboundFixMessageEvent event = new OutboundFixMessageEvent();
+        final OutboundDisruptorAdapter adapter = new OutboundDisruptorAdapter();
+        final OutboundEvent event = new OutboundEvent();
         final OutboundFixMessage message = new OutboundFixMessage(null, null, 0, "", "", "");
 
         adapter.adapt(message, event);

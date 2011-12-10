@@ -22,7 +22,7 @@ import com.lmax.disruptor.EventHandler;
 
 public class DeserializingFixMessageEventHandlerTest {
 
-    private EventHandler<InboundFixMessageEvent> handler;
+    private EventHandler<InboundEvent> handler;
 
     @Before
     public void before() {
@@ -40,7 +40,7 @@ public class DeserializingFixMessageEventHandlerTest {
     @Ignore
     @Test
     public void testFixMessageDeserialization() throws Exception {
-        final InboundFixMessageEvent fixMessageEntry = createPreloadedFixMessageEntry();
+        final InboundEvent fixMessageEntry = createPreloadedFixMessageEntry();
 
         this.handler.onEvent(fixMessageEntry, false);
 
@@ -55,8 +55,8 @@ public class DeserializingFixMessageEventHandlerTest {
         }
     }
 
-    private static InboundFixMessageEvent createPreloadedFixMessageEntry() {
-        final InboundFixMessageEvent fixMessageEntry = new InboundFixMessageEvent();
+    private static InboundEvent createPreloadedFixMessageEntry() {
+        final InboundEvent fixMessageEntry = new InboundEvent();
         fixMessageEntry.setSerializedFixMessage(FixMessages.toChannelBuffer(FixMessages.EXAMPLE_NEW_ORDER_SINGLE));
 
         return fixMessageEntry;
