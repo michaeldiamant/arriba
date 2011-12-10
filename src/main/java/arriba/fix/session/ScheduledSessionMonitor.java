@@ -24,17 +24,21 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
     private final Map<Session, ScheduledFuture<?>> sessionToMonitorFuture = new HashMap<>();
     private final Lock sessionToMonitorFutureLock = new ReentrantLock();
     private final SessionDisconnector disconnector;
+    private final SessionResolver resolver;
 
     public ScheduledSessionMonitor(final Sender<OutboundFixMessage> fixMessageSender,
             final RichOutboundFixMessageBuilder builder,
-            final SessionDisconnector disconnector) {
+            final SessionDisconnector disconnector,
+            final SessionResolver resolver) {
         this.fixMessageSender = fixMessageSender;
         this.builder = builder;
         this.disconnector = disconnector;
+        this.resolver = resolver;
     }
 
     @Override
-    public void unmonitor(final Session session) {
+    public void unmonitor(final SessionId sessionId) {
+        final Session session = this.resolver.resolve(sessionId);
         this.sessionToMonitorFutureLock.lock();
         try {
             this.sessionToMonitorFuture.remove(session);
@@ -44,7 +48,12 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
     }
 
     @Override
-    public void monitor(final Session session, final long heartbeatIntervalInMs) {
+    public void monitor(final SessionId sessionId, final long heartbeatIntervalInMs) {
+        final Session session = this.resolver.resolve(sessionId);
+        if (null == session) {
+            return;
+        }
+
         this.sessionToMonitorFutureLock.lock();
         try {
             if (!this.sessionToMonitorFuture.containsKey(session)) {

@@ -88,7 +88,8 @@ public final class ArribaWizard<T> {
         this.sessionMonitor = new ScheduledSessionMonitor(
                 this.outboundSender,
                 this.createOutboundBuilder(),
-                this.sessionDisconnector
+                this.sessionDisconnector,
+                this.sessionResolver
                 );
     }
 

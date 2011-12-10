@@ -39,8 +39,7 @@ public final class TransportWritingFixMessageEventHandler<T> implements EventHan
     }
 
     private void disconnectSession(final SessionId sessionId) {
-        final Session session = this.sessionResolver.resolve(sessionId);
-        this.monitor.unmonitor(session);
+        this.monitor.unmonitor(sessionId);
 
         final Transport<T> transport = this.transportRepository.find(sessionId.getTargetCompId());
         if (null != transport) {
