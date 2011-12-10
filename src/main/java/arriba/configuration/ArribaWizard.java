@@ -13,13 +13,13 @@ import arriba.common.Sender;
 import arriba.disruptor.DisruptorSender;
 import arriba.disruptor.DisruptorSessionDisconnector;
 import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
+import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.InboundEvent;
 import arriba.disruptor.inbound.InboundFactory;
-import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
+import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.OutboundEvent;
 import arriba.disruptor.outbound.OutboundEventFactory;
-import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.TransportWritingFixMessageEventHandler;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
 import arriba.fix.chunk.FixChunkBuilder;
@@ -32,7 +32,9 @@ import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
+import arriba.fix.session.InMemoryLogoutTracker;
 import arriba.fix.session.InMemorySessionResolver;
+import arriba.fix.session.LogoutTracker;
 import arriba.fix.session.ScheduledSessionMonitor;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionDisconnector;
@@ -60,6 +62,7 @@ public final class ArribaWizard<T> {
             new MutableByteArrayKeyedMap<FixChunkBuilder>(),
             new OpenIntObjectHashMap()
             );
+    private final LogoutTracker logoutTracker = new InMemoryLogoutTracker();
     private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<ChannelBuffer> inboundSender;
@@ -89,7 +92,8 @@ public final class ArribaWizard<T> {
                 this.outboundSender,
                 this.createOutboundBuilder(),
                 this.sessionDisconnector,
-                this.sessionResolver
+                this.sessionResolver,
+                this.logoutTracker
                 );
     }
 
