@@ -22,7 +22,7 @@ import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
 import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.OutboundEvent;
 import arriba.disruptor.outbound.OutboundEventFactory;
-import arriba.disruptor.outbound.OutboundEventHandler;
+import arriba.disruptor.outbound.TransportDelegatingEventHandler;
 import arriba.disruptor.outbound.TransportWritingFixMessageHandler;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
 import arriba.fix.chunk.FixChunkBuilder;
@@ -165,13 +165,13 @@ public final class ArribaWizard<T> {
                 configuration.getClaimStrategy(),
                 configuration.getWaitStrategy()
                 );
-        outgoingDisruptor.handleEventsWith(this.transportWritingConsumer());
+        outgoingDisruptor.handleEventsWith(this.transportDelegatingEventHandler());
 
         return outgoingDisruptor.start();
     }
 
-    private EventHandler<OutboundEvent> transportWritingConsumer() {
-        return new OutboundEventHandler<T>(
+    private EventHandler<OutboundEvent> transportDelegatingEventHandler() {
+        return new TransportDelegatingEventHandler<T>(
                 new TransportWritingFixMessageHandler<>(this.transportRepository, this.sessionResolver),
                 new DisconnectingSessionIdHandler<>(
                         this.transportRepository,

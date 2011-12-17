@@ -6,12 +6,12 @@ import arriba.fix.session.SessionId;
 
 import com.lmax.disruptor.EventHandler;
 
-public final class OutboundEventHandler<T> implements EventHandler<OutboundEvent> {
+public final class TransportDelegatingEventHandler<T> implements EventHandler<OutboundEvent> {
 
     private final Handler<OutboundFixMessage> fixMessageHandler;
     private final Handler<SessionId> sessionIdHandler;
 
-    public OutboundEventHandler(final Handler<OutboundFixMessage> fixMessageHandler,
+    public TransportDelegatingEventHandler(final Handler<OutboundFixMessage> fixMessageHandler,
             final Handler<SessionId> sessionIdHandler) {
         this.fixMessageHandler = fixMessageHandler;
         this.sessionIdHandler = sessionIdHandler;
