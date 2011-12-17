@@ -9,6 +9,7 @@ public final class OutboundEvent extends AbstractEvent {
 
     private OutboundFixMessage message;
     private SessionId sessionId;
+    private byte[] serializedFixMessage;
 
     public OutboundEvent() {}
 
@@ -26,5 +27,13 @@ public final class OutboundEvent extends AbstractEvent {
 
     public void setSessionId(final SessionId sessionId) {
         this.sessionId = sessionId;
+    }
+
+    public byte[] getSerializedFixMessage() {
+        return this.serializedFixMessage;
+    }
+
+    public void setSerializedFixMessage(final byte[] serializedFixMessage) {
+        this.serializedFixMessage = serializedFixMessage;
     }
 }
