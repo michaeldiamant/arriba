@@ -1,6 +1,5 @@
 package arriba.disruptor.outbound;
 
-import arriba.common.Handler;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.Session;
@@ -9,19 +8,21 @@ import arriba.fix.session.SessionResolver;
 import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
 
-public final class TransportWritingFixMessageHandler<T> implements Handler<OutboundFixMessage> {
+import com.google.common.base.Function;
+
+public final class TransportWritingFixMessageFunction<T> implements Function<OutboundFixMessage, byte[]> {
 
     private final TransportRepository<String, T> transportRepository;
     private final SessionResolver sessionResolver;
 
-    public TransportWritingFixMessageHandler(final TransportRepository<String, T> transportRepository,
+    public TransportWritingFixMessageFunction(final TransportRepository<String, T> transportRepository,
             final SessionResolver sessionResolver) {
         this.transportRepository = transportRepository;
         this.sessionResolver = sessionResolver;
     }
 
     @Override
-    public void handle(final OutboundFixMessage message) {
+    public byte[] apply(final OutboundFixMessage message) {
         final Transport<T> transport = this.transportRepository.find(message.getTargetCompId());
         if (null == transport) {
             throw new IllegalArgumentException("Cannot find transport for target comp ID " + message.getTargetCompId() + ".");
@@ -34,8 +35,11 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
                     " and target comp ID " + message.getTargetCompId() + ".");
         }
 
-        transport.write(message.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp()));
+        final byte[] messageBytes = message.toBytes(session.getNextSequenceNumber(), DateSupplier.getUtcTimestamp());
+        transport.write(messageBytes);
 
         session.updateLastSentTimestamp();
+
+        return messageBytes;
     }
 }
