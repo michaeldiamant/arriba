@@ -20,8 +20,8 @@ public final class OutboundFixMessage {
     private final String targetCompId;
     private final String beginString;
 
-    public OutboundFixMessage(final ByteArrayOutputStream headerOut, final ByteArrayOutputStream bodyAndTrailerOut,
-            final int messageBytesSum, final String beginString, final String senderCompId, final String targetCompId) {
+    public OutboundFixMessage(final ByteArrayOutputStream headerOut, final ByteArrayOutputStream bodyAndTrailerOut, final int messageBytesSum,
+            final String beginString, final String senderCompId, final String targetCompId) {
         this.headerOut = headerOut;
         this.bodyAndTrailerOut = bodyAndTrailerOut;
         this.messageBytesSum = messageBytesSum;
@@ -57,8 +57,8 @@ public final class OutboundFixMessage {
             finalOut.write(this.bodyAndTrailerOut.toByteArray());
 
             return finalOut.toByteArray();
-        } catch (final IOException e) {}
-
-        return null;
+        } catch (final IOException e) {
+            return new byte[0];
+        }
     }
 }
