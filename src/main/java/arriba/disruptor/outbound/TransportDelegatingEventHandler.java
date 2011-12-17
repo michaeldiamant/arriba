@@ -19,13 +19,14 @@ public final class TransportDelegatingEventHandler<T> implements EventHandler<Ou
     }
 
     @Override
-    public void onEvent(final OutboundEvent entry, final boolean endOfBatch) throws Exception {
-        if (null != entry.getFixMessage()) {
-            this.fixMessageFunc.apply(entry.getFixMessage());
+    public void onEvent(final OutboundEvent event, final boolean endOfBatch) throws Exception {
+        if (null != event.getFixMessage()) {
+            final byte[] messageBytes = this.fixMessageFunc.apply(event.getFixMessage());
+            event.setSerializedFixMessage(messageBytes);
         }
 
-        if (null != entry.getSessionId()) {
-            this.sessionIdHandler.handle(entry.getSessionId());
+        if (null != event.getSessionId()) {
+            this.sessionIdHandler.handle(event.getSessionId());
         }
     }
 }
