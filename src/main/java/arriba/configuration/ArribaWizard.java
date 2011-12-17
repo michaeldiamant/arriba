@@ -16,6 +16,7 @@ import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
 import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.InboundEvent;
 import arriba.disruptor.inbound.InboundFactory;
+import arriba.disruptor.inbound.LoggingEventHandler;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
 import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
 import arriba.disruptor.outbound.OutboundDisruptorAdapter;
@@ -192,13 +193,18 @@ public final class ArribaWizard<T> {
                 configuration.getWaitStrategy()
                 );
         inboundDisruptor
-        .handleEventsWith(this.deserializingConsumer())
-        .then(this.sessionNotifyingConsumer());
+        .handleEventsWith(this.loggingEventHandler())
+        .then(this.deserializingEventHandler())
+        .then(this.sessionNotifyingEventHandler());
 
         return inboundDisruptor.start();
     }
 
-    private EventHandler<InboundEvent> deserializingConsumer() {
+    private EventHandler<InboundEvent> loggingEventHandler() {
+        return new LoggingEventHandler();
+    }
+
+    private EventHandler<InboundEvent> deserializingEventHandler() {
         return new DeserializingFixMessageEventHandler(
                 this.inboundFixMessageBuilder(),
                 new RepeatingGroupBuilder(this.fixChunkBuilderSupplier)
@@ -212,7 +218,7 @@ public final class ArribaWizard<T> {
                 );
     }
 
-    private EventHandler<InboundEvent> sessionNotifyingConsumer() {
+    private EventHandler<InboundEvent> sessionNotifyingEventHandler() {
         return new SessionNotifyingInboundFixMessageEventHandler(this.sessionResolver);
     }
 
