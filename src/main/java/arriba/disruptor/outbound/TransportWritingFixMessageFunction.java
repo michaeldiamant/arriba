@@ -3,7 +3,7 @@ package arriba.disruptor.outbound;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.Session;
-import arriba.fix.session.SessionId;
+import arriba.fix.session.SessionIds;
 import arriba.fix.session.SessionResolver;
 import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
@@ -29,7 +29,7 @@ public final class TransportWritingFixMessageFunction<T> implements Function<Out
         }
 
         // TODO Can SessionId be cached?
-        final Session session = this.sessionResolver.resolve(new SessionId(message.getSenderCompId(), message.getTargetCompId()));
+        final Session session = this.sessionResolver.resolve(SessionIds.newSessionId(message));
         if (null == session) {
             throw new IllegalArgumentException("Cannot find session for sender comp ID " + message.getSenderCompId() +
                     " and target comp ID " + message.getTargetCompId() + ".");
