@@ -10,6 +10,7 @@ public final class OutboundEvent extends AbstractEvent {
     private OutboundFixMessage message;
     private SessionId sessionId;
     private byte[] serializedFixMessage;
+    private int sequenceNumber;
 
     public OutboundEvent() {}
 
@@ -35,5 +36,13 @@ public final class OutboundEvent extends AbstractEvent {
 
     public void setSerializedFixMessage(final byte[] serializedFixMessage) {
         this.serializedFixMessage = serializedFixMessage;
+    }
+
+    public int getSequenceNumber() {
+        return this.sequenceNumber;
+    }
+
+    public void setSequenceNumber(final int sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
     }
 }
