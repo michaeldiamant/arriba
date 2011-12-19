@@ -40,7 +40,11 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
 
         session.updateLastSentTimestamp();
 
-        event.setSerializedFixMessage(serializedMessage);
+        updateEvent(event, sequenceNumber, serializedMessage);
+    }
+
+    private static void updateEvent(final OutboundEvent event, final int sequenceNumber, final byte[] message) {
+        event.setSerializedFixMessage(message);
         event.setSequenceNumber(sequenceNumber);
     }
 }
