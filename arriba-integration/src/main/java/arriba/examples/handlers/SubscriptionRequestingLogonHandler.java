@@ -1,6 +1,5 @@
 package arriba.examples.handlers;
 
-import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
