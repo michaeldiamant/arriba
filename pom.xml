@@ -5,10 +5,14 @@
 	<groupId>arriba</groupId>
 	<artifactId>arriba</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>arriba</name>
-	<url>http://maven.apache.org</url>
+	
+	<modules>
+		<module>arriba-core</module>
+		<module>arriba-integration</module>
+	</modules>	
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
