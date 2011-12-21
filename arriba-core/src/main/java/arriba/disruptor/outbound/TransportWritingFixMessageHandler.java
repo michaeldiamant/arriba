@@ -29,11 +29,6 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
 
         // TODO Can SessionId be cached?
         final Session session = this.sessionResolver.resolve(event.getSessionId());
-        if (null == session) {
-            throw new IllegalArgumentException("Cannot find session for sender comp ID " + message.getSenderCompId() +
-                    " and target comp ID " + message.getTargetCompId() + ".");
-        }
-
         final int sequenceNumber = session.getNextSequenceNumber();
         final byte[] serializedMessage = message.toBytes(sequenceNumber, DateSupplier.getUtcTimestamp());
         transport.write(serializedMessage);
