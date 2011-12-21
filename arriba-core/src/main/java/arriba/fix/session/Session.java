@@ -4,11 +4,13 @@ import arriba.common.Handler;
 import arriba.common.HandlerRepository;
 import arriba.common.NonexistentHandlerException;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.session.messagejournal.MessageJournal;
 
 public class Session {
 
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
+    private final MessageJournal journal = null; // FIXME Inject
     private int sequenceNumber = 0;
     private long lastReceivedTimestamp = 0;
     private long lastSentTimestamp = 0;
@@ -61,6 +63,10 @@ public class Session {
 
     public void resetSequenceNumber() {
         this.sequenceNumber = 0;
+    }
+
+    public void journal(final int sequenceNumber, final byte[] message) {
+        this.journal.write(sequenceNumber, message);
     }
 
     @Override
