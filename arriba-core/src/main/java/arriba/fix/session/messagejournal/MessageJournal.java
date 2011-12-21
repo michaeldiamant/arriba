@@ -3,7 +3,7 @@ package arriba.fix.session.messagejournal;
 
 public interface MessageJournal {
 
-    void write(byte[] message, int sequenceNumber);
+    void write(int sequenceNumber, byte[] message);
 
     byte[][] retrieve(int startSequenceNumber, int endSequenceNumber);
 }

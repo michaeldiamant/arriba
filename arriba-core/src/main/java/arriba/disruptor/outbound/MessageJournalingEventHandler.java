@@ -1,19 +1,21 @@
 package arriba.disruptor.outbound;
 
-import arriba.fix.session.messagejournal.MessageJournal;
+import arriba.fix.session.Session;
+import arriba.fix.session.SessionResolver;
 
 import com.lmax.disruptor.EventHandler;
 
 public final class MessageJournalingEventHandler implements EventHandler<OutboundEvent> {
 
-    private final MessageJournal journal;
+    private final SessionResolver resolver;
 
-    public MessageJournalingEventHandler(final MessageJournal journal) {
-        this.journal = journal;
+    public MessageJournalingEventHandler(final SessionResolver resolver) {
+        this.resolver = resolver;
     }
 
     @Override
     public void onEvent(final OutboundEvent event, final boolean endOfBatch) throws Exception {
-        this.journal.write(event.getSerializedFixMessage(), event.getSessionId(), event.getSequenceNumber());
+        final Session session = this.resolver.resolve(event.getSessionId());
+        session.journal(event.getSequenceNumber(), event.getSerializedFixMessage());
     }
 }
