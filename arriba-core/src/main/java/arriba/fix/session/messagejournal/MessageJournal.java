@@ -1,10 +1,9 @@
 package arriba.fix.session.messagejournal;
 
-import arriba.fix.session.SessionId;
 
 public interface MessageJournal {
 
-    void write(byte[] message, SessionId sessionId, int sequenceNumber);
+    void write(byte[] message, int sequenceNumber);
 
-    byte[][] retrieve(SessionId sessionId, int startSequenceNumber, int endSequenceNumber);
+    byte[][] retrieve(int startSequenceNumber, int endSequenceNumber);
 }
