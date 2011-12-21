@@ -41,4 +41,9 @@ public final class SessionId {
         final SessionId other = (SessionId) obj;
         return this.senderCompId.equals(other.senderCompId) && this.targetCompId.equals(other.targetCompId);
     }
+
+    @Override
+    public String toString() {
+        return "SessionId [senderCompId=" + this.senderCompId + ", targetCompId=" + this.targetCompId + "]";
+    }
 }
