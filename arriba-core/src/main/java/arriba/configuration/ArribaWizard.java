@@ -19,6 +19,7 @@ import arriba.disruptor.inbound.InboundFactory;
 import arriba.disruptor.inbound.LoggingEventHandler;
 import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
 import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
+import arriba.disruptor.outbound.MessageJournalingEventHandler;
 import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.OutboundEvent;
 import arriba.disruptor.outbound.OutboundEventFactory;
@@ -165,7 +166,9 @@ public final class ArribaWizard<T> {
                 configuration.getClaimStrategy(),
                 configuration.getWaitStrategy()
                 );
-        outgoingDisruptor.handleEventsWith(this.transportDelegatingEventHandler());
+        outgoingDisruptor
+        .handleEventsWith(this.transportDelegatingEventHandler())
+        .then(new MessageJournalingEventHandler(this.sessionResolver));
 
         return outgoingDisruptor.start();
     }
