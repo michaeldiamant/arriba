@@ -8,7 +8,7 @@ import arriba.fix.inbound.TestRequest;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 
-public final class HeartbeatGeneratingTestRequestHandler implements Handler<TestRequest>{
+public final class HeartbeatGeneratingTestRequestHandler implements Handler<TestRequest> {
 
     private final RichOutboundFixMessageBuilder builder;
     private final Sender<OutboundFixMessage> sender;
