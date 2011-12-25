@@ -47,6 +47,8 @@ import arriba.fix.session.SessionResolver;
 import arriba.fix.session.disconnect.LogoutMarkClearingDisconnectListener;
 import arriba.fix.session.disconnect.SessionDisconnector;
 import arriba.fix.session.disconnect.SessionUnmonitoringDisconnectListener;
+import arriba.fix.session.messagejournal.InMemoryMessageJournal;
+import arriba.fix.session.messagejournal.MessageJournal;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.transport.TransportRepository;
 import cern.colt.map.OpenIntObjectHashMap;
@@ -229,7 +231,12 @@ public final class ArribaWizard<T> {
     private void initializeSessions() {
         final HandlerRepository handlerRepository = new MapHandlerRepository(this.messageTypeToHandler);
         for (final SessionId sessionId : this.sessionIds) {
-            this.sessionIdToSession.put(sessionId, new Session(sessionId, handlerRepository));
+            this.sessionIdToSession.put(sessionId,
+                    new Session(sessionId, handlerRepository, this.messageJournal()));
         }
+    }
+
+    private MessageJournal messageJournal() {
+        return new InMemoryMessageJournal();
     }
 }
