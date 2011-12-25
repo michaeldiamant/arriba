@@ -1,5 +1,9 @@
 package arriba.fix.session;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import arriba.common.Handler;
 import arriba.common.HandlerRepository;
 import arriba.common.NonexistentHandlerException;
@@ -11,6 +15,8 @@ public class Session {
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
     private final MessageJournal journal;
+    private final List<InboundFixMessage> unprocessedMessages = new LinkedList<>();
+    private boolean isAwaitngResend = false;
     private int expectedInboundSequenceNumber = 1;
     private int outboundSequenceNumber = 0;
     private long lastReceivedTimestamp = 0;
@@ -34,6 +40,26 @@ public class Session {
         }
 
         handler.handle(fixMessage);
+    }
+
+    public boolean isAwaitingResend() {
+        return this.isAwaitngResend;
+    }
+
+    public void queueMessage(final InboundFixMessage message) {
+        this.isAwaitngResend = true;
+        this.unprocessedMessages.add(message);
+    }
+
+    public boolean areMessagesQueued() {
+        return !this.unprocessedMessages.isEmpty();
+    }
+
+    public List<InboundFixMessage> drainMessageQueue() {
+        final List<InboundFixMessage> messages = new ArrayList<>(this.unprocessedMessages);
+        this.unprocessedMessages.clear();
+        this.isAwaitngResend = false;
+        return messages;
     }
 
     public long getLastReceivedTimestamp() {
