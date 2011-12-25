@@ -11,7 +11,7 @@ public class Session {
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
     private final MessageJournal journal = null; // FIXME Inject
-    private int sequenceNumber = 0;
+    private int outboundSequenceNumber = 0;
     private long lastReceivedTimestamp = 0;
     private long lastSentTimestamp = 0;
 
@@ -57,12 +57,12 @@ public class Session {
         return this.sessionId.getTargetCompId();
     }
 
-    public int getNextSequenceNumber() {
-        return this.sequenceNumber++;
+    public int getNextOutboundSequenceNumber() {
+        return this.outboundSequenceNumber++;
     }
 
-    public void resetSequenceNumber() {
-        this.sequenceNumber = 0;
+    public void resetOutboundSequenceNumber() {
+        this.outboundSequenceNumber = 0;
     }
 
     public void journal(final int sequenceNumber, final byte[] message) {
