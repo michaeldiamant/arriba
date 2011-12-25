@@ -10,15 +10,17 @@ public class Session {
 
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
-    private final MessageJournal journal = null; // FIXME Inject
+    private final MessageJournal journal;
     private int outboundSequenceNumber = 0;
     private long lastReceivedTimestamp = 0;
     private long lastSentTimestamp = 0;
 
     public Session(final SessionId sessionId,
-            final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository) {
+            final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository,
+            final MessageJournal journal) {
         this.sessionId = sessionId;
         this.messageHandlerRepository = messageHandlerRepository;
+        this.journal = journal;
     }
 
     @SuppressWarnings("unchecked")
