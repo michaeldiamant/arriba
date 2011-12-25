@@ -22,6 +22,8 @@ public final class Tags {
 
     // Body tags
     public static final int ACCOUNT = 1;
+    public static final int BEGIN_SEQUENCE_NUMBER = 7;
+    public static final int END_SEQUENCE_NUMBER = 16;
     public static final int CLIENT_ORDER_ID = 11;
     public static final int ORDER_QUANTITY = 38;
     public static final int ORDER_TYPE = 40;
