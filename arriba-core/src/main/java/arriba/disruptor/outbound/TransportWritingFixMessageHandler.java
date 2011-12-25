@@ -29,7 +29,7 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
 
         // TODO Can SessionId be cached?
         final Session session = this.sessionResolver.resolve(event.getSessionId());
-        final int sequenceNumber = session.getNextSequenceNumber();
+        final int sequenceNumber = session.getNextOutboundSequenceNumber();
         final byte[] serializedMessage = message.toBytes(sequenceNumber, DateSupplier.getUtcTimestamp());
         transport.write(serializedMessage);
 
