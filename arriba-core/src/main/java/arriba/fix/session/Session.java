@@ -11,6 +11,7 @@ public class Session {
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
     private final MessageJournal journal;
+    private int expectedInboundSequenceNumber = 1;
     private int outboundSequenceNumber = 0;
     private long lastReceivedTimestamp = 0;
     private long lastSentTimestamp = 0;
@@ -65,6 +66,21 @@ public class Session {
 
     public void resetOutboundSequenceNumber() {
         this.outboundSequenceNumber = 0;
+    }
+
+    public int getExpectedInboundSequenceNumber() {
+        return this.expectedInboundSequenceNumber;
+    }
+
+    public int compareToInboundSequenceNumber(final int otherSequenceNumber) {
+        if (this.expectedInboundSequenceNumber == otherSequenceNumber) {
+            return 0;
+        }
+        return this.expectedInboundSequenceNumber < otherSequenceNumber ? -1 : 1;
+    }
+
+    public void incrementInboundSequenceNumber() {
+        ++this.expectedInboundSequenceNumber;
     }
 
     public void journal(final int sequenceNumber, final byte[] message) {

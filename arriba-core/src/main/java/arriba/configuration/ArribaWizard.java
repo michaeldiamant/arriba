@@ -224,7 +224,7 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<InboundEvent> sessionNotifyingEventHandler() {
-        return new SessionNotifyingInboundFixMessageEventHandler(this.sessionResolver);
+        return new SessionNotifyingInboundFixMessageEventHandler(this.sessionResolver, this.outboundSender, this.createOutboundBuilder());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
