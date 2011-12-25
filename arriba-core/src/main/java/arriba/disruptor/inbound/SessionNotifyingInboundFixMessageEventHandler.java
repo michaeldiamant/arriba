@@ -40,6 +40,12 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
             session.incrementInboundSequenceNumber();
             session.updateLastReceivedTimestamp();
 
+            if  (session.areMessagesQueued()) {
+                for (final InboundFixMessage message : session.drainMessageQueue()) {
+                    session.onMessage(message);
+                }
+            }
+
             session.onMessage(inboundFixMessage);
         } else if (compareResult < 0) {
             final OutboundFixMessage logout = this.builder
@@ -48,12 +54,15 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
                     .build();
             this.sender.send(logout);
         } else {
-            final OutboundFixMessage resendRequest = this.builder
-                    .addStandardHeader(MessageType.RESEND_REQUEST, inboundFixMessage)
-                    .addField(Tags.BEGIN_SEQUENCE_NUMBER, Integer.toString(session.getExpectedInboundSequenceNumber()))
-                    .addField(Tags.END_SEQUENCE_NUMBER, Integer.toString(sequenceNumber))
-                    .build();
-            this.sender.send(resendRequest);
+            if (!session.isAwaitingResend()) {
+                final OutboundFixMessage resendRequest = this.builder
+                        .addStandardHeader(MessageType.RESEND_REQUEST, inboundFixMessage)
+                        .addField(Tags.BEGIN_SEQUENCE_NUMBER, Integer.toString(session.getExpectedInboundSequenceNumber()))
+                        .addField(Tags.END_SEQUENCE_NUMBER, Integer.toString(sequenceNumber))
+                        .build();
+                this.sender.send(resendRequest);
+            }
+            session.queueMessage(inboundFixMessage);
         }
     }
 }
