@@ -24,6 +24,17 @@ public enum MessageType {
             return this.getValue().getBytes();
         }
     },
+    RESEND_REQUEST {
+        @Override
+        public String getValue() {
+            return "2";
+        }
+
+        @Override
+        public byte[] getSerializedValue() {
+            return this.getValue().getBytes();
+        }
+    },
     LOGON {
         @Override
         public String getValue() {

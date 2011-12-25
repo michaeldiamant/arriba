@@ -59,6 +59,17 @@ public final class InboundFixMessageFactory {
                 return MessageType.TEST_REQUEST.getSerializedValue();
             }
         },
+        RESEND_REQUEST {
+            @Override
+            InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
+                return new Logon(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
+            }
+
+            @Override
+            byte[] getSerializedValue() {
+                return MessageType.RESEND_REQUEST.getSerializedValue();
+            }
+        },
         LOGON {
             @Override
             InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
