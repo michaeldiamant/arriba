@@ -12,9 +12,10 @@ public final class LoggingEventHandler implements EventHandler<InboundEvent> {
 
     @Override
     public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
-        final ChannelBuffer message = event.getSerializedFixMessage();
+        // Naive implementation that does not batch updates.
 
-        // Naive implementation.
-        LOGGER.info("{}", new String(message.array()));
+        for (final ChannelBuffer message : event.getSerializedMessages()) {
+            LOGGER.info("{}", new String(message.array()));
+        }
     }
 }

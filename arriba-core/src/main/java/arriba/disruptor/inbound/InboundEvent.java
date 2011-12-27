@@ -1,30 +1,31 @@
 package arriba.disruptor.inbound;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 import arriba.fix.inbound.InboundFixMessage;
 
 import com.lmax.disruptor.AbstractEvent;
-import org.jboss.netty.buffer.ChannelBuffer;
 
 public final class InboundEvent extends AbstractEvent {
 
-    private ChannelBuffer serializedFixMessage;
-    private InboundFixMessage inboundFixMessage;
+    private ChannelBuffer[] serializedMessages;
+    private InboundFixMessage[] messages;
 
     public InboundEvent() {}
 
-    public void setFixMessage(final InboundFixMessage inboundFixMessage) {
-        this.inboundFixMessage = inboundFixMessage;
+    public ChannelBuffer[] getSerializedMessages() {
+        return this.serializedMessages;
     }
 
-    public InboundFixMessage getFixMessage() {
-        return this.inboundFixMessage;
+    public void setSerializedMessages(final ChannelBuffer[] serializedMessages) {
+        this.serializedMessages = serializedMessages;
     }
 
-    public ChannelBuffer getSerializedFixMessage() {
-        return this.serializedFixMessage;
+    public InboundFixMessage[] getMessages() {
+        return this.messages;
     }
 
-    public void setSerializedFixMessage(final ChannelBuffer serializedFixMessage) {
-        this.serializedFixMessage = serializedFixMessage;
+    public void setMessages(final InboundFixMessage[] messages) {
+        this.messages = messages;
     }
 }

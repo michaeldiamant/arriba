@@ -6,6 +6,7 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
+import arriba.fix.session.MessageHandlingException;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionResolver;
 
@@ -27,14 +28,19 @@ public final class SessionNotifyingInboundFixMessageEventHandler implements Even
 
     @Override
     public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
-        final InboundFixMessage inboundFixMessage = event.getFixMessage();
+        final InboundFixMessage[] messages = event.getMessages();
+        for (int messageIndex = 0; messageIndex < messages.length; messageIndex++) {
+            this.notifySession(messages[messageIndex]);
+        }
+    }
 
+    private void notifySession(final InboundFixMessage inboundFixMessage) throws MessageHandlingException {
         final Session session = this.sessionResolver.resolve(inboundFixMessage.getSessionId());
         if (null == session) {
             throw new IllegalArgumentException("No session found for " + inboundFixMessage.getSessionId());
         }
 
-        final int sequenceNumber = Integer.parseInt(event.getFixMessage().getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
+        final int sequenceNumber = Integer.parseInt(inboundFixMessage.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
         final int compareResult = session.compareToInboundSequenceNumber(sequenceNumber);
         if (0 == compareResult) {
             session.incrementInboundSequenceNumber();

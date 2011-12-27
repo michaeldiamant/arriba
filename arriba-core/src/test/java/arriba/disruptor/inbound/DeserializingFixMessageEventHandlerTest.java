@@ -5,6 +5,7 @@ import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,11 +41,13 @@ public class DeserializingFixMessageEventHandlerTest {
     @Ignore
     @Test
     public void testFixMessageDeserialization() throws Exception {
-        final InboundEvent fixMessageEntry = createPreloadedFixMessageEntry();
+        final InboundEvent event = createPreloadedFixMessageEvent();
 
-        this.handler.onEvent(fixMessageEntry, false);
+        this.handler.onEvent(event, false);
 
-        assertAllFieldsAreSet(fixMessageEntry.getFixMessage());
+        for (final InboundFixMessage message : event.getMessages()) {
+            assertAllFieldsAreSet(message);
+        }
     }
 
     private static void assertAllFieldsAreSet(final InboundFixMessage inboundFixMessage) {
@@ -55,9 +58,12 @@ public class DeserializingFixMessageEventHandlerTest {
         }
     }
 
-    private static InboundEvent createPreloadedFixMessageEntry() {
+    private static InboundEvent createPreloadedFixMessageEvent() {
         final InboundEvent fixMessageEntry = new InboundEvent();
-        fixMessageEntry.setSerializedFixMessage(FixMessages.toChannelBuffer(FixMessages.EXAMPLE_NEW_ORDER_SINGLE));
+        fixMessageEntry.setSerializedMessages(
+                new ChannelBuffer[] {
+                        FixMessages.toChannelBuffer(FixMessages.EXAMPLE_NEW_ORDER_SINGLE)
+                });
 
         return fixMessageEntry;
     }

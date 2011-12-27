@@ -55,7 +55,7 @@ public class MarketTakerClient {
                 repository
                 );
 
-        final Sender<ChannelBuffer> inboundSender = wizard.getInboundSender();
+        final Sender<ChannelBuffer[]> inboundSender = wizard.getInboundSender();
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard

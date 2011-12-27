@@ -73,7 +73,7 @@ public final class ArribaWizard<T> {
     private final LogoutTracker logoutTracker = new InMemoryLogoutTracker();
     private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
     private final Sender<OutboundFixMessage> outboundSender;
-    private final Sender<ChannelBuffer> inboundSender;
+    private final Sender<ChannelBuffer[]> inboundSender;
     private final SessionDisconnector sessionDisconnector;
     private final SessionMonitor sessionMonitor;
 
@@ -119,7 +119,7 @@ public final class ArribaWizard<T> {
         return this.sessionMonitor;
     }
 
-    public Sender<ChannelBuffer> getInboundSender() {
+    public Sender<ChannelBuffer[]> getInboundSender() {
         return this.inboundSender;
     }
 
