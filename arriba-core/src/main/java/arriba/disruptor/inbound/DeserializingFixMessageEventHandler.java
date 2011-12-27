@@ -38,19 +38,22 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
     }
 
     @Override
-    public void onEvent(final InboundEvent entry, final boolean endOfBatch) throws Exception {
-        final ChannelBuffer serializedFixMessage = entry.getSerializedFixMessage();
+    public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
+        final ChannelBuffer[] serializedMessages = event.getSerializedMessages();
+        final InboundFixMessage[] messages = new InboundFixMessage[serializedMessages.length];
 
-        this.parsingState = ParsingState.NON_REPEATING_GROUP;
-        final InboundFixMessage inboundFixMessage = this.deserializeFixMessage(serializedFixMessage);
+        for (int messageIndex = 0; messageIndex < serializedMessages.length; messageIndex++) {
+            this.parsingState = ParsingState.NON_REPEATING_GROUP;
+            messages[messageIndex] = this.deserializeFixMessage(serializedMessages[messageIndex]);
+        }
 
-        entry.setFixMessage(inboundFixMessage);
+        event.setMessages(messages);
     }
 
-    private InboundFixMessage deserializeFixMessage(final ChannelBuffer fixMessageBuffer) throws DeserializationException {
-        while ((this.nextFlagIndex = fixMessageBuffer.bytesBefore(this.nextFlagByte)) != -1) {
-            final ChannelBuffer nextValueBuffer = fixMessageBuffer.readBytes(this.nextFlagIndex);
-            fixMessageBuffer.readerIndex(fixMessageBuffer.readerIndex() + 1);
+    private InboundFixMessage deserializeFixMessage(final ChannelBuffer buffer) throws DeserializationException {
+        while ((this.nextFlagIndex = buffer.bytesBefore(this.nextFlagByte)) != -1) {
+            final ChannelBuffer nextValueBuffer = buffer.readBytes(this.nextFlagIndex);
+            buffer.readerIndex(buffer.readerIndex() + 1);
 
             if (Fields.EQUAL_SIGN == this.nextFlagByte) {
                 this.nextFlagByte = Fields.DELIMITER;

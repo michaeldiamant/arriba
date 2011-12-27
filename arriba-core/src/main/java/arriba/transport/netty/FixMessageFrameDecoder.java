@@ -17,6 +17,9 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
     private static final byte[] CHECKSUM_BYTES = Tags.toByteArray(Tags.CHECKSUM);
     private static final int DELIMITER_LENGTH = 1;
 
+    private final ChannelBuffer[] decodedMessages = new ChannelBuffer[100];
+
+    private int decodedMessageCount = 0;
     private byte nextFlagByte;
     private int nextFlagIndex;
     private boolean hasFoundFinalDelimiter;
@@ -27,11 +30,28 @@ public final class FixMessageFrameDecoder extends FrameDecoder {
 
     @Override
     protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final ChannelBuffer buffer) throws Exception {
+        ChannelBuffer message = null;
+        while ((message = this.decodeMessage(buffer)) != null) {
+            this.decodedMessages[this.decodedMessageCount++] = message;
+        }
 
+        if (this.decodedMessageCount == 0) {
+            return null;
+        }
+
+        final ChannelBuffer[] decodedMessagesCopy = new ChannelBuffer[this.decodedMessageCount];
+        System.arraycopy(this.decodedMessages, 0, decodedMessagesCopy, 0, this.decodedMessageCount);
+        this.decodedMessageCount = 0;
+
+        return decodedMessagesCopy;
+    }
+
+    private ChannelBuffer decodeMessage(final ChannelBuffer buffer) {
         // TODO Should verify that tags are being received in correct order (e.g. checksum is last tag).
         // It is currently being assumed that tags are in the proper order.
 
         // Maintain the original buffer reader index to calculate the byte[] size when a complete FIX message is found.
+
         final int bufferStartReadIndex = buffer.readerIndex();
 
         final String bufferString = new String(buffer.array());

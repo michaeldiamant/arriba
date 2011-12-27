@@ -10,15 +10,15 @@ import arriba.common.Sender;
 
 public final class SerializedFixMessageHandler extends SimpleChannelHandler {
 
-    private final Sender<ChannelBuffer> disruptorSender;
+    private final Sender<ChannelBuffer[]> sender;
 
-    public SerializedFixMessageHandler(final Sender<ChannelBuffer> disruptorSender) {
-        this.disruptorSender = disruptorSender;
+    public SerializedFixMessageHandler(final Sender<ChannelBuffer[]> sender) {
+        this.sender = sender;
     }
 
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-        this.disruptorSender.send((ChannelBuffer) e.getMessage());
+        this.sender.send((ChannelBuffer[]) e.getMessage());
     }
 
     @Override
