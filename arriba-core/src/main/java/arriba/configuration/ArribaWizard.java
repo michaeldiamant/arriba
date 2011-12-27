@@ -17,7 +17,7 @@ import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.InboundEvent;
 import arriba.disruptor.inbound.InboundFactory;
 import arriba.disruptor.inbound.LoggingEventHandler;
-import arriba.disruptor.inbound.SessionNotifyingInboundFixMessageEventHandler;
+import arriba.disruptor.inbound.SessionNotifyingEventHandler;
 import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
 import arriba.disruptor.outbound.MessageJournalingEventHandler;
 import arriba.disruptor.outbound.OutboundDisruptorAdapter;
@@ -224,7 +224,7 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<InboundEvent> sessionNotifyingEventHandler() {
-        return new SessionNotifyingInboundFixMessageEventHandler(this.sessionResolver, this.outboundSender, this.createOutboundBuilder());
+        return new SessionNotifyingEventHandler(this.sessionResolver, this.outboundSender, this.createOutboundBuilder());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

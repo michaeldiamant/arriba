@@ -12,13 +12,13 @@ import arriba.fix.session.SessionResolver;
 
 import com.lmax.disruptor.EventHandler;
 
-public final class SessionNotifyingInboundFixMessageEventHandler implements EventHandler<InboundEvent> {
+public final class SessionNotifyingEventHandler implements EventHandler<InboundEvent> {
 
     private final SessionResolver sessionResolver;
     private final Sender<OutboundFixMessage> sender;
     private final RichOutboundFixMessageBuilder builder;
 
-    public SessionNotifyingInboundFixMessageEventHandler(final SessionResolver sessionResolver,
+    public SessionNotifyingEventHandler(final SessionResolver sessionResolver,
             final Sender<OutboundFixMessage> sender,
             final RichOutboundFixMessageBuilder builder) {
         this.sessionResolver = sessionResolver;
