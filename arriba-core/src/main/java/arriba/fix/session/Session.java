@@ -1,12 +1,11 @@
 package arriba.fix.session;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import arriba.common.Handler;
 import arriba.common.HandlerRepository;
 import arriba.common.NonexistentHandlerException;
+import arriba.fix.Tags;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.session.messagejournal.MessageJournal;
 
@@ -15,7 +14,7 @@ public class Session {
     private final SessionId sessionId;
     private final HandlerRepository<String, ? extends InboundFixMessage> messageHandlerRepository;
     private final MessageJournal journal;
-    private final List<InboundFixMessage> unprocessedMessages = new LinkedList<>();
+    private final LinkedList<InboundFixMessage> unprocessedMessages = new LinkedList<>();
     private boolean isAwaitngResend = false;
     private int expectedInboundSequenceNumber = 1;
     private int outboundSequenceNumber = 0;
@@ -51,15 +50,20 @@ public class Session {
         this.unprocessedMessages.add(message);
     }
 
-    public boolean areMessagesQueued() {
-        return !this.unprocessedMessages.isEmpty();
+    public boolean isResendComplete() {
+        final InboundFixMessage firstQueuedMessage = this.unprocessedMessages.getFirst();
+        final int sequenceNumber = Integer.parseInt(firstQueuedMessage.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
+        return sequenceNumber == this.getExpectedInboundSequenceNumber();
     }
 
-    public List<InboundFixMessage> drainMessageQueue() {
-        final List<InboundFixMessage> messages = new ArrayList<>(this.unprocessedMessages);
-        this.unprocessedMessages.clear();
-        this.isAwaitngResend = false;
-        return messages;
+    // TODO Rename later.
+    public InboundFixMessage peek() {
+        return this.unprocessedMessages.getFirst();
+    }
+
+    // TODO Rename later.
+    public void dropHead() {
+        this.unprocessedMessages.removeFirst();
     }
 
     public long getLastReceivedTimestamp() {

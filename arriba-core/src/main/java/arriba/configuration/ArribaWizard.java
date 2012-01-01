@@ -17,6 +17,7 @@ import arriba.disruptor.inbound.InboundDisruptorAdapter;
 import arriba.disruptor.inbound.InboundEvent;
 import arriba.disruptor.inbound.InboundFactory;
 import arriba.disruptor.inbound.LoggingEventHandler;
+import arriba.disruptor.inbound.SequenceNumberValidatingEventHandler;
 import arriba.disruptor.inbound.SessionNotifyingEventHandler;
 import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
 import arriba.disruptor.outbound.MessageJournalingEventHandler;
@@ -200,6 +201,7 @@ public final class ArribaWizard<T> {
         inboundDisruptor
         .handleEventsWith(this.loggingEventHandler())
         .then(this.deserializingEventHandler())
+        .then(this.sequenceNumberValidatingEventHandler())
         .then(this.sessionNotifyingEventHandler());
 
         return inboundDisruptor.start();
@@ -223,8 +225,12 @@ public final class ArribaWizard<T> {
                 );
     }
 
+    private EventHandler<InboundEvent> sequenceNumberValidatingEventHandler() {
+        return new SequenceNumberValidatingEventHandler(this.sessionResolver, this.outboundSender, this.createOutboundBuilder());
+    }
+
     private EventHandler<InboundEvent> sessionNotifyingEventHandler() {
-        return new SessionNotifyingEventHandler(this.sessionResolver, this.outboundSender, this.createOutboundBuilder());
+        return new SessionNotifyingEventHandler(this.sessionResolver);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
