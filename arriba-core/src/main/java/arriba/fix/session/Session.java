@@ -63,7 +63,11 @@ public class Session {
 
     // TODO Rename later.
     public void dropHead() {
-        this.unprocessedMessages.removeFirst();
+        if (this.unprocessedMessages.isEmpty()) {
+            this.isAwaitngResend = false;
+        } else {
+            this.unprocessedMessages.removeFirst();
+        }
     }
 
     public long getLastReceivedTimestamp() {

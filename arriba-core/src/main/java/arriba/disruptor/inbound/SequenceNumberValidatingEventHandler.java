@@ -63,10 +63,14 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         boolean isValid = true;
         while (isValid) {
             final InboundFixMessage queuedMessage = session.peek();
-            isValid = this.shouldForwardMessage(session, queuedMessage);
-            if (isValid) {
-                this.validatedMessages[this.validatedMessagesIndex++] = queuedMessage;
-                session.dropHead();
+            if (queuedMessage == null) {
+                isValid = false;
+            } else {
+                isValid = this.shouldForwardMessage(session, queuedMessage);
+                if (isValid) {
+                    this.validatedMessages[this.validatedMessagesIndex++] = queuedMessage;
+                    session.dropHead();
+                }
             }
         }
     }
