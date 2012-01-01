@@ -1,8 +1,6 @@
 package arriba.fix.tagindexresolvers;
 
 import arriba.fix.Tags;
-import arriba.fix.tagindexresolvers.StandardHeaderTagIndexResolver;
-import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public class StandardHeaderTagIndexResolverTest extends AbstractTagIndexResolverTest {
 
@@ -13,11 +11,21 @@ public class StandardHeaderTagIndexResolverTest extends AbstractTagIndexResolver
 
     @Override
     public int[] getExpectedRequiredTags() {
-        return Tags.getHeaders();
+        return new int[] {
+                Tags.BEGIN_STRING,
+                Tags.BODY_LENGTH,
+                Tags.MESSAGE_SEQUENCE_NUMBER,
+                Tags.MESSAGE_TYPE,
+                Tags.SENDER_COMP_ID,
+                Tags.SENDING_TIME,
+                Tags.TARGET_COMP_ID
+        };
     }
 
     @Override
     public int[] getExpectedOptionalTags() {
-        return new int[0];
+        return new int[] {
+                Tags.GAP_FILL_FLAG
+        };
     }
 }
