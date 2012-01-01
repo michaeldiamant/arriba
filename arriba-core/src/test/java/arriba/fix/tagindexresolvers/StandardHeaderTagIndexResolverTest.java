@@ -25,7 +25,7 @@ public class StandardHeaderTagIndexResolverTest extends AbstractTagIndexResolver
     @Override
     public int[] getExpectedOptionalTags() {
         return new int[] {
-                Tags.GAP_FILL_FLAG
+                Tags.POSSIBLE_DUPLICATE_FLAG
         };
     }
 }
