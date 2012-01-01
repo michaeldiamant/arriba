@@ -81,6 +81,17 @@ public final class InboundFixMessageFactory {
                 return MessageType.LOGON.getSerializedValue();
             }
         },
+        SEQUENCE_RESET {
+            @Override
+            InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
+                return new SequenceReset(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
+            }
+
+            @Override
+            byte[] getSerializedValue() {
+                return MessageType.SEQUENCE_RESET.getSerializedValue();
+            }
+        },
         LOGOUT {
             @Override
             InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
