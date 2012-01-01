@@ -44,6 +44,10 @@ public abstract class InboundFixMessage {
         return this.headerChunk.getValue(tag);
     }
 
+    public boolean hasHeaderValue(final int tag) {
+        return null != this.headerChunk.getValue(tag);
+    }
+
     public String getBodyValue(final int tag) {
         return this.bodyChunk.getValue(tag);
     }

@@ -46,6 +46,17 @@ public enum MessageType {
             return this.getValue().getBytes();
         }
     },
+    SEQUENCE_RESET {
+        @Override
+        public String getValue() {
+            return "4";
+        }
+
+        @Override
+        public byte[] getSerializedValue() {
+            return this.getValue().getBytes();
+        }
+    },
     LOGOUT {
         @Override
         public String getValue() {
