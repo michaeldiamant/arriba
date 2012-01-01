@@ -24,7 +24,10 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
         final InboundFixMessage[] messages = new InboundFixMessage[serializedMessages.length];
 
         for (int messageIndex = 0; messageIndex < serializedMessages.length; messageIndex++) {
-            messages[messageIndex] = this.deserializer.deserialize(serializedMessages[messageIndex]);
+            final InboundFixMessage message = this.deserializer.deserialize(serializedMessages[messageIndex]);
+            if (null != message) {
+                messages[messageIndex] = message;
+            }
         }
 
         event.setMessages(messages);

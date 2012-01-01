@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.disruptor.inbound.DeserializationException;
 import arriba.fix.Fields;
 import arriba.fix.RepeatingGroups;
 import arriba.fix.Tags;
@@ -107,8 +106,7 @@ public final class InboundFixMessageDeserializer {
             }
         }
 
-        // TODO Consider how to better handle this situation.
-        throw new DeserializationException("Unable to deserialize FIX message.");
+        return null;
     }
 
     private void handleNewRepeatingGroup() {
