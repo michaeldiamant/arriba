@@ -62,7 +62,7 @@ public final class InboundFixMessageFactory {
         RESEND_REQUEST {
             @Override
             InboundFixMessage create(final FixChunk headerChunk, final FixChunk bodyChunk, final FixChunk trailerChunk, final FixChunk[][] repeatingGroups) {
-                return new Logon(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
+                return new ResendRequest(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
             }
 
             @Override
