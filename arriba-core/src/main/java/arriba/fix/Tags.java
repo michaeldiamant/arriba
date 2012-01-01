@@ -3,7 +3,7 @@ package arriba.fix;
 public final class Tags {
 
     private static final int MAXIMUM_TAG = 2000;
-    private static final int HEADER_COUNT = 7;
+    private static final int HEADER_COUNT = 8;
     private static final int TRAILER_COUNT = 1;
     private static final byte[][] DELIMITED_BYTE_ARRAY_TAGS = new byte[MAXIMUM_TAG][];
     private static final byte[][] BYTE_ARRAY_TAGS = new byte[MAXIMUM_TAG][];
@@ -15,6 +15,7 @@ public final class Tags {
     public static final int BODY_LENGTH = 9;
     public static final int MESSAGE_SEQUENCE_NUMBER = 34;
     public static final int MESSAGE_TYPE = 35;
+    public static final int POSSIBLE_DUPLICATE_FLAG = 43;
     public static final int SENDER_COMP_ID = 49;
     public static final int SENDING_TIME = 52;
     public static final int TARGET_COMP_ID = 56;
@@ -25,6 +26,7 @@ public final class Tags {
     public static final int BEGIN_SEQUENCE_NUMBER = 7;
     public static final int END_SEQUENCE_NUMBER = 16;
     public static final int CLIENT_ORDER_ID = 11;
+    public static final int NEW_SEQUENCE_NUMBER = 36;
     public static final int ORDER_QUANTITY = 38;
     public static final int ORDER_TYPE = 40;
     public static final int PRICE = 44;
@@ -35,6 +37,7 @@ public final class Tags {
     public static final int ENCRYPT_METHOD = 98;
     public static final int HEARTBEAT_INTERVAL = 108;
     public static final int TEST_REQUEST_ID = 112;
+    public static final int GAP_FILL_FLAG = 123;
     public static final int NUMBER_RELATED_SYMBOLS = 146;
     public static final int MD_REQUEST_ID = 262;
     public static final int SUBSCRIPTION_REQUEST_TYPE = 263;
@@ -67,9 +70,10 @@ public final class Tags {
         HEADERS[1] = BODY_LENGTH;
         HEADERS[2] = MESSAGE_SEQUENCE_NUMBER;
         HEADERS[3] = MESSAGE_TYPE;
-        HEADERS[4] = SENDER_COMP_ID;
-        HEADERS[5] = SENDING_TIME;
-        HEADERS[6] = TARGET_COMP_ID;
+        HEADERS[4] = POSSIBLE_DUPLICATE_FLAG;
+        HEADERS[5] = SENDER_COMP_ID;
+        HEADERS[6] = SENDING_TIME;
+        HEADERS[7] = TARGET_COMP_ID;
     }
 
     private static void buildByteArrayTags() {

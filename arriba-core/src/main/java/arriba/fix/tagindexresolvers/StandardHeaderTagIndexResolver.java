@@ -19,6 +19,8 @@ public final class StandardHeaderTagIndexResolver extends TagIndexResolver {
 
     @Override
     protected int[] getOptionalTags() {
-        return new int[0];
+        return new int[] {
+                Tags.POSSIBLE_DUPLICATE_FLAG
+        };
     }
 }
