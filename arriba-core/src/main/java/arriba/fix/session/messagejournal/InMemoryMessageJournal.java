@@ -38,9 +38,12 @@ public final class InMemoryMessageJournal implements MessageJournal {
 
     @Override
     public byte[][] retrieve(final int startSequenceNumber, final int endSequenceNumber) {
-        if (endSequenceNumber <= startSequenceNumber ||
-                endSequenceNumber >= this.messages.length) {
+        if (endSequenceNumber <= startSequenceNumber) {
             return null;
+        }
+
+        if (endSequenceNumber >= this.messages.length) {
+            return getSubsequence(this.messages, startSequenceNumber, this.messages.length - 1);
         }
 
         return getSubsequence(this.messages, startSequenceNumber, endSequenceNumber);
