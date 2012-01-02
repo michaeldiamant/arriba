@@ -53,16 +53,24 @@ public final class MessageResendingResendRequestHandler implements Handler<Resen
 
         for (final byte[] serializedMessage : serializedMessages) {
             final InboundFixMessage inboundMessage = this.deserializer.deserialize(ChannelBuffers.copiedBuffer(serializedMessage));
+            final int originalSequenceNumber = Integer.parseInt(inboundMessage.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
 
-            if (!messageTypesNotResent.contains(inboundMessage.getMessageType())) {
-                final int originalSequenceNumber = Integer.parseInt(inboundMessage.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
-                final OutboundFixMessage outboundMessage = this.builder
+            final OutboundFixMessage outboundMessage;
+            if (messageTypesNotResent.contains(inboundMessage.getMessageType())) {
+                // TODO Support GapFill messages with fill size > 1.
+                outboundMessage = this.builder
+                        .addStandardHeader(MessageType.SEQUENCE_RESET, request)
+                        .addField(Tags.POSSIBLE_DUPLICATE_FLAG, "Y")
+                        .addField(Tags.GAP_FILL_FLAG, "Y")
+                        .addField(Tags.NEW_SEQUENCE_NUMBER, Integer.toString(originalSequenceNumber + 1))
+                        .build();
+            } else {
+                outboundMessage = this.builder
                         .addStandardHeader(MessageType.valueOf(inboundMessage.getMessageType()), request)
                         .addField(Tags.POSSIBLE_DUPLICATE_FLAG, "Y")
                         .build();
-
-                this.sender.send(outboundMessage.toBytes(originalSequenceNumber, DateSupplier.getUtcTimestamp()));
             }
+            this.sender.send(outboundMessage.toBytes(originalSequenceNumber, DateSupplier.getUtcTimestamp()));
         }
     }
 }
