@@ -117,8 +117,16 @@ public class Session {
         ++this.expectedInboundSequenceNumber;
     }
 
+    public void setInboundSequenceNumber(final int value) {
+        this.expectedInboundSequenceNumber = value;
+    }
+
     public void journal(final int sequenceNumber, final byte[] message) {
         this.journal.write(sequenceNumber, message);
+    }
+
+    public byte[][] retrieve(final int startSequenceNumber, final int endSequenceNumber) {
+        return this.journal.retrieve(startSequenceNumber, endSequenceNumber);
     }
 
     @Override

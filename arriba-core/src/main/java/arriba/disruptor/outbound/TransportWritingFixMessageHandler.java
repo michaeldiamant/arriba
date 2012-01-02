@@ -13,8 +13,7 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
     private final TransportRepository<String, T> transportRepository;
     private final SessionResolver sessionResolver;
 
-    public TransportWritingFixMessageHandler(final TransportRepository<String, T> transportRepository,
-            final SessionResolver sessionResolver) {
+    public TransportWritingFixMessageHandler(final TransportRepository<String, T> transportRepository, final SessionResolver sessionResolver) {
         this.transportRepository = transportRepository;
         this.sessionResolver = sessionResolver;
     }
@@ -29,13 +28,19 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
 
         // TODO Can SessionId be cached?
         final Session session = this.sessionResolver.resolve(event.getSessionId());
-        final int sequenceNumber = session.getNextOutboundSequenceNumber();
-        final byte[] serializedMessage = message.toBytes(sequenceNumber, DateSupplier.getUtcTimestamp());
+
+        final byte[] serializedMessage;
+        if (event.isResend()) {
+            serializedMessage = event.getSerializedFixMessage();
+        } else {
+            final int sequenceNumber = session.getNextOutboundSequenceNumber();
+            serializedMessage = message.toBytes(sequenceNumber, DateSupplier.getUtcTimestamp());
+            updateEvent(event, sequenceNumber, serializedMessage);
+        }
+
         transport.write(serializedMessage);
 
         session.updateLastSentTimestamp();
-
-        updateEvent(event, sequenceNumber, serializedMessage);
     }
 
     private static void updateEvent(final OutboundEvent event, final int sequenceNumber, final byte[] message) {
