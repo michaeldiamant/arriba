@@ -13,11 +13,15 @@ SessionIdToDisruptorAdapter<OutboundEvent> {
     public void adapt(final OutboundFixMessage message, final OutboundEvent event) {
         event.setFixMessage(message);
         event.setSessionId(null);
+        event.setSerializedFixMessage(null);
+        event.setResend(false);
     }
 
     @Override
     public void adapt(final SessionId sessionId, final OutboundEvent event) {
         event.setFixMessage(null);
         event.setSessionId(sessionId);
+        event.setSerializedFixMessage(null);
+        event.setResend(false);
     }
 }

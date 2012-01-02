@@ -18,6 +18,7 @@ import arriba.configuration.DisruptorConfiguration;
 import arriba.examples.handlers.AuthenticatingLogonHandler;
 import arriba.examples.handlers.DisconnectingLogoutHandler;
 import arriba.examples.handlers.HeartbeatGeneratingTestRequestHandler;
+import arriba.examples.handlers.MessageResendingResendRequestHandler;
 import arriba.examples.handlers.NewClientSessionHandler;
 import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
@@ -71,6 +72,7 @@ public class MarketMakerClient {
 
         wizard
         .registerMessageHandler(MessageType.TEST_REQUEST, new HeartbeatGeneratingTestRequestHandler(wizard.createOutboundBuilder(), outboundSender))
+        .registerMessageHandler(MessageType.RESEND_REQUEST, new MessageResendingResendRequestHandler(wizard.getSessionResolver(), wizard.getSerializedOutboundSender(), wizard.createOutboundBuilder(), wizard.getInboundDeserializer()))
         .registerMessageHandler(MessageType.LOGON, new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder(), this.channels, repository, wizard.getSessionMonitor()))
         .registerMessageHandler(MessageType.LOGOUT, new DisconnectingLogoutHandler(outboundSender, wizard.createOutboundBuilder(), wizard.getSessionDisconnector() , wizard.getLogoutTracker()))
         .registerMessageHandler(MessageType.MARKET_DATA_REQUEST, new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))

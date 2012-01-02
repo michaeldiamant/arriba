@@ -24,6 +24,7 @@ import arriba.disruptor.outbound.MessageJournalingEventHandler;
 import arriba.disruptor.outbound.OutboundDisruptorAdapter;
 import arriba.disruptor.outbound.OutboundEvent;
 import arriba.disruptor.outbound.OutboundEventFactory;
+import arriba.disruptor.outbound.SerializedOutboundDisruptorAdapter;
 import arriba.disruptor.outbound.TransportDelegatingEventHandler;
 import arriba.disruptor.outbound.TransportWritingFixMessageHandler;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
@@ -34,6 +35,7 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.InboundFixMessageBuilder;
 import arriba.fix.inbound.InboundFixMessageFactory;
 import arriba.fix.inbound.RepeatingGroupBuilder;
+import arriba.fix.inbound.deserializers.InboundFixMessageDeserializer;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
@@ -74,6 +76,7 @@ public final class ArribaWizard<T> {
     private final LogoutTracker logoutTracker = new InMemoryLogoutTracker();
     private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
     private final Sender<OutboundFixMessage> outboundSender;
+    private final Sender<byte[]> outboundBytesSender;
     private final Sender<ChannelBuffer[]> inboundSender;
     private final SessionDisconnector sessionDisconnector;
     private final SessionMonitor sessionMonitor;
@@ -91,6 +94,10 @@ public final class ArribaWizard<T> {
         this.outboundSender = new DisruptorSender<>(
                 outboundDisruptor,
                 new OutboundDisruptorAdapter()
+                );
+        this.outboundBytesSender = new DisruptorSender<>(
+                outboundDisruptor,
+                new SerializedOutboundDisruptorAdapter()
                 );
         this.sessionDisconnector = new DisruptorSessionDisconnector<>(
                 outboundDisruptor,
@@ -111,6 +118,10 @@ public final class ArribaWizard<T> {
         return this.logoutTracker;
     }
 
+    public SessionResolver getSessionResolver() {
+        return this.sessionResolver;
+    }
+
     public SessionDisconnector getSessionDisconnector() {
         return this.sessionDisconnector;
     }
@@ -126,6 +137,14 @@ public final class ArribaWizard<T> {
 
     public Sender<OutboundFixMessage> getOutboundSender() {
         return this.outboundSender;
+    }
+
+    public Sender<byte[]> getSerializedOutboundSender() {
+        return this.outboundBytesSender;
+    }
+
+    public InboundFixMessageDeserializer getInboundDeserializer() {
+        return new InboundFixMessageDeserializer(this.inboundFixMessageBuilder(), new RepeatingGroupBuilder(this.fixChunkBuilderSupplier));
     }
 
     public RichOutboundFixMessageBuilder createOutboundBuilder() {
