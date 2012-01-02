@@ -13,6 +13,7 @@ import arriba.configuration.DisruptorConfiguration;
 import arriba.examples.handlers.DisconnectingLogoutHandler;
 import arriba.examples.handlers.HeartbeatGeneratingTestRequestHandler;
 import arriba.examples.handlers.LogonOnConnectApplication;
+import arriba.examples.handlers.MessageResendingResendRequestHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.fields.MessageType;
@@ -60,6 +61,7 @@ public class MarketTakerClient {
 
         wizard
         .registerMessageHandler(MessageType.TEST_REQUEST, new HeartbeatGeneratingTestRequestHandler(wizard.createOutboundBuilder(), outboundSender))
+        .registerMessageHandler(MessageType.RESEND_REQUEST, new MessageResendingResendRequestHandler(wizard.getSessionResolver(), wizard.getSerializedOutboundSender(), wizard.createOutboundBuilder(), wizard.getInboundDeserializer()))
         .registerMessageHandler(MessageType.LOGON, new SubscriptionRequestingLogonHandler(Sets.newHashSet("EURUSD"), outboundSender, wizard.createOutboundBuilder()))
         .registerMessageHandler(MessageType.LOGOUT, new DisconnectingLogoutHandler(outboundSender, wizard.createOutboundBuilder(), wizard.getSessionDisconnector() , wizard.getLogoutTracker()))
         .registerMessageHandler(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, new NewOrderGeneratingMarketDataHandler(outboundSender, wizard.createOutboundBuilder()))

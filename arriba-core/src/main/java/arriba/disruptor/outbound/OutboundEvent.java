@@ -10,12 +10,21 @@ public final class OutboundEvent extends AbstractEvent {
     private OutboundFixMessage message;
     private SessionId sessionId;
     private byte[] serializedFixMessage;
+    private boolean isResend;
     private int sequenceNumber;
 
     public OutboundEvent() {}
 
     public OutboundFixMessage getFixMessage() {
         return this.message;
+    }
+
+    public boolean isResend() {
+        return this.isResend;
+    }
+
+    public void setResend(final boolean isResend) {
+        this.isResend = isResend;
     }
 
     public void setFixMessage(final OutboundFixMessage message) {
