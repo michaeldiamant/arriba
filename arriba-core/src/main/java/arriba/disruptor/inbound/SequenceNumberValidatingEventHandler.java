@@ -1,6 +1,5 @@
 package arriba.disruptor.inbound;
 
-import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.InboundFixMessage;
@@ -14,19 +13,15 @@ import com.lmax.disruptor.EventHandler;
 
 public final class SequenceNumberValidatingEventHandler implements EventHandler<InboundEvent> {
 
-    private static final int EXPECTED_SEQUENCE_NUMBER = 0;
-
     private final SessionResolver resolver;
-    private final Sender<OutboundFixMessage> sender;
     private final RichOutboundFixMessageBuilder builder;
-    private final InboundFixMessage[] validatedMessages = new InboundFixMessage[2000]; // TODO Set reasonable default.
+    private final InboundFixMessage[] validatedMessages = new InboundFixMessage[100]; // TODO Set reasonable default.
+    private final OutboundFixMessage[] outboundMessages = new OutboundFixMessage[100];
 
     private int validatedMessagesIndex = 0;
 
-    public SequenceNumberValidatingEventHandler(final SessionResolver resolver, final Sender<OutboundFixMessage> sender,
-            final RichOutboundFixMessageBuilder builder) {
+    public SequenceNumberValidatingEventHandler(final SessionResolver resolver, final RichOutboundFixMessageBuilder builder) {
         this.resolver = resolver;
-        this.sender = sender;
         this.builder = builder;
     }
 
@@ -40,16 +35,47 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
                 throw new IllegalArgumentException("No session found for " + message.getSessionId());
             }
 
-            if (this.shouldForwardMessage(session, message)) {
-                this.validatedMessages[this.validatedMessagesIndex++] = message;
+            if (shouldForwardMessage(session, message)) {
+                this.processMsg(session, message);
+            }
 
-                if (session.isAwaitingResend() && session.isResendComplete()) {
-                    this.processQueuedMessages(session);
-                }
+            if (session.isAwaitingResend() && session.isResendComplete()) {
+                this.processQueuedMessages(session);
             }
         }
 
         this.setEventMessages(event);
+    }
+
+    // TODO Consider a recursive message processing algorithm that uses LinkedList instead of Array of messages.
+    // Queued messages can be prepended to the list of messages to remove nested duplication.
+
+    private void processMsg(final Session session, final InboundFixMessage message) {
+        final int sequenceNumber = getSequenceNumber(message);
+        final int compareResult = session.compareToInboundSequenceNumber(sequenceNumber);
+        if (0 == compareResult) {
+            updateSessionState(session, message);
+
+            this.validatedMessages[this.validatedMessagesIndex] = message;
+        } else if (compareResult < 0) {
+            final OutboundFixMessage logout = this.builder
+                    .addStandardHeader(MessageType.LOGOUT, message)
+                    .addField(Tags.TEXT,
+                            "Expected sequence number " + session.getExpectedInboundSequenceNumber() + ", but received " + sequenceNumber + ".")
+                            .build();
+            this.outboundMessages[this.validatedMessagesIndex] = logout;
+        } else {
+            session.queueMessage(message);
+            if (!session.isAwaitingResend()) {
+                final OutboundFixMessage resendRequest = this.builder.addStandardHeader(MessageType.RESEND_REQUEST, message)
+                        .addField(Tags.BEGIN_SEQUENCE_NUMBER, Integer.toString(session.getExpectedInboundSequenceNumber()))
+                        .addField(Tags.END_SEQUENCE_NUMBER, Integer.toString(getSequenceNumber(message) - 1))
+                        .build();
+
+                this.outboundMessages[this.validatedMessagesIndex] = resendRequest;
+            }
+        }
+        ++this.validatedMessagesIndex;
     }
 
     private void setEventMessages(final InboundEvent event) {
@@ -57,6 +83,19 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         final InboundFixMessage[] validatedMessagesCopy = new InboundFixMessage[this.validatedMessagesIndex];
         System.arraycopy(this.validatedMessages, 0, validatedMessagesCopy, 0, validatedMessagesCopy.length);
         event.setMessages(validatedMessagesCopy);
+
+        final OutboundFixMessage[] outboundMessagesCopy = new OutboundFixMessage[this.validatedMessagesIndex];
+        System.arraycopy(this.validatedMessages, 0, this.outboundMessages, 0, outboundMessagesCopy.length);
+        event.setOutboundMessages(outboundMessagesCopy);
+    }
+
+    private static void updateSessionState(final Session session, final InboundFixMessage message) {
+        if (message.isA(MessageType.SEQUENCE_RESET)) {
+            processSequenceReset(session, (SequenceReset) message);
+        } else {
+            session.incrementInboundSequenceNumber();
+        }
+        session.updateLastReceivedTimestamp();
     }
 
     private void processQueuedMessages(final Session session) {
@@ -67,11 +106,11 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
             if (queuedMessage == null) {
                 isValid = false;
             } else {
-                isValid = this.shouldForwardMessage(session, queuedMessage);
+                isValid = shouldForwardMessage(session, queuedMessage);
                 if (isValid) {
-                    this.validatedMessages[this.validatedMessagesIndex++] = queuedMessage;
-                    session.dropHead();
+                    this.processMsg(session, queuedMessage);
                 }
+                session.dropHead();
             }
         }
     }
@@ -90,45 +129,17 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         }
     }
 
-    // FIXME Refactor to remove side-effects from this method.
-    private boolean shouldForwardMessage(final Session session, final InboundFixMessage message) {
+    private static int getSequenceNumber(final InboundFixMessage message) {
+        return Integer.parseInt(message.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
+    }
+
+    private static boolean shouldForwardMessage(final Session session, final InboundFixMessage message) {
         // FIXME Support SequenceReset Reset messages.
         // FIXME Support proper semantics for mismatch on response by message type (p. 13 FIXT1.1 spec).
-
         if (!session.isAwaitingResend() && "Y".equalsIgnoreCase(message.getHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG))) {
             return false;
         }
 
-        final int sequenceNumber = Integer.parseInt(message.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
-        final int compareResult = session.compareToInboundSequenceNumber(sequenceNumber);
-        if (EXPECTED_SEQUENCE_NUMBER == compareResult) {
-            if (message.isA(MessageType.SEQUENCE_RESET)) {
-                processSequenceReset(session, (SequenceReset) message);
-            } else {
-                session.incrementInboundSequenceNumber();
-            }
-            session.updateLastReceivedTimestamp();
-
-            return true;
-        } else if (compareResult < EXPECTED_SEQUENCE_NUMBER) {
-            final OutboundFixMessage logout = this.builder
-                    .addStandardHeader(MessageType.LOGOUT, message)
-                    .addField(Tags.TEXT,
-                            "Expected sequence number " + session.getExpectedInboundSequenceNumber() + ", but received " + sequenceNumber + ".")
-                            .build();
-            this.sender.send(logout);
-
-            return false;
-        } else {
-            if (!session.isAwaitingResend()) {
-                final OutboundFixMessage resendRequest = this.builder.addStandardHeader(MessageType.RESEND_REQUEST, message)
-                        .addField(Tags.BEGIN_SEQUENCE_NUMBER, Integer.toString(session.getExpectedInboundSequenceNumber()))
-                        .addField(Tags.END_SEQUENCE_NUMBER, Integer.toString(sequenceNumber - 1)).build();
-                this.sender.send(resendRequest);
-            }
-            session.queueMessage(message);
-
-            return false;
-        }
+        return true;
     }
 }

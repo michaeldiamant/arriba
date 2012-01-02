@@ -245,11 +245,11 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<InboundEvent> sequenceNumberValidatingEventHandler() {
-        return new SequenceNumberValidatingEventHandler(this.sessionResolver, this.outboundSender, this.createOutboundBuilder());
+        return new SequenceNumberValidatingEventHandler(this.sessionResolver, this.createOutboundBuilder());
     }
 
     private EventHandler<InboundEvent> sessionNotifyingEventHandler() {
-        return new SessionNotifyingEventHandler(this.sessionResolver);
+        return new SessionNotifyingEventHandler(this.sessionResolver, this.outboundSender);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
