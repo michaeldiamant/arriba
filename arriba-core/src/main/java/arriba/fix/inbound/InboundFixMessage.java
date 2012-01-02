@@ -2,6 +2,7 @@ package arriba.fix.inbound;
 
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
+import arriba.fix.fields.MessageType;
 import arriba.fix.session.SessionId;
 
 public abstract class InboundFixMessage {
@@ -22,6 +23,10 @@ public abstract class InboundFixMessage {
     public SessionId getSessionId() {
         // From inbound FIX message perspective, the TargetCompID is the session's SenderCompID and vice-versa.
         return new SessionId(this.getTargetCompId(), this.getSenderCompId());
+    }
+
+    public boolean isA(final MessageType messageType) {
+        return messageType.getValue().equals(this.getHeaderValue(Tags.MESSAGE_TYPE));
     }
 
     public String getMessageType() {
