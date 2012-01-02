@@ -85,15 +85,18 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
             } else {
                 // TODO What should happen?
             }
-        } else {
-            // TODO What should happen?
+        } else if ("N".equalsIgnoreCase(sequenceReset.getGapFillFlag())) {
+            // TODO Handle SequenceReset Reset messages.
         }
     }
 
     // FIXME Refactor to remove side-effects from this method.
     private boolean shouldForwardMessage(final Session session, final InboundFixMessage message) {
-        if (message.hasHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG) && !session.isAwaitingResend()) {
-            // TODO What should happen?
+        // FIXME Support SequenceReset Reset messages.
+        // FIXME Support proper semantics for mismatch on response by message type (p. 13 FIXT1.1 spec).
+
+        if (!session.isAwaitingResend() && "Y".equalsIgnoreCase(message.getHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG))) {
+            return false;
         }
 
         final int sequenceNumber = Integer.parseInt(message.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
