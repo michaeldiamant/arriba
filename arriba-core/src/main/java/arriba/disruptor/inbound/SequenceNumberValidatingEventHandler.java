@@ -4,6 +4,7 @@ import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.SequenceReset;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.Session;
@@ -75,6 +76,20 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         }
     }
 
+    private static void processSequenceReset(final Session session, final SequenceReset sequenceReset) {
+        if ("Y".equalsIgnoreCase(sequenceReset.getHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG))) {
+            if ("Y".equalsIgnoreCase(sequenceReset.getGapFillFlag())) {
+                final int newSequenceNumber = Integer.parseInt(sequenceReset.getNewSequenceNumber());
+                // FIXME Assuming new sequence number is not larger than first queued message.
+                session.setInboundSequenceNumber(newSequenceNumber);
+            } else {
+                // TODO What should happen?
+            }
+        } else {
+            // TODO What should happen?
+        }
+    }
+
     // FIXME Refactor to remove side-effects from this method.
     private boolean shouldForwardMessage(final Session session, final InboundFixMessage message) {
         if (message.hasHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG) && !session.isAwaitingResend()) {
@@ -84,7 +99,11 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         final int sequenceNumber = Integer.parseInt(message.getHeaderValue(Tags.MESSAGE_SEQUENCE_NUMBER));
         final int compareResult = session.compareToInboundSequenceNumber(sequenceNumber);
         if (EXPECTED_SEQUENCE_NUMBER == compareResult) {
-            session.incrementInboundSequenceNumber();
+            if (message.isA(MessageType.SEQUENCE_RESET)) {
+                processSequenceReset(session, (SequenceReset) message);
+            } else {
+                session.incrementInboundSequenceNumber();
+            }
             session.updateLastReceivedTimestamp();
 
             return true;
