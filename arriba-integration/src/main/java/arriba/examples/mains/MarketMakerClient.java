@@ -37,8 +37,8 @@ import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.bootstraps.FixServerBootstrap;
 
 import com.google.common.collect.Sets;
-import com.lmax.disruptor.ClaimStrategy;
-import com.lmax.disruptor.WaitStrategy;
+import com.lmax.disruptor.MultiThreadedClaimStrategy;
+import com.lmax.disruptor.SleepingWaitStrategy;
 
 public class MarketMakerClient {
 
@@ -54,10 +54,9 @@ public class MarketMakerClient {
 
     public void start() {
         final DisruptorConfiguration configuration = new DisruptorConfiguration(
-                512,
                 Executors.newCachedThreadPool(),
-                ClaimStrategy.Option.SINGLE_THREADED,
-                WaitStrategy.Option.YIELDING
+                new MultiThreadedClaimStrategy(512),
+                new SleepingWaitStrategy()
                 );
         final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<String, Channel>(new NettyTransportFactory());
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);

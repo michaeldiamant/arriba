@@ -3,38 +3,31 @@ package arriba.configuration;
 import java.util.concurrent.Executor;
 
 import com.lmax.disruptor.ClaimStrategy;
-import com.lmax.disruptor.ClaimStrategy.Option;
 import com.lmax.disruptor.WaitStrategy;
 
 public final class DisruptorConfiguration {
 
-    private final int ringBufferSize;
     private final Executor executor;
-    private final ClaimStrategy.Option claimStrategy;
-    private final WaitStrategy.Option waitStrategy;
+    private final ClaimStrategy claimStrategy;
+    private final WaitStrategy waitStrategy;
 
-    public DisruptorConfiguration(final int ringBufferSize, final Executor executor, final Option claimStrategy,
-            final WaitStrategy.Option waitStrategy) {
-        this.ringBufferSize = ringBufferSize;
+    public DisruptorConfiguration(final Executor executor, final ClaimStrategy claimStrategy,
+            final WaitStrategy waitStrategy) {
         this.executor = executor;
         this.claimStrategy = claimStrategy;
         this.waitStrategy = waitStrategy;
-    }
-
-    public int getRingBufferSize() {
-        return this.ringBufferSize;
     }
 
     public Executor getExecutor() {
         return this.executor;
     }
 
-    public ClaimStrategy.Option getClaimStrategy() {
+    public ClaimStrategy getClaimStrategy() {
         return this.claimStrategy;
     }
 
 
-    public WaitStrategy.Option getWaitStrategy() {
+    public WaitStrategy getWaitStrategy() {
         return this.waitStrategy;
     }
 }

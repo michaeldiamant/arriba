@@ -5,7 +5,8 @@ import com.lmax.disruptor.EventFactory;
 
 public final class InboundFactory implements EventFactory<InboundEvent> {
 
-    public InboundEvent create() {
+    @Override
+    public InboundEvent newInstance() {
         return new InboundEvent();
     }
 }

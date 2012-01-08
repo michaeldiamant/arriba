@@ -17,7 +17,7 @@ public final class TransportDelegatingEventHandler<T> implements EventHandler<Ou
     }
 
     @Override
-    public void onEvent(final OutboundEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final OutboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         if (null != event.getFixMessage()) {
             this.fixMessageHandler.handle(event);
         }

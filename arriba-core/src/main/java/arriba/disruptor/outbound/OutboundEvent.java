@@ -3,9 +3,7 @@ package arriba.disruptor.outbound;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.SessionId;
 
-import com.lmax.disruptor.AbstractEvent;
-
-public final class OutboundEvent extends AbstractEvent {
+public final class OutboundEvent {
 
     private OutboundFixMessage message;
     private SessionId sessionId;

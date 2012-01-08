@@ -26,7 +26,7 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
     }
 
     @Override
-    public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         final InboundFixMessage[] messages = event.getMessages();
         for (int messageIndex = 0; messageIndex < messages.length; messageIndex++) {
             final InboundFixMessage message = messages[messageIndex];

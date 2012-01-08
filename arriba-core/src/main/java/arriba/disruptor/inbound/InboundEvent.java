@@ -5,9 +5,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import arriba.fix.inbound.InboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessage;
 
-import com.lmax.disruptor.AbstractEvent;
-
-public final class InboundEvent extends AbstractEvent {
+public final class InboundEvent {
 
     private ChannelBuffer[] serializedMessages;
     private InboundFixMessage[] messages;

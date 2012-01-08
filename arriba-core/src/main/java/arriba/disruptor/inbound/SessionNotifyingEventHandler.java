@@ -20,7 +20,7 @@ public final class SessionNotifyingEventHandler implements EventHandler<InboundE
     }
 
     @Override
-    public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         final InboundFixMessage[] messages = event.getMessages();
         final OutboundFixMessage[] outboundMessages = event.getOutboundMessages();
         for (int messageIndex = 0; messageIndex < messages.length; messageIndex++) {
