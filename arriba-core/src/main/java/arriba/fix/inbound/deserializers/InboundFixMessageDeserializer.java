@@ -127,6 +127,7 @@ public final class InboundFixMessageDeserializer {
         this.repeatingGroupTags = null;
         this.inboundFixMessageBuilder.clear();
         this.repeatingGroupBuilder.clear();
+        this.parsingState = ParsingState.NON_REPEATING_GROUP;
     }
 
     private static enum ParsingState {
