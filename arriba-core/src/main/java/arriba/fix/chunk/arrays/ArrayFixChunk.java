@@ -5,6 +5,8 @@ import arriba.fix.tagindexresolvers.TagIndexResolver;
 
 public final class ArrayFixChunk implements FixChunk {
 
+    private static final byte[] EMPTY_CHUNK = new byte[0];
+
     private final byte[][] values;
     private final TagIndexResolver resolver;
 
@@ -20,11 +22,12 @@ public final class ArrayFixChunk implements FixChunk {
 
     @Override
     public byte[] getSerializedValue(final int tag) {
-        return this.values[this.resolver.getTagIndex(tag)];
+        final int tagIndex = this.resolver.getTagIndex(tag);
+        return tagIndex < this.values.length ? this.values[this.resolver.getTagIndex(tag)] : EMPTY_CHUNK;
     }
 
     @Override
     public String getValue(final int tag) {
-        return new String(this.values[this.resolver.getTagIndex(tag)]);
+        return new String(this.getSerializedValue(tag));
     }
 }
