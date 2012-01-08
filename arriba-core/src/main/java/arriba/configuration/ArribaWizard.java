@@ -77,6 +77,7 @@ public final class ArribaWizard<T> {
     private final LogoutTracker logoutTracker = new InMemoryLogoutTracker();
     private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
     private final DisconnectingSessionIdHandler<T> disconnectingSessionIdHandler;
+    private final SessionNotifyingEventHandler sessionNotifyingEventHandler;
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<byte[]> outboundBytesSender;
     private final Sender<ChannelBuffer[]> inboundSender;
@@ -90,6 +91,7 @@ public final class ArribaWizard<T> {
                 this.transportRepository,
                 Sets.<SessionDisconnectListener>newHashSet(new LogoutMarkClearingDisconnectListener(this.logoutTracker))
                 );
+        this.sessionNotifyingEventHandler = new SessionNotifyingEventHandler(this.sessionResolver);
 
         final RingBuffer<InboundEvent> inboundDisruptor = this.inboundDisruptor(disruptorConfiguration);
         this.inboundSender = new DisruptorSender<>(
@@ -120,6 +122,7 @@ public final class ArribaWizard<T> {
                 );
 
         this.disconnectingSessionIdHandler.addListener(new SessionUnmonitoringDisconnectListener(this.sessionMonitor));
+        this.sessionNotifyingEventHandler.setSender(this.outboundSender);
     }
 
     // TODO Should not be exposed.
@@ -223,7 +226,7 @@ public final class ArribaWizard<T> {
         .handleEventsWith(this.loggingEventHandler())
         .then(this.deserializingEventHandler())
         .then(this.sequenceNumberValidatingEventHandler())
-        .then(this.sessionNotifyingEventHandler());
+        .then(this.sessionNotifyingEventHandler);
 
         return inboundDisruptor.start();
     }
@@ -248,10 +251,6 @@ public final class ArribaWizard<T> {
 
     private EventHandler<InboundEvent> sequenceNumberValidatingEventHandler() {
         return new SequenceNumberValidatingEventHandler(this.sessionResolver, this.createOutboundBuilder());
-    }
-
-    private EventHandler<InboundEvent> sessionNotifyingEventHandler() {
-        return new SessionNotifyingEventHandler(this.sessionResolver, this.outboundSender);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

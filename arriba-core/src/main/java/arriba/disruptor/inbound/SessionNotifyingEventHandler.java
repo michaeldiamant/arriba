@@ -12,10 +12,16 @@ import com.lmax.disruptor.EventHandler;
 public final class SessionNotifyingEventHandler implements EventHandler<InboundEvent> {
 
     private final SessionResolver resolver;
-    private final Sender<OutboundFixMessage> sender;
+    private Sender<OutboundFixMessage> sender;
 
-    public SessionNotifyingEventHandler(final SessionResolver resolver, final Sender<OutboundFixMessage> sender) {
+    public SessionNotifyingEventHandler(final SessionResolver resolver) {
         this.resolver = resolver;
+    }
+
+    /**
+     * Required due to circular dependency issue.
+     */
+    public void setSender(final Sender<OutboundFixMessage> sender) {
         this.sender = sender;
     }
 
