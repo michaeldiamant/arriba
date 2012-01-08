@@ -30,4 +30,11 @@ public final class DisconnectingSessionIdHandler<T> implements Handler<SessionId
             transport.close();
         }
     }
+
+    /**
+     * Only exists because of circular dependency that exists when instantiating components.
+     */
+    public void addListener(final SessionDisconnectListener listener) {
+        this.disconnectListeners.add(listener);
+    }
 }
