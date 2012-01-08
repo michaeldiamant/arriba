@@ -136,7 +136,9 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
     private static boolean shouldForwardMessage(final Session session, final InboundFixMessage message) {
         // FIXME Support SequenceReset Reset messages.
         // FIXME Support proper semantics for mismatch on response by message type (p. 13 FIXT1.1 spec).
-        if (!session.isAwaitingResend() && "Y".equalsIgnoreCase(message.getHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG))) {
+        if (!session.isAwaitingResend() &&
+                message.hasHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG) &&
+                "Y".equalsIgnoreCase(message.getHeaderValue(Tags.POSSIBLE_DUPLICATE_FLAG))) {
             return false;
         }
 
