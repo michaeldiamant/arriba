@@ -19,7 +19,7 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
     }
 
     @Override
-    public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         final ChannelBuffer[] serializedMessages = event.getSerializedMessages();
         final InboundFixMessage[] messages = new InboundFixMessage[serializedMessages.length];
 
@@ -32,5 +32,4 @@ public final class DeserializingFixMessageEventHandler implements EventHandler<I
 
         event.setMessages(messages);
     }
-
 }

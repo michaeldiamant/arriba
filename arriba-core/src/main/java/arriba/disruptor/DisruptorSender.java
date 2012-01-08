@@ -2,10 +2,9 @@ package arriba.disruptor;
 
 import arriba.common.Sender;
 
-import com.lmax.disruptor.AbstractEvent;
 import com.lmax.disruptor.RingBuffer;
 
-public final class DisruptorSender<M, E extends AbstractEvent> implements Sender<M> {
+public final class DisruptorSender<M, E> implements Sender<M> {
 
     private final RingBuffer<E> disruptor;
     private final MessageToDisruptorAdapter<M, E> adapter;
@@ -17,8 +16,9 @@ public final class DisruptorSender<M, E extends AbstractEvent> implements Sender
     }
 
     public void send(final M message) {
-        final E event = this.disruptor.nextEvent();
+        final long sequence = this.disruptor.next();
+        final E event = this.disruptor.get(sequence);
         this.adapter.adapt(message, event);
-        this.disruptor.publish(event);
+        this.disruptor.publish(sequence);
     }
 }

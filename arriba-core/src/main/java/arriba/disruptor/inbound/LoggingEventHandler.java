@@ -11,7 +11,7 @@ public final class LoggingEventHandler implements EventHandler<InboundEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LoggingEventHandler.class);
 
     @Override
-    public void onEvent(final InboundEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final InboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         // Naive implementation that does not batch updates.
 
         for (final ChannelBuffer message : event.getSerializedMessages()) {

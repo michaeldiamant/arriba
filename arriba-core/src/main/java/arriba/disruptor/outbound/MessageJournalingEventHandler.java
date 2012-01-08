@@ -14,7 +14,7 @@ public final class MessageJournalingEventHandler implements EventHandler<Outboun
     }
 
     @Override
-    public void onEvent(final OutboundEvent event, final boolean endOfBatch) throws Exception {
+    public void onEvent(final OutboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         if (!event.isResend()) {
             final Session session = this.resolver.resolve(event.getSessionId());
             session.journal(event.getSequenceNumber(), event.getSerializedFixMessage());

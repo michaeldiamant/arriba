@@ -3,10 +3,9 @@ package arriba.disruptor;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.disconnect.SessionDisconnector;
 
-import com.lmax.disruptor.AbstractEvent;
 import com.lmax.disruptor.RingBuffer;
 
-public final class DisruptorSessionDisconnector<E extends AbstractEvent> implements SessionDisconnector {
+public final class DisruptorSessionDisconnector<E> implements SessionDisconnector {
     private final RingBuffer<E> disruptor;
     private final SessionIdToDisruptorAdapter<E> adapter;
 
@@ -17,8 +16,9 @@ public final class DisruptorSessionDisconnector<E extends AbstractEvent> impleme
 
     @Override
     public void disconnect(final SessionId sessionId) {
-        final E event = this.disruptor.nextEvent();
+        final long sequence = this.disruptor.next();
+        final E event = this.disruptor.get(sequence);
         this.adapter.adapt(sessionId, event);
-        this.disruptor.publish(event);
+        this.disruptor.publish(sequence);
     }
 }

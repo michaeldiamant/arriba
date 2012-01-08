@@ -60,7 +60,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.wizard.DisruptorWizard;
+import com.lmax.disruptor.dsl.Disruptor;
 
 public final class ArribaWizard<T> {
 
@@ -181,13 +181,13 @@ public final class ArribaWizard<T> {
 
     @SuppressWarnings("unchecked")
     private RingBuffer<OutboundEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
-        final DisruptorWizard<OutboundEvent> outgoingDisruptor = new DisruptorWizard<>(
+        final Disruptor<OutboundEvent> outgoingDisruptor = new Disruptor<>(
                 new OutboundEventFactory(),
-                configuration.getRingBufferSize(),
                 configuration.getExecutor(),
                 configuration.getClaimStrategy(),
                 configuration.getWaitStrategy()
                 );
+
         outgoingDisruptor
         .handleEventsWith(this.transportDelegatingEventHandler())
         .then(new MessageJournalingEventHandler(this.sessionResolver));
@@ -210,9 +210,8 @@ public final class ArribaWizard<T> {
 
     @SuppressWarnings("unchecked")
     private RingBuffer<InboundEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
-        final DisruptorWizard<InboundEvent> inboundDisruptor = new DisruptorWizard<>(
+        final Disruptor<InboundEvent> inboundDisruptor = new Disruptor<>(
                 new InboundFactory(),
-                configuration.getRingBufferSize(),
                 configuration.getExecutor(),
                 configuration.getClaimStrategy(),
                 configuration.getWaitStrategy()

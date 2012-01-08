@@ -43,7 +43,7 @@ public class DeserializingFixMessageEventHandlerTest {
     public void testFixMessageDeserialization() throws Exception {
         final InboundEvent event = createPreloadedFixMessageEvent();
 
-        this.handler.onEvent(event, false);
+        this.handler.onEvent(event, 1, false);
 
         for (final InboundFixMessage message : event.getMessages()) {
             assertAllFieldsAreSet(message);

@@ -4,7 +4,8 @@ import com.lmax.disruptor.EventFactory;
 
 public final class OutboundEventFactory implements EventFactory<OutboundEvent> {
 
-    public OutboundEvent create() {
+    @Override
+    public OutboundEvent newInstance() {
         return new OutboundEvent();
     }
 }
