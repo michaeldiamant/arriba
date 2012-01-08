@@ -48,6 +48,7 @@ import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionMonitor;
 import arriba.fix.session.SessionResolver;
 import arriba.fix.session.disconnect.LogoutMarkClearingDisconnectListener;
+import arriba.fix.session.disconnect.SessionDisconnectListener;
 import arriba.fix.session.disconnect.SessionDisconnector;
 import arriba.fix.session.disconnect.SessionUnmonitoringDisconnectListener;
 import arriba.fix.session.messagejournal.InMemoryMessageJournal;
@@ -75,6 +76,7 @@ public final class ArribaWizard<T> {
             );
     private final LogoutTracker logoutTracker = new InMemoryLogoutTracker();
     private final SessionResolver sessionResolver = new InMemorySessionResolver(this.sessionIdToSession);
+    private final DisconnectingSessionIdHandler<T> disconnectingSessionIdHandler;
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<byte[]> outboundBytesSender;
     private final Sender<ChannelBuffer[]> inboundSender;
@@ -83,6 +85,11 @@ public final class ArribaWizard<T> {
 
     public ArribaWizard(final DisruptorConfiguration disruptorConfiguration, final TransportRepository<String, T> transportRepository) {
         this.transportRepository = transportRepository;
+
+        this.disconnectingSessionIdHandler = new DisconnectingSessionIdHandler<T>(
+                this.transportRepository,
+                Sets.<SessionDisconnectListener>newHashSet(new LogoutMarkClearingDisconnectListener(this.logoutTracker))
+                );
 
         final RingBuffer<InboundEvent> inboundDisruptor = this.inboundDisruptor(disruptorConfiguration);
         this.inboundSender = new DisruptorSender<>(
@@ -111,6 +118,8 @@ public final class ArribaWizard<T> {
                 this.sessionResolver,
                 this.logoutTracker
                 );
+
+        this.disconnectingSessionIdHandler.addListener(new SessionUnmonitoringDisconnectListener(this.sessionMonitor));
     }
 
     // TODO Should not be exposed.
@@ -198,13 +207,7 @@ public final class ArribaWizard<T> {
     private EventHandler<OutboundEvent> transportDelegatingEventHandler() {
         return new TransportDelegatingEventHandler<T>(
                 new TransportWritingFixMessageHandler<>(this.transportRepository, this.sessionResolver),
-                new DisconnectingSessionIdHandler<>(
-                        this.transportRepository,
-                        Sets.newHashSet(
-                                new SessionUnmonitoringDisconnectListener(this.sessionMonitor),
-                                new LogoutMarkClearingDisconnectListener(this.logoutTracker)
-                                )
-                        )
+                this.disconnectingSessionIdHandler
                 );
     }
 
