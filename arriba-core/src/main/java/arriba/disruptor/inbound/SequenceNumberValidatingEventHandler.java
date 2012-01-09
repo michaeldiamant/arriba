@@ -85,7 +85,7 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         event.setMessages(validatedMessagesCopy);
 
         final OutboundFixMessage[] outboundMessagesCopy = new OutboundFixMessage[this.validatedMessagesIndex];
-        System.arraycopy(this.validatedMessages, 0, this.outboundMessages, 0, outboundMessagesCopy.length);
+        System.arraycopy(this.outboundMessages, 0, outboundMessagesCopy, 0, outboundMessagesCopy.length);
         event.setOutboundMessages(outboundMessagesCopy);
     }
 
