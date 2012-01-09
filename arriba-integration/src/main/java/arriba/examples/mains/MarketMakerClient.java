@@ -20,6 +20,7 @@ import arriba.examples.handlers.DisconnectingLogoutHandler;
 import arriba.examples.handlers.HeartbeatGeneratingTestRequestHandler;
 import arriba.examples.handlers.MessageResendingResendRequestHandler;
 import arriba.examples.handlers.NewClientSessionHandler;
+import arriba.examples.handlers.NoOpHeartbeatHandler;
 import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
@@ -37,8 +38,8 @@ import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.bootstraps.FixServerBootstrap;
 
 import com.google.common.collect.Sets;
-import com.lmax.disruptor.MultiThreadedClaimStrategy;
-import com.lmax.disruptor.SleepingWaitStrategy;
+import com.lmax.disruptor.BlockingWaitStrategy;
+import com.lmax.disruptor.SingleThreadedClaimStrategy;
 
 public class MarketMakerClient {
 
@@ -55,8 +56,8 @@ public class MarketMakerClient {
     public void start() {
         final DisruptorConfiguration configuration = new DisruptorConfiguration(
                 Executors.newCachedThreadPool(),
-                new MultiThreadedClaimStrategy(512),
-                new SleepingWaitStrategy()
+                new SingleThreadedClaimStrategy(128),
+                new BlockingWaitStrategy()
                 );
         final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<String, Channel>(new NettyTransportFactory());
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
@@ -70,6 +71,7 @@ public class MarketMakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
+        .registerMessageHandler(MessageType.HEARTBEAT, new NoOpHeartbeatHandler())
         .registerMessageHandler(MessageType.TEST_REQUEST, new HeartbeatGeneratingTestRequestHandler(wizard.createOutboundBuilder(), outboundSender))
         .registerMessageHandler(MessageType.RESEND_REQUEST, new MessageResendingResendRequestHandler(wizard.getSessionResolver(), wizard.getSerializedOutboundSender(), wizard.createOutboundBuilder(), wizard.getInboundDeserializer()))
         .registerMessageHandler(MessageType.LOGON, new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder(), this.channels, repository, wizard.getSessionMonitor()))
