@@ -45,6 +45,7 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
         }
 
         this.setEventMessages(event);
+        this.validatedMessagesIndex = 0;
     }
 
     // TODO Consider a recursive message processing algorithm that uses LinkedList instead of Array of messages.
