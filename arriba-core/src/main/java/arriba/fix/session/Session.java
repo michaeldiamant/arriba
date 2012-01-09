@@ -16,8 +16,9 @@ public class Session {
     private final MessageJournal journal;
     private final LinkedList<InboundFixMessage> unprocessedMessages = new LinkedList<>();
     private boolean isAwaitngResend = false;
+    // TODO Load sequence numbers from store.
     private int expectedInboundSequenceNumber = 1;
-    private int outboundSequenceNumber = 0;
+    private int outboundSequenceNumber = 1;
     private long lastReceivedTimestamp = 0;
     private long lastSentTimestamp = 0;
 
