@@ -29,8 +29,11 @@ public final class SessionNotifyingEventHandler implements EventHandler<InboundE
     public void onEvent(final InboundEvent event, final long sequence, final boolean endOfBatch) throws Exception {
         final InboundFixMessage[] messages = event.getMessages();
         final OutboundFixMessage[] outboundMessages = event.getOutboundMessages();
-        for (int messageIndex = 0; messageIndex < messages.length; messageIndex++) {
-            this.notifySession(messages[messageIndex]);
+        final int messageLength = Math.max(messages.length, outboundMessages.length);
+        for (int messageIndex = 0; messageIndex < messageLength; messageIndex++) {
+            if (null != messages[messageIndex]) {
+                this.notifySession(messages[messageIndex]);
+            }
 
             if (null != outboundMessages[messageIndex]) {
                 this.sender.send(outboundMessages[messageIndex]);
