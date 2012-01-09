@@ -118,7 +118,7 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
                     }
                 };
 
-                final ScheduledFuture<?> monitorFuture = this.executor.scheduleAtFixedRate(monitorRunnable, 0, heartbeatIntervalInMs, TimeUnit.MILLISECONDS);
+                final ScheduledFuture<?> monitorFuture = this.executor.scheduleAtFixedRate(monitorRunnable, heartbeatIntervalInMs, heartbeatIntervalInMs, TimeUnit.MILLISECONDS);
                 this.sessionToMonitorFuture.put(session, monitorFuture);
             }
         } finally {
