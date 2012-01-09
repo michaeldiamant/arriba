@@ -2,6 +2,7 @@ package arriba.configuration;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
@@ -59,7 +60,9 @@ import cern.colt.map.OpenIntObjectHashMap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventHandler;
+import com.lmax.disruptor.MultiThreadedClaimStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
@@ -195,9 +198,9 @@ public final class ArribaWizard<T> {
     private RingBuffer<OutboundEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
         final Disruptor<OutboundEvent> outgoingDisruptor = new Disruptor<>(
                 new OutboundEventFactory(),
-                configuration.getExecutor(),
-                configuration.getClaimStrategy(),
-                configuration.getWaitStrategy()
+                Executors.newCachedThreadPool(),
+                new MultiThreadedClaimStrategy(256),
+                new BlockingWaitStrategy()
                 );
 
         outgoingDisruptor
@@ -218,9 +221,9 @@ public final class ArribaWizard<T> {
     private RingBuffer<InboundEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
         final Disruptor<InboundEvent> inboundDisruptor = new Disruptor<>(
                 new InboundFactory(),
-                configuration.getExecutor(),
-                configuration.getClaimStrategy(),
-                configuration.getWaitStrategy()
+                Executors.newCachedThreadPool(),
+                new MultiThreadedClaimStrategy(256),
+                new BlockingWaitStrategy()
                 );
         inboundDisruptor
         .handleEventsWith(this.loggingEventHandler())
