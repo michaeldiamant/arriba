@@ -4,6 +4,7 @@ import arriba.common.Handler;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.Session;
+import arriba.fix.session.SessionIds;
 import arriba.fix.session.SessionResolver;
 import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
@@ -27,7 +28,7 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
         }
 
         // TODO Can SessionId be cached?
-        final Session session = this.sessionResolver.resolve(event.getSessionId());
+        final Session session = this.sessionResolver.resolve(SessionIds.newSessionId(message));
 
         final byte[] serializedMessage;
         if (event.isResend()) {
