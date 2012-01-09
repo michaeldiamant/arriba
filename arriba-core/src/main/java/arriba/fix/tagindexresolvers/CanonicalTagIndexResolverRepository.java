@@ -23,6 +23,7 @@ public final class CanonicalTagIndexResolverRepository implements TagIndexResolv
 
     private ByteArrayKeyedMap<TagIndexResolver> initializeBodyResolvers() {
         return new ImmutableByteArrayKeyedMapBuilder<TagIndexResolver>()
+                .put(MessageType.HEARTBEAT.getSerializedValue(), new HeartbeatTagIndexResolver())
                 .put(MessageType.LOGON.getSerializedValue(), new LogonTagIndexResolver())
                 .put(MessageType.LOGOUT.getSerializedValue(), new LogoutTagIndexResolver())
                 .put(MessageType.TEST_REQUEST.getSerializedValue(), new TestRequestTagIndexResolver())
