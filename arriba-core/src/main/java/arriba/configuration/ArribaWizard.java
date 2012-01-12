@@ -2,7 +2,6 @@ package arriba.configuration;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executors;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
@@ -60,9 +59,7 @@ import cern.colt.map.OpenIntObjectHashMap;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.lmax.disruptor.BlockingWaitStrategy;
 import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.MultiThreadedClaimStrategy;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 
@@ -87,7 +84,8 @@ public final class ArribaWizard<T> {
     private final SessionDisconnector sessionDisconnector;
     private final SessionMonitor sessionMonitor;
 
-    public ArribaWizard(final DisruptorConfiguration disruptorConfiguration, final TransportRepository<String, T> transportRepository) {
+    public ArribaWizard(final DisruptorConfiguration inboundConfiguration, final DisruptorConfiguration outboundConfiguration,
+            final TransportRepository<String, T> transportRepository) {
         this.transportRepository = transportRepository;
 
         this.disconnectingSessionIdHandler = new DisconnectingSessionIdHandler<T>(
@@ -96,13 +94,13 @@ public final class ArribaWizard<T> {
                 );
         this.sessionNotifyingEventHandler = new SessionNotifyingEventHandler(this.sessionResolver);
 
-        final RingBuffer<InboundEvent> inboundDisruptor = this.inboundDisruptor(disruptorConfiguration);
+        final RingBuffer<InboundEvent> inboundDisruptor = this.inboundDisruptor(inboundConfiguration);
         this.inboundSender = new DisruptorSender<>(
                 inboundDisruptor,
                 new InboundDisruptorAdapter()
                 );
 
-        final RingBuffer<OutboundEvent> outboundDisruptor = this.outboundDisruptor(disruptorConfiguration);
+        final RingBuffer<OutboundEvent> outboundDisruptor = this.outboundDisruptor(outboundConfiguration);
         this.outboundSender = new DisruptorSender<>(
                 outboundDisruptor,
                 new OutboundDisruptorAdapter()
@@ -198,9 +196,9 @@ public final class ArribaWizard<T> {
     private RingBuffer<OutboundEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
         final Disruptor<OutboundEvent> outgoingDisruptor = new Disruptor<>(
                 new OutboundEventFactory(),
-                Executors.newCachedThreadPool(),
-                new MultiThreadedClaimStrategy(256),
-                new BlockingWaitStrategy()
+                configuration.getExecutor(),
+                configuration.getClaimStrategy(),
+                configuration.getWaitStrategy()
                 );
 
         outgoingDisruptor
@@ -221,9 +219,9 @@ public final class ArribaWizard<T> {
     private RingBuffer<InboundEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
         final Disruptor<InboundEvent> inboundDisruptor = new Disruptor<>(
                 new InboundFactory(),
-                Executors.newCachedThreadPool(),
-                new MultiThreadedClaimStrategy(256),
-                new BlockingWaitStrategy()
+                configuration.getExecutor(),
+                configuration.getClaimStrategy(),
+                configuration.getWaitStrategy()
                 );
         inboundDisruptor
         .handleEventsWith(this.loggingEventHandler())
