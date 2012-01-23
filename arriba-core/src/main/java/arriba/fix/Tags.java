@@ -38,10 +38,12 @@ public final class Tags {
     public static final int HEARTBEAT_INTERVAL = 108;
     public static final int TEST_REQUEST_ID = 112;
     public static final int GAP_FILL_FLAG = 123;
+    public static final int RESET_SEQUENCE_NUMBER_FLAG = 141;
     public static final int NUMBER_RELATED_SYMBOLS = 146;
     public static final int MD_REQUEST_ID = 262;
     public static final int SUBSCRIPTION_REQUEST_TYPE = 263;
     public static final int MARKET_DEPTH = 264;
+    public static final int NUMBER_MD_ENTRY_TYPES = 267;
     public static final int NUMBER_MD_ENTRIES = 268;
     public static final int MD_ENTRY_TYPE = 269;
     public static final int MD_ENTRY_PRICE = 270;
