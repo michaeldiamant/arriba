@@ -96,7 +96,7 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
 
                     private void sendLogout() {
                         final OutboundFixMessage logout = ScheduledSessionMonitor.this.builder
-                                .addStandardHeader(MessageType.LOGOUT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
+                                .addStandardHeader(MessageType.LOGOUT, BeginString.FIX44.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
                         ScheduledSessionMonitor.this.fixMessageSender.send(logout);
                         ScheduledSessionMonitor.this.tracker.markLogout(sessionId);
@@ -104,14 +104,14 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
 
                     private void sendHeartbeat() {
                         final OutboundFixMessage heartbeat = ScheduledSessionMonitor.this.builder
-                                .addStandardHeader(MessageType.HEARTBEAT, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
+                                .addStandardHeader(MessageType.HEARTBEAT, BeginString.FIX44.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .build();
                         ScheduledSessionMonitor.this.fixMessageSender.send(heartbeat);
                     }
 
                     private void sendTestRequest() {
                         final OutboundFixMessage testRequest = ScheduledSessionMonitor.this.builder
-                                .addStandardHeader(MessageType.TEST_REQUEST, BeginString.FIXT11.getValue(), session.getSenderCompId(), session.getTargetCompId())
+                                .addStandardHeader(MessageType.TEST_REQUEST, BeginString.FIX44.getValue(), session.getSenderCompId(), session.getTargetCompId())
                                 .addField(Tags.TEST_REQUEST_ID, Long.toString(System.currentTimeMillis()))
                                 .build();
                         ScheduledSessionMonitor.this.fixMessageSender.send(testRequest);
