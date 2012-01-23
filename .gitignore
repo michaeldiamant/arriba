@@ -13,3 +13,4 @@ project/target
 *.idea
 *.DS_Store
 *.DS_STORE
+*.cache
