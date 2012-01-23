@@ -44,7 +44,7 @@ public final class SubscriptionRequestingLogonHandler implements Handler<Logon> 
         }
 
         this.builder
-        .addField(Tags.NUMBER_MD_ENTRIES, "2")
+        .addField(Tags.NUMBER_MD_ENTRY_TYPES, "2")
         .addField(Tags.MD_ENTRY_TYPE, "0")
         .addField(Tags.MD_ENTRY_TYPE, "1");
 
