@@ -46,8 +46,8 @@ public final class OutboundFixMessage {
             final int bodyLength = this.bodyAndTrailerOut.size() + this.headerOut.size();
 
             final ByteArrayOutputStream finalOut = new ByteArrayOutputStream();
-            FieldWriter.write(BEGIN_STRING_BYTES, this.beginString, finalOut);
-            FieldWriter.write(BODY_LENGTH_BYTES, Integer.toString(bodyLength), finalOut);
+            this.messageBytesSum += FieldWriter.write(BEGIN_STRING_BYTES, this.beginString, finalOut);
+            this.messageBytesSum += FieldWriter.write(BODY_LENGTH_BYTES, Integer.toString(bodyLength), finalOut);
 
             final int checksum = this.messageBytesSum % 256;
             // TODO Create lookup table.
