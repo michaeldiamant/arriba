@@ -16,7 +16,8 @@ public final class LogonTagIndexResolver extends TagIndexResolver {
     protected int[] getOptionalTags() {
         return new int[] {
                 Tags.USERNAME,
-                Tags.PASSWORD
+                Tags.PASSWORD,
+                Tags.RESET_SEQUENCE_NUMBER_FLAG
         };
     }
 }
