@@ -12,6 +12,28 @@ public enum BeginString {
         public byte[] getSerializedValue() {
             return this.getValue().getBytes();
         }
+    },
+    FIX50 {
+        @Override
+        public String getValue() {
+            return "FIX.5.0";
+        }
+
+        @Override
+        public byte[] getSerializedValue() {
+            return this.getValue().getBytes();
+        }
+    },
+    FIX44 {
+        @Override
+        public String getValue() {
+            return "FIX.4.4";
+        }
+
+        @Override
+        public byte[] getSerializedValue() {
+            return this.getValue().getBytes();
+        }
     };
 
     public abstract String getValue();
