@@ -8,6 +8,7 @@ import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
+import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 
@@ -40,6 +41,7 @@ public final class NewOrderGeneratingMarketDataHandler implements Handler<Market
             final FixChunk[] mdEntries = message.getGroup(Tags.NUMBER_MD_ENTRIES);
             final FixChunk firstEntry = mdEntries[0];
             this.builder
+            .addField(Tags.TRANSACTION_TIME, DateSupplier.getUtcTimestamp())
             .addField(Tags.PRICE, firstEntry.getValue(Tags.MD_ENTRY_PRICE))
             .addField(Tags.ORDER_TYPE, LIMIT)
 
