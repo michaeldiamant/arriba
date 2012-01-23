@@ -51,7 +51,7 @@ public final class OutboundFixMessage {
 
             final int checksum = this.messageBytesSum % 256;
             // TODO Create lookup table.
-            FieldWriter.write(CHECKSUM_BYTES, Integer.toString(checksum), this.bodyAndTrailerOut);
+            FieldWriter.write(CHECKSUM_BYTES, formatChecksum(checksum), this.bodyAndTrailerOut);
 
             finalOut.write(this.headerOut.toByteArray());
             finalOut.write(this.bodyAndTrailerOut.toByteArray());
@@ -60,5 +60,28 @@ public final class OutboundFixMessage {
         } catch (final IOException e) {
             return new byte[0];
         }
+    }
+
+    private static int countDigits(int checksum) {
+        int digits = 0;
+        while (checksum > 0) {
+            checksum = checksum / 10;
+            ++digits;
+        }
+
+        return digits;
+    }
+
+    private static String formatChecksum(final int checksum) {
+        final int digits = countDigits(checksum);
+
+        if (digits == 1) {
+            return "00" + Integer.toString(checksum);
+        } else if (digits == 2) {
+            return "0" + Integer.toString(checksum);
+        } else {
+            return Integer.toString(checksum);
+        }
+
     }
 }
