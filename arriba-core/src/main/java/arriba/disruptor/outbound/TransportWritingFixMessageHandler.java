@@ -1,5 +1,8 @@
 package arriba.disruptor.outbound;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import arriba.common.Handler;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
@@ -10,6 +13,8 @@ import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
 
 public final class TransportWritingFixMessageHandler<T> implements Handler<OutboundEvent> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransportWritingFixMessageHandler.class);
 
     private final TransportRepository<String, T> transportRepository;
     private final SessionResolver sessionResolver;
@@ -40,6 +45,7 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
         }
 
         transport.write(serializedMessage);
+        LOGGER.debug("Outbound:  {}", new String(serializedMessage));
 
         session.updateLastSentTimestamp();
     }
