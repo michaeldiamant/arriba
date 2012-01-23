@@ -39,7 +39,7 @@ public final class RandomQuoteSupplier implements Runnable {
 
             for (final String subscriberCompId : this.subscriptionService.findSubscribers(symbol)) {
                 this.builder
-                .addStandardHeader(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, BeginString.FIXT11.getValue(), this.senderCompId, subscriberCompId)
+                .addStandardHeader(MessageType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, BeginString.FIX44.getValue(), this.senderCompId, subscriberCompId)
 
                 .addField(Tags.SYMBOL, symbol)
 
