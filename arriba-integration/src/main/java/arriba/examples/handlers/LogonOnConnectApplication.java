@@ -50,12 +50,13 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
     public void onConnect(final TransportIdentity<T> identity) {
 
         this.builder
-        .addStandardHeader(MessageType.LOGON, BeginString.FIXT11.getValue(), this.senderCompId, this.targetCompId)
+        .addStandardHeader(MessageType.LOGON, BeginString.FIX44.getValue(), this.senderCompId, this.targetCompId)
 
         .addField(Tags.ENCRYPT_METHOD, EncryptMethod.NONE.getValue())
-        .addField(Tags.HEARTBEAT_INTERVAL, Integer.toString(this.heartbeatIntervalInMs))
+        .addField(Tags.HEARTBEAT_INTERVAL, Integer.toString(this.heartbeatIntervalInMs / 1000))
         .addField(Tags.USERNAME, this.username)
-        .addField(Tags.PASSWORD, this.password);
+        .addField(Tags.PASSWORD, this.password)
+        .addField(Tags.RESET_SEQUENCE_NUMBER_FLAG, "Y");
 
         this.transportRepository.add(this.targetCompId, identity);
 
