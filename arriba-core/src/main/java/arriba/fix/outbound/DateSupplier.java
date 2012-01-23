@@ -2,6 +2,7 @@ package arriba.fix.outbound;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public final class DateSupplier {
 
@@ -10,6 +11,8 @@ public final class DateSupplier {
     private DateSupplier() {}
 
     public static String getUtcTimestamp() {
-        return new SimpleDateFormat(UTC_TIMESTAMP_FORMAT).format(new Date());
+        final SimpleDateFormat sdf = new SimpleDateFormat(UTC_TIMESTAMP_FORMAT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return sdf.format(new Date());
     }
 }
