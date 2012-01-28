@@ -69,7 +69,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
 
         this.monitor.monitor(
                 new SessionId(message.getTargetCompId(), message.getSenderCompId()),
-                Integer.parseInt(message.getHeartbeatInterval())
+                Integer.parseInt(message.getHeartbeatInterval()) * 1000
                 );
 
         this.fixMessageSender.send(this.builder.build());
