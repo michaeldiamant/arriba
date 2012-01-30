@@ -21,4 +21,8 @@ public final class Logon extends InboundFixMessage {
     public String getHeartbeatInterval() {
         return this.getBodyValue(Tags.HEARTBEAT_INTERVAL);
     }
+
+    public String getResetSequenceNumberFlag() {
+        return this.getBodyValue(Tags.RESET_SEQUENCE_NUMBER_FLAG);
+    }
 }
