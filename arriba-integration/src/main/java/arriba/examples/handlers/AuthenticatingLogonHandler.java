@@ -61,6 +61,10 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         .addField(Tags.PASSWORD, message.getPassword())
         .addField(Tags.HEARTBEAT_INTERVAL, message.getHeartbeatInterval());
 
+        if (message.hasBodyValue(Tags.RESET_SEQUENCE_NUMBER_FLAG)) {
+            this.builder.addField(Tags.RESET_SEQUENCE_NUMBER_FLAG, message.getResetSequenceNumberFlag());
+        }
+
         // TODO Need to figure out right way to negotiate channel registration server-side.
         // Assuming first channel entry is the 'right' one.
 
