@@ -23,6 +23,10 @@ public final class RepeatingGroups {
         NUMBER_IN_GROUP_TAGS[Tags.NUMBER_RELATED_SYMBOLS] = new int[] {
                 Tags.SYMBOL
         };
+
+        NUMBER_IN_GROUP_TAGS[Tags.NUMBER_MD_ENTRY_TYPES] = new int[] {
+                Tags.MD_ENTRY_TYPE
+        };
     }
 
     private static void sortNumberInGroupTagValues() {
