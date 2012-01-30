@@ -45,12 +45,12 @@ public final class RandomQuoteSupplier implements Runnable {
 
                 .addField(Tags.NUMBER_MD_ENTRIES, "2")
                 .addField(Tags.MD_ENTRY_TYPE, "0")
-                .addField(Tags.MD_ENTRY_SIZE, "100")
                 .addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice))
+                .addField(Tags.MD_ENTRY_SIZE, "100")
 
                 .addField(Tags.MD_ENTRY_TYPE, "1")
-                .addField(Tags.MD_ENTRY_SIZE, "200")
-                .addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice + 0.05));
+                .addField(Tags.MD_ENTRY_PRICE, String.valueOf(symbolBidPrice + 0.05))
+                .addField(Tags.MD_ENTRY_SIZE, "200");
 
                 this.fixMessageSender.send(this.builder.build());
             }
