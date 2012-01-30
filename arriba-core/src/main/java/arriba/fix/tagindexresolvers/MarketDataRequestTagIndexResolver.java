@@ -10,7 +10,7 @@ public final class MarketDataRequestTagIndexResolver extends TagIndexResolver {
                 Tags.MD_REQUEST_ID,
                 Tags.SUBSCRIPTION_REQUEST_TYPE,
                 Tags.MARKET_DEPTH,
-                Tags.NUMBER_MD_ENTRIES,
+                Tags.NUMBER_MD_ENTRY_TYPES,
                 Tags.NUMBER_RELATED_SYMBOLS,
         };
     }
