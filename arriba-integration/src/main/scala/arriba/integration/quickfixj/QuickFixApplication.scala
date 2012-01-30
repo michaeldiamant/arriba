@@ -20,21 +20,21 @@ class QuickFixApplication
   with Application {
 
   override def fromApp(message: Message, sessionId: SessionID) {
-    println(">> fromApp ")
+    println(">> fromApp: " + message)
     crack(message, sessionId)
   }
 
   override def toApp(message: Message, sessionId: SessionID) {
-    println(">>> toApp")
+    println(">>> toApp: " + message)
   }
 
   override def fromAdmin(message: Message, sessionId: SessionID) {
-    println(">> fromAdmin ")
+    println(">> fromAdmin: " + message)
     crack(message, sessionId)
   }
 
   override def toAdmin(message: Message, sessionId: SessionID) {
-    println(">>> toAdmin")
+    println(">>> toAdmin: " + message)
   }
 
   override def onLogout(sessionId: SessionID) {
