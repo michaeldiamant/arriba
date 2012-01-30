@@ -38,21 +38,21 @@ class InitiatorApplication
   with Application {
 
   override def fromApp(message: Message, sessionId: SessionID) {
-    println(">> fromApp ")
+    println(">> fromApp: " + message)
     crack(message, sessionId)
   }
 
   override def toApp(message: Message, sessionId: SessionID) {
-    println(">>> toApp")
+    println(">>> toApp:  " + message)
   }
 
   override def fromAdmin(message: Message, sessionId: SessionID) {
-    println(">> fromAdmin ")
+    println(">> fromAdmin: " + message)
     crack(message, sessionId)
   }
 
   override def toAdmin(message: Message, sessionId: SessionID) {
-    println(">>> toAdmin")
+    println(">>> toAdmin: " + message)
 
     if (message.getHeader.getString(MsgType.FIELD) == MsgType.LOGON) {
       message.setString(Username.FIELD, "tr8der")
@@ -73,7 +73,7 @@ class InitiatorApplication
     val request = new MarketDataRequest
 
     request.setString(MDReqID.FIELD, Random.nextInt(10000).toString)
-    request.setChar(SubscriptionRequestType.FIELD, SubscriptionRequestType.SNAPSHOT)
+    request.setChar(SubscriptionRequestType.FIELD, SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES)
     request.setInt(MarketDepth.FIELD, 0)
 
     val entryTypes = new NoMDEntryTypes
@@ -91,26 +91,30 @@ class InitiatorApplication
   }
 
   override def onMessage(message: MarketDataSnapshotFullRefresh, sessionId: SessionID) {
-    if (message.getHeader.getInt(MsgSeqNum.FIELD) % 2 == 0) {
-      val order = new NewOrderSingle
+    try {
+      if (message.getHeader.getInt(MsgSeqNum.FIELD) % 2 == 0) {
+        val order = new NewOrderSingle
 
-      order.setString(ClOrdID.FIELD, Random.nextString(10))
-      order.setString(Symbol.FIELD, message.getString(Symbol.FIELD))
+        order.setString(ClOrdID.FIELD, Random.nextString(10))
+        order.setString(Symbol.FIELD, message.getString(Symbol.FIELD))
 
-      order.setUtcTimeStamp(TransactTime.FIELD, new Date)
+        order.setUtcTimeStamp(TransactTime.FIELD, new Date)
 
-      val firstGroup = message.getGroups(NoMDEntries.FIELD).head
-      order.setString(Price.FIELD, firstGroup.getString(MDEntryPx.FIELD))
-      order.setChar(OrdType.FIELD, OrdType.LIMIT)
-      order.setString(OrderQty.FIELD, firstGroup.getString(MDEntrySize.FIELD))
+        val firstGroup = message.getGroups(NoMDEntries.FIELD).head
+        order.setString(Price.FIELD, firstGroup.getString(MDEntryPx.FIELD))
+        order.setChar(OrdType.FIELD, OrdType.LIMIT)
+        order.setString(OrderQty.FIELD, firstGroup.getString(MDEntrySize.FIELD))
 
-      val side = firstGroup.getChar(MDEntryType.FIELD) match {
-        case MDEntryType.BID => Side.BUY
-        case MDEntryType.OFFER => Side.SELL
+        val side = firstGroup.getChar(MDEntryType.FIELD) match {
+          case MDEntryType.BID => Side.BUY
+          case MDEntryType.OFFER => Side.SELL
+        }
+        order.setChar(Side.FIELD, side)
+
+        Session.sendToTarget(order, sessionId)
       }
-      order.setChar(Side.FIELD, side)
-
-      Session.sendToTarget(order, sessionId)
+    } catch {
+      case e: Exception => e.printStackTrace()
     }
   }
 }
