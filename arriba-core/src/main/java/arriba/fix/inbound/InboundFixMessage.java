@@ -50,7 +50,11 @@ public abstract class InboundFixMessage {
     }
 
     public boolean hasHeaderValue(final int tag) {
-        return null != this.headerChunk.getValue(tag);
+        return null != this.headerChunk.getSerializedValue(tag);
+    }
+
+    public boolean hasBodyValue(final int tag) {
+        return null != this.bodyChunk.getSerializedValue(tag);
     }
 
     public String getBodyValue(final int tag) {
