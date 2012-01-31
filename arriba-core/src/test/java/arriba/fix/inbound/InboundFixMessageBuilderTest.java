@@ -74,9 +74,7 @@ public class InboundFixMessageBuilderTest {
         final MessageType messageType = MessageType.MARKET_DATA_REQUEST;
         final String mdRequestId = "mdReqId";
         final String mdStreamId = "mdStreamId";
-        final String mdEntrySize = "100";
         final String mdEntryType = "1";
-        final String mdEntryPrice = "1.2332";
         final String eurUsd = "EURUSD";
         final String usdJpy = "USDJPY";
         final String audCad = "AUDCAD";
@@ -84,10 +82,8 @@ public class InboundFixMessageBuilderTest {
         final RepeatingGroupBuilder groupBuilder = new RepeatingGroupBuilder(this.supplier);
 
         final FixChunk[][] repeatingGroups = groupBuilder
-                .setNumberOfRepeatingGroupsTag(Tags.NUMBER_MD_ENTRIES)
-                .addField(Tags.MD_ENTRY_SIZE, mdEntrySize.getBytes())
+                .setNumberOfRepeatingGroupsTag(Tags.NUMBER_MD_ENTRY_TYPES)
                 .addField(Tags.MD_ENTRY_TYPE, mdEntryType.getBytes())
-                .addField(Tags.MD_ENTRY_PRICE, mdEntryPrice.getBytes())
 
                 .setNumberOfRepeatingGroupsTag(Tags.NUMBER_RELATED_SYMBOLS)
                 .addField(Tags.SYMBOL, eurUsd.getBytes())
@@ -107,7 +103,7 @@ public class InboundFixMessageBuilderTest {
 
                 .build(repeatingGroups, groupBuilder.getNumberOfRepeatingGroupTags());
 
-        final FixChunk[] entries = message.getGroup(Tags.NUMBER_MD_ENTRIES);
+        final FixChunk[] entries = message.getGroup(Tags.NUMBER_MD_ENTRY_TYPES);
         assertNotNull(entries);
         assertThat(entries.length, is(1));
 
