@@ -105,4 +105,14 @@ public enum MessageType {
     public abstract String getValue();
 
     public abstract byte[] getSerializedValue();
+
+    public static MessageType toMessageType(final String fixMessageType) {
+        for (final MessageType messageType : MessageType.values()) {
+            if (messageType.getValue().equals(fixMessageType)) {
+                return messageType;
+            }
+        }
+
+        throw new IllegalArgumentException("Unknown message type:  " + fixMessageType + ".");
+    }
 }
