@@ -1,4 +1,4 @@
-package arriba.examples.handlers;
+package arriba.fix.inbound.handlers;
 
 import java.util.Set;
 
@@ -8,9 +8,9 @@ import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.InboundFixMessage;
-import arriba.fix.inbound.ResendRequest;
 import arriba.fix.inbound.deserializers.InboundFixMessageDeserializer;
+import arriba.fix.inbound.messages.InboundFixMessage;
+import arriba.fix.inbound.messages.ResendRequest;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;

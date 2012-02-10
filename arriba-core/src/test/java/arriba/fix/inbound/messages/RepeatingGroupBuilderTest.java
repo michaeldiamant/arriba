@@ -1,4 +1,4 @@
-package arriba.fix.inbound;
+package arriba.fix.inbound.messages;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -9,6 +9,7 @@ import org.junit.Test;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
+import arriba.fix.inbound.messages.RepeatingGroupBuilder;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 
 public class RepeatingGroupBuilderTest {

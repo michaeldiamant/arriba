@@ -2,7 +2,7 @@ package arriba.fix.outbound;
 
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessage;
 
 public final class RichOutboundFixMessageBuilder {
 

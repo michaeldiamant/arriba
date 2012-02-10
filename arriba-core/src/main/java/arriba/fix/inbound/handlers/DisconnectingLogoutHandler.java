@@ -1,9 +1,9 @@
-package arriba.examples.handlers;
+package arriba.fix.inbound.handlers;
 
 import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.Logout;
+import arriba.fix.inbound.messages.Logout;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.LogoutTracker;

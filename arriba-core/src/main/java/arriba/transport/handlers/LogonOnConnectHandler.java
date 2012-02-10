@@ -1,4 +1,4 @@
-package arriba.examples.handlers;
+package arriba.transport.handlers;
 
 
 import arriba.common.Sender;
@@ -10,11 +10,10 @@ import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionMonitor;
-import arriba.transport.TransportConnectHandler;
 import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
 
-public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> {
+public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
 
     private final String senderCompId;
     private final String targetCompId;
@@ -26,7 +25,7 @@ public class LogonOnConnectApplication<T> implements TransportConnectHandler<T> 
     private final RichOutboundFixMessageBuilder builder;
     private final SessionMonitor sessionMonitor;
 
-    public LogonOnConnectApplication(final String senderCompId,
+    public LogonOnConnectHandler(final String senderCompId,
             final String targetCompId,
             final int heartbeatIntervalInMs,
             final String username,

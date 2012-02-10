@@ -2,10 +2,10 @@ package arriba.disruptor.inbound;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.fix.inbound.InboundFixMessage;
-import arriba.fix.inbound.InboundFixMessageBuilder;
-import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.inbound.deserializers.InboundFixMessageDeserializer;
+import arriba.fix.inbound.messages.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessageBuilder;
+import arriba.fix.inbound.messages.RepeatingGroupBuilder;
 
 import com.lmax.disruptor.EventHandler;
 

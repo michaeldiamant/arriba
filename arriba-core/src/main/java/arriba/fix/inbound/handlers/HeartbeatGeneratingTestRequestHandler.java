@@ -1,10 +1,10 @@
-package arriba.examples.handlers;
+package arriba.fix.inbound.handlers;
 
 import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.TestRequest;
+import arriba.fix.inbound.messages.TestRequest;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 

@@ -3,6 +3,7 @@ package arriba.examples.mains;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
+import arriba.configuration.ArribaWizardType;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -10,17 +11,17 @@ import org.jboss.netty.channel.Channel;
 import arriba.common.Sender;
 import arriba.configuration.ArribaWizard;
 import arriba.configuration.DisruptorConfiguration;
-import arriba.examples.handlers.DisconnectingLogoutHandler;
-import arriba.examples.handlers.HeartbeatGeneratingTestRequestHandler;
-import arriba.examples.handlers.LogonOnConnectApplication;
-import arriba.examples.handlers.MessageResendingResendRequestHandler;
 import arriba.examples.handlers.NewOrderGeneratingMarketDataHandler;
-import arriba.examples.handlers.NoOpHeartbeatHandler;
 import arriba.examples.handlers.SubscriptionRequestingLogonHandler;
 import arriba.fix.fields.MessageType;
+import arriba.fix.inbound.handlers.DisconnectingLogoutHandler;
+import arriba.fix.inbound.handlers.HeartbeatGeneratingTestRequestHandler;
+import arriba.fix.inbound.handlers.MessageResendingResendRequestHandler;
+import arriba.fix.inbound.handlers.NoOpHeartbeatHandler;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.TransportRepository;
+import arriba.transport.handlers.LogonOnConnectHandler;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.NettyConnectHandlerAdapter;
 import arriba.transport.netty.NettyTransportFactory;
@@ -58,6 +59,7 @@ public class MarketTakerClient {
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
+                ArribaWizardType.INITIATOR,
                 inboundConfiguration,
                 outboundConfiguration,
                 repository
@@ -80,7 +82,7 @@ public class MarketTakerClient {
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NettyConnectHandlerAdapter(new LogonOnConnectApplication<Channel>(this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder(), wizard.getSessionMonitor())),
+                new NettyConnectHandlerAdapter(new LogonOnConnectHandler<Channel>(this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder(), wizard.getSessionMonitor())),
                 new SerializedFixMessageHandler(inboundSender)
                 );
 

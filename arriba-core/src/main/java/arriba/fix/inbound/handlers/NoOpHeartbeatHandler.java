@@ -1,7 +1,7 @@
-package arriba.examples.handlers;
+package arriba.fix.inbound.handlers;
 
 import arriba.common.Handler;
-import arriba.fix.inbound.Heartbeat;
+import arriba.fix.inbound.messages.Heartbeat;
 
 public final class NoOpHeartbeatHandler implements Handler<Heartbeat> {
 

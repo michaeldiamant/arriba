@@ -7,7 +7,7 @@ import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.MarketDataSnapshotFullRefresh;
+import arriba.fix.inbound.messages.MarketDataSnapshotFullRefresh;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;

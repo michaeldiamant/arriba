@@ -2,7 +2,7 @@ package arriba.disruptor.inbound;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessage;
 
 public final class InboundEvent {
