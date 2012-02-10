@@ -1,7 +1,7 @@
 package arriba.disruptor.inbound;
 
 import arriba.common.Sender;
-import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.MessageHandlingException;
 import arriba.fix.session.Session;

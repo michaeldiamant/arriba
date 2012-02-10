@@ -44,14 +44,14 @@ class QuickFixAcceptor {
   while (true) {}
 }
 
-object QuickFixInitiator {
+object QuickFixInitiatorMain {
 
   def main(args: Array[String]) {
     new QuickFixInitiator
   }
 }
 
-object QuickFixAcceptor {
+object QuickFixAcceptorMain {
 
   def main(args: Array[String]) {
     new QuickFixAcceptor

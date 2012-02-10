@@ -6,7 +6,7 @@ import arriba.common.Handler;
 import arriba.common.HandlerRepository;
 import arriba.common.NonexistentHandlerException;
 import arriba.fix.Tags;
-import arriba.fix.inbound.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessage;
 import arriba.fix.session.messagejournal.MessageJournal;
 
 public class Session {

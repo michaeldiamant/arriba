@@ -1,12 +1,12 @@
 package arriba.integration.quickfixj
 
+import quickfix.fix44.MarketDataSnapshotFullRefresh.NoMDEntries;
 import quickfix.MessageCracker
 import quickfix.Application
 import quickfix.SessionID
 import quickfix.fix44.MarketDataRequest
 import quickfix.fix44.NewOrderSingle
 import quickfix.fix44.MarketDataSnapshotFullRefresh
-import quickfix.fix44.MarketDataSnapshotFullRefresh.NoMDEntries
 import quickfix.field.Symbol
 import quickfix.field.NoRelatedSym
 import quickfix.field.MDEntryType

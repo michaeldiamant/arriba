@@ -1,4 +1,6 @@
-package arriba.transport;
+package arriba.transport.handlers;
+
+import arriba.transport.TransportIdentity;
 
 public interface TransportConnectHandler<T> {
 

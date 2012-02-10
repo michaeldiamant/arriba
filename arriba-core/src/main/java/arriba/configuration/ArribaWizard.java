@@ -32,10 +32,10 @@ import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.InboundFixMessageBuilder;
-import arriba.fix.inbound.InboundFixMessageFactory;
-import arriba.fix.inbound.RepeatingGroupBuilder;
 import arriba.fix.inbound.deserializers.InboundFixMessageDeserializer;
+import arriba.fix.inbound.messages.InboundFixMessageBuilder;
+import arriba.fix.inbound.messages.InboundFixMessageFactory;
+import arriba.fix.inbound.messages.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
@@ -83,9 +83,11 @@ public final class ArribaWizard<T> {
     private final Sender<ChannelBuffer[]> inboundSender;
     private final SessionDisconnector sessionDisconnector;
     private final SessionMonitor sessionMonitor;
+    private final ArribaWizardType type;
 
-    public ArribaWizard(final DisruptorConfiguration inboundConfiguration, final DisruptorConfiguration outboundConfiguration,
+    public ArribaWizard(final ArribaWizardType type, final DisruptorConfiguration inboundConfiguration, final DisruptorConfiguration outboundConfiguration,
             final TransportRepository<String, T> transportRepository) {
+        this.type = type;
         this.transportRepository = transportRepository;
 
         this.disconnectingSessionIdHandler = new DisconnectingSessionIdHandler<T>(

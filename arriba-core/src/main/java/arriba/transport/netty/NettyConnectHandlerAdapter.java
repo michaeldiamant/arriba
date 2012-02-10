@@ -5,8 +5,8 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 
-import arriba.transport.TransportConnectHandler;
 import arriba.transport.TransportIdentity;
+import arriba.transport.handlers.TransportConnectHandler;
 
 public final class NettyConnectHandlerAdapter extends SimpleChannelHandler {
 

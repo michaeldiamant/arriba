@@ -1,4 +1,4 @@
-package arriba.fix.inbound;
+package arriba.fix.inbound.messages;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
@@ -14,6 +14,11 @@ import arriba.fix.chunk.FixChunkBuilderSupplier;
 import arriba.fix.chunk.arrays.ArrayFixChunkBuilderSupplier;
 import arriba.fix.fields.BeginString;
 import arriba.fix.fields.MessageType;
+import arriba.fix.inbound.messages.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessageBuilder;
+import arriba.fix.inbound.messages.InboundFixMessageFactory;
+import arriba.fix.inbound.messages.NewOrderSingle;
+import arriba.fix.inbound.messages.RepeatingGroupBuilder;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 
 public class InboundFixMessageBuilderTest {

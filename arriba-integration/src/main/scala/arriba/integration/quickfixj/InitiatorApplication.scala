@@ -4,8 +4,6 @@ import quickfix.MessageCracker
 import quickfix.Application
 import quickfix.SessionID
 import quickfix.fix44.MarketDataRequest
-import quickfix.fix44.MarketDataRequest.NoMDEntryTypes
-import quickfix.fix44.MarketDataRequest.NoRelatedSym
 import quickfix.fix44.NewOrderSingle
 import quickfix.fix44.MarketDataSnapshotFullRefresh
 import quickfix.field.Symbol
@@ -22,6 +20,8 @@ import quickfix.field.MsgSeqNum
 import quickfix.field.ClOrdID
 import quickfix.field.TransactTime
 import java.util.Date
+import quickfix.fix44.MarketDataRequest.NoMDEntryTypes;
+import quickfix.fix44.MarketDataRequest.NoRelatedSym;
 import quickfix.field.NoMDEntries
 import scala.collection.JavaConversions._
 import quickfix.field.Price

@@ -7,7 +7,7 @@ import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.Logon;
+import arriba.fix.inbound.messages.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 

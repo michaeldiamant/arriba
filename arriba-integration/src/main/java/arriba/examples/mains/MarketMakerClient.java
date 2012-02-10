@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import arriba.configuration.ArribaWizardType;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -15,18 +16,17 @@ import arriba.common.PrintingHandler;
 import arriba.common.Sender;
 import arriba.configuration.ArribaWizard;
 import arriba.configuration.DisruptorConfiguration;
-import arriba.examples.handlers.AuthenticatingLogonHandler;
-import arriba.examples.handlers.DisconnectingLogoutHandler;
-import arriba.examples.handlers.HeartbeatGeneratingTestRequestHandler;
-import arriba.examples.handlers.MessageResendingResendRequestHandler;
-import arriba.examples.handlers.NewClientSessionHandler;
-import arriba.examples.handlers.NoOpHeartbeatHandler;
 import arriba.examples.handlers.SubscriptionManagingMarketDataRequestHandler;
 import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.NewOrderSingle;
+import arriba.fix.inbound.handlers.AuthenticatingLogonHandler;
+import arriba.fix.inbound.handlers.DisconnectingLogoutHandler;
+import arriba.fix.inbound.handlers.HeartbeatGeneratingTestRequestHandler;
+import arriba.fix.inbound.handlers.MessageResendingResendRequestHandler;
+import arriba.fix.inbound.handlers.NoOpHeartbeatHandler;
+import arriba.fix.inbound.messages.NewOrderSingle;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.transport.InMemoryTransportRepository;
@@ -34,6 +34,7 @@ import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.NettyTransportFactory;
 import arriba.transport.netty.NettyTransportRepository;
+import arriba.transport.netty.NewClientSessionHandler;
 import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.bootstraps.FixServerBootstrap;
 
@@ -69,6 +70,7 @@ public class MarketMakerClient {
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
+                ArribaWizardType.ACCEPTOR,
                 inboundConfiguration,
                 outboundConfiguration,
                 repository

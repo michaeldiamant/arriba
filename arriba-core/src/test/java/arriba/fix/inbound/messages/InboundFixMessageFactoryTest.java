@@ -1,4 +1,4 @@
-package arriba.fix.inbound;
+package arriba.fix.inbound.messages;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -9,6 +9,7 @@ import org.junit.Test;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
 import arriba.fix.fields.MessageType;
+import arriba.fix.inbound.messages.InboundFixMessageFactory;
 
 public class InboundFixMessageFactoryTest {
 

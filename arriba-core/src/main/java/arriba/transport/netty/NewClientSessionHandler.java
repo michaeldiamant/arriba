@@ -1,4 +1,4 @@
-package arriba.examples.handlers;
+package arriba.transport.netty;
 
 import java.util.List;
 

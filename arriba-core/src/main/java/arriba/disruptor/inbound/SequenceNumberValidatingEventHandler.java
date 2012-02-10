@@ -2,8 +2,8 @@ package arriba.disruptor.inbound;
 
 import arriba.fix.Tags;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.InboundFixMessage;
-import arriba.fix.inbound.SequenceReset;
+import arriba.fix.inbound.messages.InboundFixMessage;
+import arriba.fix.inbound.messages.SequenceReset;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.Session;

@@ -11,10 +11,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import arriba.fix.chunk.FixChunkBuilderSupplier;
-import arriba.fix.inbound.InboundFixMessage;
-import arriba.fix.inbound.InboundFixMessageBuilder;
-import arriba.fix.inbound.InboundFixMessageFactory;
-import arriba.fix.inbound.RepeatingGroupBuilder;
+import arriba.fix.inbound.messages.InboundFixMessage;
+import arriba.fix.inbound.messages.InboundFixMessageBuilder;
+import arriba.fix.inbound.messages.InboundFixMessageFactory;
+import arriba.fix.inbound.messages.RepeatingGroupBuilder;
 import arriba.transport.netty.util.FixMessages;
 import arriba.utils.Field;
 

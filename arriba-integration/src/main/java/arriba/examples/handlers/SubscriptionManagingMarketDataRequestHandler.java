@@ -6,7 +6,7 @@ import arriba.common.Handler;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.Tags;
 import arriba.fix.chunk.FixChunk;
-import arriba.fix.inbound.MarketDataRequest;
+import arriba.fix.inbound.messages.MarketDataRequest;
 
 import com.google.common.collect.Sets;
 

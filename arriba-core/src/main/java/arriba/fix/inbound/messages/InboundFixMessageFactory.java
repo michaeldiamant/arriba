@@ -1,4 +1,4 @@
-package arriba.fix.inbound;
+package arriba.fix.inbound.messages;
 
 import arriba.bytearrays.ByteArrayKeyedMap;
 import arriba.bytearrays.ImmutableByteArrayKeyedMapBuilder;
