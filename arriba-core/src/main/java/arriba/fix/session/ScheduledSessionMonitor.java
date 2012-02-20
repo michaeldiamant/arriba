@@ -125,4 +125,9 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
             this.sessionToMonitorFutureLock.unlock();
         }
     }
+
+    @Override
+    public void shutdown() {
+        this.executor.shutdown();
+    }
 }
