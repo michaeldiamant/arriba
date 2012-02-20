@@ -1,10 +1,5 @@
 package arriba.configuration;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.jboss.netty.buffer.ChannelBuffer;
-
 import arriba.bytearrays.MutableByteArrayKeyedMap;
 import arriba.common.Handler;
 import arriba.common.HandlerRepository;
@@ -12,21 +7,8 @@ import arriba.common.MapHandlerRepository;
 import arriba.common.Sender;
 import arriba.disruptor.DisruptorSender;
 import arriba.disruptor.DisruptorSessionDisconnector;
-import arriba.disruptor.inbound.DeserializingFixMessageEventHandler;
-import arriba.disruptor.inbound.InboundDisruptorAdapter;
-import arriba.disruptor.inbound.InboundEvent;
-import arriba.disruptor.inbound.InboundFactory;
-import arriba.disruptor.inbound.LoggingEventHandler;
-import arriba.disruptor.inbound.SequenceNumberValidatingEventHandler;
-import arriba.disruptor.inbound.SessionNotifyingEventHandler;
-import arriba.disruptor.outbound.DisconnectingSessionIdHandler;
-import arriba.disruptor.outbound.MessageJournalingEventHandler;
-import arriba.disruptor.outbound.OutboundDisruptorAdapter;
-import arriba.disruptor.outbound.OutboundEvent;
-import arriba.disruptor.outbound.OutboundEventFactory;
-import arriba.disruptor.outbound.SerializedOutboundDisruptorAdapter;
-import arriba.disruptor.outbound.TransportDelegatingEventHandler;
-import arriba.disruptor.outbound.TransportWritingFixMessageHandler;
+import arriba.disruptor.inbound.*;
+import arriba.disruptor.outbound.*;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
 import arriba.fix.chunk.FixChunkBuilder;
 import arriba.fix.chunk.FixChunkBuilderSupplier;
@@ -39,14 +21,7 @@ import arriba.fix.inbound.messages.RepeatingGroupBuilder;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RawOutboundFixMessageBuilder;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
-import arriba.fix.session.InMemoryLogoutTracker;
-import arriba.fix.session.InMemorySessionResolver;
-import arriba.fix.session.LogoutTracker;
-import arriba.fix.session.ScheduledSessionMonitor;
-import arriba.fix.session.Session;
-import arriba.fix.session.SessionId;
-import arriba.fix.session.SessionMonitor;
-import arriba.fix.session.SessionResolver;
+import arriba.fix.session.*;
 import arriba.fix.session.disconnect.LogoutMarkClearingDisconnectListener;
 import arriba.fix.session.disconnect.SessionDisconnectListener;
 import arriba.fix.session.disconnect.SessionDisconnector;
@@ -56,12 +31,14 @@ import arriba.fix.session.messagejournal.MessageJournal;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
 import arriba.transport.TransportRepository;
 import cern.colt.map.OpenIntObjectHashMap;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.lmax.disruptor.EventHandler;
-import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+import org.jboss.netty.buffer.ChannelBuffer;
+
+import java.util.Map;
+import java.util.Set;
 
 public final class ArribaWizard<T> {
 
@@ -85,6 +62,9 @@ public final class ArribaWizard<T> {
     private final SessionMonitor sessionMonitor;
     private final ArribaWizardType type;
 
+    private final Disruptor<InboundEvent> inboundDisruptor;
+    private final Disruptor<OutboundEvent> outboundDisruptor;
+
     public ArribaWizard(final ArribaWizardType type, final DisruptorConfiguration inboundConfiguration, final DisruptorConfiguration outboundConfiguration,
             final TransportRepository<String, T> transportRepository) {
         this.type = type;
@@ -96,23 +76,23 @@ public final class ArribaWizard<T> {
                 );
         this.sessionNotifyingEventHandler = new SessionNotifyingEventHandler(this.sessionResolver);
 
-        final RingBuffer<InboundEvent> inboundDisruptor = this.inboundDisruptor(inboundConfiguration);
+        this.inboundDisruptor = this.inboundDisruptor(inboundConfiguration);
         this.inboundSender = new DisruptorSender<>(
-                inboundDisruptor,
+                inboundDisruptor.getRingBuffer(),
                 new InboundDisruptorAdapter()
                 );
 
-        final RingBuffer<OutboundEvent> outboundDisruptor = this.outboundDisruptor(outboundConfiguration);
+        this.outboundDisruptor = this.outboundDisruptor(outboundConfiguration);
         this.outboundSender = new DisruptorSender<>(
-                outboundDisruptor,
+                outboundDisruptor.getRingBuffer(),
                 new OutboundDisruptorAdapter()
                 );
         this.outboundBytesSender = new DisruptorSender<>(
-                outboundDisruptor,
+                outboundDisruptor.getRingBuffer(),
                 new SerializedOutboundDisruptorAdapter()
                 );
         this.sessionDisconnector = new DisruptorSessionDisconnector<>(
-                outboundDisruptor,
+                outboundDisruptor.getRingBuffer(),
                 new OutboundDisruptorAdapter()
                 );
 
@@ -194,8 +174,13 @@ public final class ArribaWizard<T> {
         this.initializeSessions();
     }
 
+    public void stop() {
+        this.inboundDisruptor.shutdown();
+        this.outboundDisruptor.shutdown();
+    }
+
     @SuppressWarnings("unchecked")
-    private RingBuffer<OutboundEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
+    private Disruptor<OutboundEvent> outboundDisruptor(final DisruptorConfiguration configuration) {
         final Disruptor<OutboundEvent> outgoingDisruptor = new Disruptor<>(
                 new OutboundEventFactory(),
                 configuration.getExecutor(),
@@ -206,8 +191,9 @@ public final class ArribaWizard<T> {
         outgoingDisruptor
         .handleEventsWith(this.transportDelegatingEventHandler())
         .then(new MessageJournalingEventHandler(this.sessionResolver));
+        outgoingDisruptor.start();
 
-        return outgoingDisruptor.start();
+        return outgoingDisruptor;
     }
 
     private EventHandler<OutboundEvent> transportDelegatingEventHandler() {
@@ -218,7 +204,7 @@ public final class ArribaWizard<T> {
     }
 
     @SuppressWarnings("unchecked")
-    private RingBuffer<InboundEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
+    private Disruptor<InboundEvent> inboundDisruptor(final DisruptorConfiguration configuration) {
         final Disruptor<InboundEvent> inboundDisruptor = new Disruptor<>(
                 new InboundFactory(),
                 configuration.getExecutor(),
@@ -230,8 +216,9 @@ public final class ArribaWizard<T> {
         .then(this.deserializingEventHandler())
         .then(this.sequenceNumberValidatingEventHandler())
         .then(this.sessionNotifyingEventHandler);
+        inboundDisruptor.start();
 
-        return inboundDisruptor.start();
+        return inboundDisruptor;
     }
 
     private EventHandler<InboundEvent> loggingEventHandler() {
