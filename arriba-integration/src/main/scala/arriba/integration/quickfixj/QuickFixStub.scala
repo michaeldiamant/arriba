@@ -1,29 +1,11 @@
 package arriba.integration.quickfixj
-import quickfix.Message
+
 import arriba.configuration.ArribaWizardType
-import arriba.transport.netty.NewClientSessionHandler
-import arriba.transport.handlers.LogonOnConnectHandler
-import quickfix.Session
-import quickfix.SessionSettings
 import scala.PartialFunction
-import scala.collection.mutable.ArrayBuffer
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
-import quickfix.SocketInitiator
-import quickfix.FileStoreFactory
-import quickfix.FileLogFactory
-import quickfix.DefaultMessageFactory
-import quickfix.SocketAcceptor
 import arriba.configuration.DisruptorConfiguration
-import java.util.concurrent.Executors
 import com.lmax.disruptor.MultiThreadedClaimStrategy
 import com.lmax.disruptor.BlockingWaitStrategy
 import arriba.transport.InMemoryTransportRepository
-import arriba.transport.netty.SerializedFixMessageHandler
-import arriba.transport.netty.NettyConnectHandlerAdapter
-import org.jboss.netty.channel.Channel
-import arriba.transport.netty.NettyTransportFactory
-import arriba.transport.netty.NettyTransportRepository
 import arriba.configuration.ArribaWizard
 import arriba.fix.Tags
 import arriba.fix.fields.MessageType
@@ -34,19 +16,31 @@ import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository
 import arriba.common.Handler
 import arriba.transport.netty.bootstraps.FixServerBootstrap
 import arriba.transport.netty.bootstraps.FixClientBootstrap
-import arriba.transport.netty.FixMessageFrameDecoder
 import java.net.InetSocketAddress
+import java.util.concurrent.{CopyOnWriteArrayList, CountDownLatch, TimeUnit, Executors}
+import arriba.transport.netty._
+import arriba.transport.handlers.LogonOnConnectHandler
+import collection.mutable.{ListBuffer, ArrayBuffer}
+import arriba.integration.runner.ClientWizard
+import quickfix.mina.SessionConnector
+import quickfix._
+import org.jboss.netty.channel.{ChannelFuture, ChannelFutureListener, Channel}
+import com.weiglewilczek.slf4s.Logging
 
 case class FixSession(beginString: String, senderCompId: String, targetCompId: String, username: String, password: String)
 
 trait FixClientStub {
 
-  protected val actions = new ArrayBuffer[() => Unit]
-  protected val handlers = new ArrayBuffer[PartialFunction[Message, Unit]]
+  val clientType: ClientType
+
+  def start()
+
+  def stop()
 }
 
-class QuickFixStub(client: ClientType) extends FixClientStub {
+class QuickFixStub(val clientType: ClientType) extends FixClientStub {
 
+  private val handlers = new ArrayBuffer[PartialFunction[Message, Unit]]
   private val sessions = ArrayBuffer[FixSession]()
 
   def addSession(session: FixSession) = {
@@ -54,8 +48,11 @@ class QuickFixStub(client: ClientType) extends FixClientStub {
     this
   }
 
+  var initiatorOption: Option[SocketInitiator] = None
+  var acceptorOption: Option[SocketAcceptor] = None
+
   def start() {
-    client match {
+    clientType match {
       case Acceptor => {
         val settings = sessions.foldLeft(new SessionSettings())((settings, session) => SessionSettingsFactory.newAcceptor(session.beginString, session.senderCompId, session.targetCompId, settings))
 
@@ -67,43 +64,63 @@ class QuickFixStub(client: ClientType) extends FixClientStub {
           new DefaultMessageFactory)
 
         acceptor.start()
+        acceptorOption = Some(acceptor)
       }
       case Initiator => {
         val settings = sessions.foldLeft(new SessionSettings())((settings, session) => SessionSettingsFactory.newInitiator(session.beginString, session.senderCompId, session.targetCompId, settings))
         val initiator = new SocketInitiator(
           new QuickFixApplicationAdapter(handlers),
-          new FileStoreFactory(settings),
+          new MemoryStoreFactory,
           settings,
           new FileLogFactory(settings),
           new DefaultMessageFactory)
-        
+
         initiator.start()
-        while (!initiator.isLoggedOn) {
-          Thread.sleep(200)
-        }
+        initiatorOption = Some(initiator)
       }
     }
   }
 
-  def send(message: Message) {
-    actions += (() => Session.sendToTarget(message))
+  def send(message: Message)(implicit wizard: ClientWizard) {
+    wizard += (latch => {
+      () => {
+        Session.sendToTarget(message)
+        latch.countDown()
+      }
+    })
   }
 
-  def handle(pf: PartialFunction[Message, Unit]) {
-    val latch = new CountDownLatch(1)
+  def stop() {
+    (initiatorOption, acceptorOption) match {
+      case (Some(initiator), None) => initiator.stop(true)
+      case (None,  Some(acceptor)) => acceptor.stop(true)
+      case (None,  None) => throw new IllegalStateException()
+    }
+  }
 
-    handlers += pf.andThen(message => latch.countDown())
-
-    actions += (() => {
-      latch.await(1, TimeUnit.SECONDS) match {
-        case true => // OK
-        case false => // Failure
+  def waitForLogon()(implicit wizard: ClientWizard) {
+    wizard += (latch => {
+      () => {
+        while (!initiatorOption.get.isLoggedOn) {
+          Thread.sleep(200)
+        }
+        latch.countDown()
       }
+    })
+  }
+
+  def handle(pf: PartialFunction[Message, Unit])(implicit wizard: ClientWizard) {
+    wizard += (latch => {
+      handlers += pf.andThen(message => latch.countDown())
+
+      null
     })
   }
 }
 
-class ArribaStub(client: ClientType) extends FixClientStub {
+class ArribaStub(val clientType: ClientType)
+  extends FixClientStub
+  with Logging {
 
   private val inboundConfiguration = new DisruptorConfiguration(
     Executors.newCachedThreadPool,
@@ -119,61 +136,97 @@ class ArribaStub(client: ClientType) extends FixClientStub {
   private val backingRepository = new InMemoryTransportRepository[String, Channel](new NettyTransportFactory())
   private val repository = new NettyTransportRepository(backingRepository);
 
-  val wizardType = client match {
+  val wizardType = clientType match {
     case Acceptor => ArribaWizardType.ACCEPTOR
     case Initiator => ArribaWizardType.INITIATOR
   }
 
   private val wizard = new ArribaWizard(wizardType, inboundConfiguration, outboundConfiguration, repository)
 
-  val headerBuilder = new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository()).getHeaderBuilder()
+  val headerBuilder = new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository).getHeaderBuilder
   val factory = new InboundFixMessageFactory
 
   val messageTemplates = MessageType.values.map(messageType =>
     factory.create(headerBuilder.addField(Tags.MESSAGE_TYPE, messageType.getSerializedValue).build, null, null, null))
 
+  // Kludge
+  private val sessions = ListBuffer[FixSession]()
+
   def addSession(session: FixSession) = {
+    sessions += session
     wizard.register(session.senderCompId).`with`(session.targetCompId)
     this
   }
 
+  def stop() {
+    val disconnectFuture = channel.disconnect()
+    if (!disconnectFuture.await(2, TimeUnit.SECONDS)) {
+       logger.warn("Unable to disconnect channel.")
+    }
+
+    wizard.stop()
+  }
+
+  var channel: Channel = null
   def start() {
     wizard.start()
 
-    client match {
+    val channels = new CopyOnWriteArrayList[Channel]()
+
+    clientType match {
       case Acceptor => {
         val acceptor = FixServerBootstrap.create(
           new FixMessageFrameDecoder(),
-          new NewClientSessionHandler(null),
-          new SerializedFixMessageHandler(null)
+          new NewClientSessionHandler(channels),
+          new SerializedFixMessageHandler(wizard.getInboundSender)
         )
-
-        acceptor.bind(new InetSocketAddress("localhost", 8080));
+        channel = acceptor.bind(new InetSocketAddress("localhost", 8080));
       }
       case Initiator => {
+        val session = sessions.head
+
         // FIXME initiator initialize incomplete
         val initiator = FixClientBootstrap.create(
-                new FixMessageFrameDecoder(),
-                null,
-                null
-//                new NettyConnectHandlerAdapter(new LogonOnConnectHandler[Channel](this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder(), wizard.getSessionMonitor())),
-//                new SerializedFixMessageHandler(inboundSender)
-                );
+          new FixMessageFrameDecoder,
+          new NettyConnectHandlerAdapter(new LogonOnConnectHandler[Channel](
+            session.senderCompId,
+            session.targetCompId,
+            30,
+            session.username,
+            session.password,
+            wizard.getOutboundSender,
+            repository,
+            wizard.createOutboundBuilder(),
+            wizard.getSessionMonitor)),
+          new SerializedFixMessageHandler(wizard.getInboundSender)
+        );
 
-        initiator.connect(new InetSocketAddress("localhost", 8080));
+        initiator.connect(new InetSocketAddress("localhost", 8080)).addListener(
+          new ChannelFutureListener {
+            def operationComplete(future: ChannelFuture) {
+              channel = future.getChannel
+            }
+          }        
+        );
       }
     }
   }
 
-  def handle(pf: PartialFunction[InboundFixMessage, Unit]) {
+  def handle(pf: PartialFunction[InboundFixMessage, Unit])(implicit clientWizard: ClientWizard) {
+    var pfLatch: CountDownLatch = null
+    clientWizard += (latch => {
+      pfLatch = latch
+
+      null
+    })
+
     messageTemplates.find(message => pf.isDefinedAt(message)) match {
       case Some(message) => wizard.registerMessageHandler(MessageType.toMessageType(message.getMessageType),
         new Handler[InboundFixMessage]() {
 
           def handle(message: InboundFixMessage) {
-            pf(message)
+            pf.andThen(message => pfLatch.countDown())(message)
           }
-
         })
       case None => throw new IllegalArgumentException("No matching messages")
     }
@@ -187,6 +240,8 @@ object QuickFixStub {
   def newInitiator(beginString: String, senderCompId: String, targetCompId: String) = new QuickFixStub(Initiator)
 }
 
-protected sealed trait ClientType
+sealed trait ClientType
+
 object Acceptor extends ClientType
+
 object Initiator extends ClientType
