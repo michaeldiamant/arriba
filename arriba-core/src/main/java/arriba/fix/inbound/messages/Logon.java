@@ -9,6 +9,10 @@ public final class Logon extends InboundFixMessage {
             final FixChunk[][] repeatingGroups) {
         super(headerChunk, bodyChunk, trailerChunk, repeatingGroups);
     }
+    
+    public String getEncryptMethod() {
+        return this.getBodyValue(Tags.ENCRYPT_METHOD);
+    }
 
     public String getUsername() {
         return this.getBodyValue(Tags.USERNAME);
