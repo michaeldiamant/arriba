@@ -57,6 +57,7 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         this.builder
         .addStandardHeader(MessageType.LOGON, message)
 
+        .addField(Tags.ENCRYPT_METHOD, message.getEncryptMethod())
         .addField(Tags.USERNAME, message.getUsername())
         .addField(Tags.PASSWORD, message.getPassword())
         .addField(Tags.HEARTBEAT_INTERVAL, message.getHeartbeatInterval());
