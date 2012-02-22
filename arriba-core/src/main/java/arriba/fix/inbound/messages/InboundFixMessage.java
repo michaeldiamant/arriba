@@ -7,6 +7,8 @@ import arriba.fix.session.SessionId;
 
 public abstract class InboundFixMessage {
 
+    private static final byte[] EMPTY = new byte[0];
+    
     private final FixChunk headerChunk;
     private final FixChunk bodyChunk;
     private final FixChunk trailerChunk;
@@ -50,11 +52,11 @@ public abstract class InboundFixMessage {
     }
 
     public boolean hasHeaderValue(final int tag) {
-        return null != this.headerChunk.getSerializedValue(tag);
+        return this.headerChunk.getSerializedValue(tag).length != 0;
     }
 
     public boolean hasBodyValue(final int tag) {
-        return null != this.bodyChunk.getSerializedValue(tag);
+        return this.bodyChunk.getSerializedValue(tag).length != 0;
     }
 
     public String getBodyValue(final int tag) {
