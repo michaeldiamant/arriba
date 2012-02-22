@@ -1,10 +1,10 @@
 package arriba.integration.quickfixj
-import quickfix.Message
-import quickfix.SessionID
 import java.util.concurrent.atomic.AtomicInteger
-import quickfix.Application
+import quickfix.field.{Password, Username, MsgType}
+import quickfix.{Session, Message, SessionID, Application}
 
-class QuickFixApplicationAdapter(messageProcessors: Seq[PartialFunction[Message, Unit]]) extends Application {
+class QuickFixApplicationAdapter(messageProcessors: Seq[PartialFunction[Message, Unit]],
+                                 sessionOption: Option[FixSession] = None) extends Application {
 
   private val responseCounter = new AtomicInteger
 
@@ -18,7 +18,17 @@ class QuickFixApplicationAdapter(messageProcessors: Seq[PartialFunction[Message,
 
   override def toApp(message: Message, sessionId: SessionID) {}
 
-  override def toAdmin(message: Message, sessionId: SessionID) {}
+  override def toAdmin(message: Message, sessionId: SessionID) {
+    if (message.getHeader.getString(MsgType.FIELD) == MsgType.LOGON) {
+      sessionOption match {
+        case Some(session) => {
+          message.setString(Username.FIELD, session.username)
+          message.setString(Password.FIELD, session.password)
+        }
+        case None => // Nothing to do
+      }
+    }
+  }
 
   override def onLogout(sessionId: SessionID) {}
 
