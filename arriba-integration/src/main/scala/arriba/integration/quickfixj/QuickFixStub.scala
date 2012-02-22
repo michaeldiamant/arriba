@@ -69,7 +69,7 @@ class QuickFixStub(val clientType: ClientType) extends FixClientStub {
       case Initiator => {
         val settings = sessions.foldLeft(new SessionSettings())((settings, session) => SessionSettingsFactory.newInitiator(session.beginString, session.senderCompId, session.targetCompId, settings))
         val initiator = new SocketInitiator(
-          new QuickFixApplicationAdapter(handlers),
+          new QuickFixApplicationAdapter(handlers, Some(sessions.head)),
           new MemoryStoreFactory,
           settings,
           new FileLogFactory(settings),
@@ -134,14 +134,14 @@ class ArribaStub(val clientType: ClientType)
   )
 
   private val backingRepository = new InMemoryTransportRepository[String, Channel](new NettyTransportFactory())
-  private val repository = new NettyTransportRepository(backingRepository);
+  val repository = new NettyTransportRepository(backingRepository);
 
   val wizardType = clientType match {
     case Acceptor => ArribaWizardType.ACCEPTOR
     case Initiator => ArribaWizardType.INITIATOR
   }
 
-  private val wizard = new ArribaWizard(wizardType, inboundConfiguration, outboundConfiguration, repository)
+  val wizard = new ArribaWizard(wizardType, inboundConfiguration, outboundConfiguration, repository)
 
   val headerBuilder = new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository).getHeaderBuilder
   val factory = new InboundFixMessageFactory
@@ -168,10 +168,10 @@ class ArribaStub(val clientType: ClientType)
   }
 
   var channel: Channel = null
+  val channels = new CopyOnWriteArrayList[Channel]()
   def start() {
-    wizard.start()
 
-    val channels = new CopyOnWriteArrayList[Channel]()
+    wizard.start()
 
     clientType match {
       case Acceptor => {
