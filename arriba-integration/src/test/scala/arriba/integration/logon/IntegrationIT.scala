@@ -7,13 +7,13 @@ import arriba.integration.runner.ClientWizard
 import arriba.fix.inbound.handlers.AuthenticatingLogonHandler
 import quickfix.Message
 import arriba.integration.LazyValue._
-import quickfix.field.{Username, MsgType}
+import quickfix.field.{Password, Username, MsgType}
 
 class IntegrationIT extends SpecificationWithJUnit {
 
-  "my test" should {
+  "Logon accepted by Arriba" should {
 
-    "run this example" in {
+    "response with Logon message" in {
       implicit val wizard = new ClientWizard
       val session = FixSession("FIX.4.4", "INITIATOR", "ACCEPTOR", "user", "pw")
 
@@ -39,7 +39,10 @@ class IntegrationIT extends SpecificationWithJUnit {
 
       qFixInitiator handle {
         case message: Message if message.getHeader.getString(MsgType.FIELD).equals(MsgType.LOGON) => {
-          wizard.queue(message.getString(Username.FIELD) must_== session.username)
+          wizard.queue(
+            message.getString(Username.FIELD) must_== session.username,
+            message.getString(Password.FIELD) must_== session.password
+          )
         }
       }
 
