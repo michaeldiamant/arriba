@@ -16,7 +16,7 @@ class ClientWizard
   with Logging {
 
   private val actions = new ArrayBuffer[(CountDownLatch, Option[() => Unit])]
-  private val verifications = new LinkedBlockingQueue[LazyValue[MatchResult[Any]]]()
+  private val verifications = new LinkedBlockingQueue[Stream[LazyValue[MatchResult[Any]]]]()
 
   def +=(func: CountDownLatch => (() => Unit)) {
     val latch = new CountDownLatch(1)
@@ -24,8 +24,8 @@ class ClientWizard
     actions += ((latch, Option(func(latch))))
   }
 
-  def queue(v: LazyValue[MatchResult[Any]]) {
-     this.verifications.put(v)
+  def queue(v: LazyValue[MatchResult[Any]]*) {
+     this.verifications.put(v.toStream)
   }
 
   private def withClient(clientType: ClientType)(func: FixClientStub => Unit)(implicit clients: List[FixClientStub]) {
@@ -54,7 +54,7 @@ class ClientWizard
           latch.await(2, TimeUnit.SECONDS) match {
             case true => {
               while (!verifications.isEmpty) {
-                verifications.take().apply()
+                verifications.take().foreach(_.apply())
               }
             }
             case false => {
