@@ -1,90 +1,90 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<artifactId>arriba</artifactId>
-		<groupId>arriba</groupId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <artifactId>arriba</artifactId>
+        <groupId>arriba</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>arriba-integration</artifactId>
-	<packaging>jar</packaging>
+    <artifactId>arriba-integration</artifactId>
+    <packaging>jar</packaging>
 
-	<dependencies>
-		<dependency>
-			<artifactId>arriba-core</artifactId>
-			<groupId>arriba</groupId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.scala-lang</groupId>
-			<artifactId>scala-library</artifactId>
-			<version>2.9.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.specs2</groupId>
-			<artifactId>specs2_2.9.1</artifactId>
-			<version>1.7.1</version>
-		</dependency>
-		<dependency>
-			<groupId>quickfixj</groupId>
-			<artifactId>quickfixj-all</artifactId>
-			<version>1.5.0-bd</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.mina</groupId>
-			<artifactId>mina-core</artifactId>
-			<version>1.1.7</version>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <artifactId>arriba-core</artifactId>
+            <groupId>arriba</groupId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.specs2</groupId>
+            <artifactId>specs2_2.9.1</artifactId>
+            <version>1.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>quickfixj</groupId>
+            <artifactId>quickfixj-all</artifactId>
+            <version>1.5.0-bd</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.mina</groupId>
+            <artifactId>mina-core</artifactId>
+            <version>1.1.7</version>
+        </dependency>
         <dependency>
             <groupId>com.weiglewilczek.slf4s</groupId>
             <artifactId>slf4s_2.9.1</artifactId>
             <version>1.0.7</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
-	<repositories>
-		<repository>
-			<id>MarketceteraRepo</id>
-			<url>http://repo.marketcetera.org/maven</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository>
-	</repositories>
+    <repositories>
+        <repository>
+            <id>MarketceteraRepo</id>
+            <url>http://repo.marketcetera.org/maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
 
-	<build>
+    <build>
 
-		<finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
 
-		<plugins>
-			<plugin>
-				<groupId>org.scala-tools</groupId>
-				<artifactId>maven-scala-plugin</artifactId>
-				<version>2.15.2</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>compile</goal>
-							<goal>testCompile</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.11</version>
-				<configuration>
-					<includes>
-						<include>**/*Spec.*</include>
-					</includes>
-				</configuration>
-			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.11</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Spec.*</include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
 
-	</build>
+    </build>
 
 </project>
