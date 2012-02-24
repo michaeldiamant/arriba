@@ -8,8 +8,6 @@ import arriba.fix.fields.EncryptMethod;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
-import arriba.fix.session.SessionId;
-import arriba.fix.session.SessionMonitor;
 import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
 
@@ -23,7 +21,6 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
     private final Sender<OutboundFixMessage> fixMessageSender;
     private final TransportRepository<String, T> transportRepository;
     private final RichOutboundFixMessageBuilder builder;
-    private final SessionMonitor sessionMonitor;
 
     public LogonOnConnectHandler(final String senderCompId,
             final String targetCompId,
@@ -32,8 +29,7 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
             final String password,
             final Sender<OutboundFixMessage> fixMessageSender,
             final TransportRepository<String, T> transportRepository,
-            final RichOutboundFixMessageBuilder builder,
-            final SessionMonitor sessionMonitor) {
+            final RichOutboundFixMessageBuilder builder) {
         this.senderCompId = senderCompId;
         this.targetCompId = targetCompId;
         this.heartbeatIntervalInMs = heartbeatIntervalInMs;
@@ -42,7 +38,6 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
         this.fixMessageSender = fixMessageSender;
         this.transportRepository = transportRepository;
         this.builder = builder;
-        this.sessionMonitor = sessionMonitor;
     }
 
     @Override
@@ -60,10 +55,5 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
         this.transportRepository.add(this.targetCompId, identity);
 
         this.fixMessageSender.send(this.builder.build());
-
-        this.sessionMonitor.monitor(
-                new SessionId(this.senderCompId, this.targetCompId),
-                this.heartbeatIntervalInMs
-                );
     }
 }

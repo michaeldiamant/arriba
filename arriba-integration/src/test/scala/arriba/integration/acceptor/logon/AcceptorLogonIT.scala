@@ -4,17 +4,18 @@ import arriba.integration.quickfixj._
 import org.specs2.mutable.SpecificationWithJUnit
 import arriba.fix.inbound.messages.Logon
 import arriba.integration.runner.ClientWizard
-import arriba.fix.inbound.handlers.AuthenticatingLogonHandler
 import quickfix.Message
 import arriba.integration.LazyValue._
 import quickfix.field.{Password, Username, MsgType}
 import java.util.Date
+import arriba.fix.inbound.handlers.{SessionMonitoringLogonHandler, AuthenticatingLogonHandler}
+import arriba.common.ComposedHandler
 
 class AcceptorLogonIT extends SpecificationWithJUnit {
 
   "Arriba acceptor processing logon" should {
 
-    "respond with logon message" in {
+    "respond with logon message" >> {
       implicit val wizard = new ClientWizard
       val session = FixSession("FIX.4.4", "INITIATOR", "ACCEPTOR", "user", "pw")
 
@@ -26,14 +27,16 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
 
       arribaAcceptor handle {
         case message: Logon => {
-          new AuthenticatingLogonHandler(
-            session.username,
-            session.password,
-            arribaAcceptor.wizard.getOutboundSender,
-            arribaAcceptor.wizard.createOutboundBuilder,
-            arribaAcceptor.channels,
-            arribaAcceptor.repository,
-            arribaAcceptor.wizard.getSessionMonitor
+          new ComposedHandler(
+            new AuthenticatingLogonHandler(
+              session.username,
+              session.password,
+              arribaAcceptor.wizard.getOutboundSender,
+              arribaAcceptor.wizard.createOutboundBuilder,
+              arribaAcceptor.channels,
+              arribaAcceptor.repository
+            ),
+            new SessionMonitoringLogonHandler(arribaAcceptor.wizard.getSessionMonitor)
           ).handle(message)
         }
       }
@@ -50,7 +53,7 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
       wizard start()
     }
 
-    "handle sequence number that is too high" in {
+    "handle sequence number that is too high" >> {
       implicit val wizard = new ClientWizard
       val session = FixSession("FIX.4.4", "INITIATOR", "ACCEPTOR", "user", "pw")
 
@@ -62,18 +65,19 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
 
       firstArribaAcceptor handle {
         case message: Logon => {
-          new AuthenticatingLogonHandler(
-            session.username,
-            session.password,
-            firstArribaAcceptor.wizard.getOutboundSender,
-            firstArribaAcceptor.wizard.createOutboundBuilder,
-            firstArribaAcceptor.channels,
-            firstArribaAcceptor.repository,
-            firstArribaAcceptor.wizard.getSessionMonitor
+          new ComposedHandler(
+            new AuthenticatingLogonHandler(
+              session.username,
+              session.password,
+              firstArribaAcceptor.wizard.getOutboundSender,
+              firstArribaAcceptor.wizard.createOutboundBuilder,
+              firstArribaAcceptor.channels,
+              firstArribaAcceptor.repository
+            ),
+            new SessionMonitoringLogonHandler(firstArribaAcceptor.wizard.getSessionMonitor)
           ).handle(message)
         }
       }
-
 
       var secondArribaAcceptor: ArribaStub = null
       qFixInitiator handle {
