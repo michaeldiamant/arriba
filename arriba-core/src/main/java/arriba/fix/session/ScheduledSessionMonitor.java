@@ -16,9 +16,13 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.disconnect.SessionDisconnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ScheduledSessionMonitor implements SessionMonitor {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduledSessionMonitor.class);
+    
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
     private final Sender<OutboundFixMessage> fixMessageSender;
     private final RichOutboundFixMessageBuilder builder;
@@ -43,11 +47,17 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
     @Override
     public void unmonitor(final SessionId sessionId) {
         final Session session = this.resolver.resolve(sessionId);
+        ScheduledFuture<?> future = null;
+
         this.sessionToMonitorFutureLock.lock();
         try {
-            this.sessionToMonitorFuture.remove(session);
+            future = this.sessionToMonitorFuture.remove(session);
         } finally {
             this.sessionToMonitorFutureLock.unlock();
+        }
+
+        if (null != future) {
+            future.cancel(false);
         }
     }
 
@@ -84,7 +94,9 @@ public final class ScheduledSessionMonitor implements SessionMonitor {
                     @Override
                     public void run() {
                         if (this.hasTimedoutWaitingForLogoutResponse()) {
-                            ScheduledSessionMonitor.this.disconnector.disconnect(new SessionId(session.getSenderCompId(), session.getTargetCompId()));
+                            LOGGER.debug("Disconnecting " + sessionId + " due to logout response timeout.");
+                            ScheduledSessionMonitor.this.disconnector.disconnect(sessionId);
+                            ScheduledSessionMonitor.this.unmonitor(sessionId);
                         } else if (this.isLogoutRequired()) {
                             this.sendLogout();
                         } else if (this.isTestRequestRequired()) {
