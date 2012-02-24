@@ -26,9 +26,9 @@ import quickfix.mina.SessionConnector
 import quickfix._
 import com.weiglewilczek.slf4s.Logging
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
-import org.jboss.netty.bootstrap.ServerBootstrap
 import org.jboss.netty.channel._
 import group.DefaultChannelGroup
+import org.jboss.netty.bootstrap.{Bootstrap, ServerBootstrap}
 
 case class FixSession(beginString: String, senderCompId: String, targetCompId: String, username: String, password: String)
 
@@ -96,8 +96,8 @@ class QuickFixStub(val clientType: ClientType) extends FixClientStub {
   def stop() {
     (initiatorOption, acceptorOption) match {
       case (Some(initiator), None) => initiator.stop(true)
-      case (None,  Some(acceptor)) => acceptor.stop(true)
-      case (None,  None) => throw new IllegalStateException()
+      case (None, Some(acceptor)) => acceptor.stop(true)
+      case (None, None) => throw new IllegalStateException()
     }
   }
 
@@ -163,14 +163,13 @@ class ArribaStub(val clientType: ClientType)
 
   def stop() {
     group.unbind().awaitUninterruptibly()
-    channelFactory.releaseExternalResources()
+    channelFactory.foreach(_.releaseExternalResources())
 
     wizard.stop()
   }
 
-  var channel: Channel = null
+  var channelFactory: Option[ChannelFactory] = None
   val channels = new CopyOnWriteArrayList[Channel]()
-  var channelFactory: ChannelFactory = null
   var group = new DefaultChannelGroup("myid")
 
   def start() {
@@ -179,27 +178,19 @@ class ArribaStub(val clientType: ClientType)
 
     clientType match {
       case Acceptor => {
-        channelFactory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool, Executors.newCachedThreadPool)
-        val bootstrap = new ServerBootstrap(channelFactory)
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory {
-          def getPipeline: ChannelPipeline = {
-            return Channels.pipeline(new FixMessageFrameDecoder(),
-              new NewClientSessionHandler(channels, group),
-              new SerializedFixMessageHandler(wizard.getInboundSender))
-          }
-        })
-        bootstrap.setOption("child.tcpNoDelay", true)
-        bootstrap.setOption("child.keepAlive", true)
+        val bootstrap = FixServerBootstrap.create(new FixMessageFrameDecoder(),
+          new NewClientSessionHandler(channels, group),
+          new SerializedFixMessageHandler(wizard.getInboundSender)
+        )
 
-
-        channel = bootstrap.bind(new InetSocketAddress("localhost", 8080));
+        val channel = bootstrap.bind(new InetSocketAddress("localhost", 8080))
+        channelFactory = Some(channel.getFactory)
         group.add(channel)
       }
       case Initiator => {
         val session = sessions.head
 
-        // FIXME initiator initialize incomplete
-        val initiator = FixClientBootstrap.create(
+        val bootstrap = FixClientBootstrap.create(
           new FixMessageFrameDecoder,
           new NettyConnectHandlerAdapter(new LogonOnConnectHandler[Channel](
             session.senderCompId,
@@ -209,18 +200,17 @@ class ArribaStub(val clientType: ClientType)
             session.password,
             wizard.getOutboundSender,
             repository,
-            wizard.createOutboundBuilder(),
-            wizard.getSessionMonitor)),
+            wizard.createOutboundBuilder())),
           new SerializedFixMessageHandler(wizard.getInboundSender)
         );
 
-        initiator.connect(new InetSocketAddress("localhost", 8080)).addListener(
-          new ChannelFutureListener {
-            def operationComplete(future: ChannelFuture) {
-              channel = future.getChannel
-            }
-          }        
-        );
+        val channelFuture = bootstrap.connect(new InetSocketAddress("localhost", 8080))
+        channelFuture.addListener(new ChannelFutureListener {
+          def operationComplete(future: ChannelFuture) {
+              channelFactory = Some(future.getChannel.getFactory)
+              group.add(future.getChannel)
+          }
+        })
       }
     }
   }

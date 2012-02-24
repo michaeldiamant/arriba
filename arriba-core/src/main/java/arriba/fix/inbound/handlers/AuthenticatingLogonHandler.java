@@ -26,22 +26,20 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
     private final List<Channel> channels;
     private final TransportRepository<String, Channel> transportRepository;
     private final RichOutboundFixMessageBuilder builder;
-    private final SessionMonitor monitor;
+
 
     public AuthenticatingLogonHandler(final String expectedUsername,
             final String expectedPassword,
             final Sender<OutboundFixMessage> fixMessageSender,
             final RichOutboundFixMessageBuilder builder,
             final List<Channel> channels,
-            final TransportRepository<String, Channel> transportRepository,
-            final SessionMonitor monitor) {
+            final TransportRepository<String, Channel> transportRepository) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
         this.fixMessageSender = fixMessageSender;
         this.builder = builder;
         this.channels = channels;
         this.transportRepository = transportRepository;
-        this.monitor = monitor;
     }
 
     @Override
@@ -72,12 +70,6 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         final Channel channelToAdd = this.channels.remove(0);
         this.transportRepository.add(message.getSenderCompId(), new TransportIdentity<>(channelToAdd));
 
-        this.monitor.monitor(
-                new SessionId(message.getTargetCompId(), message.getSenderCompId()),
-                Integer.parseInt(message.getHeartbeatInterval()) * 1000
-                );
-
         this.fixMessageSender.send(this.builder.build());
     }
-
 }

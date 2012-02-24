@@ -7,8 +7,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import arriba.common.ComposedHandler;
+import arriba.common.Handler;
 import arriba.configuration.ArribaWizardType;
-import arriba.transport.TransportIdentity;
+import arriba.fix.inbound.handlers.*;
+import arriba.fix.inbound.messages.Logon;
 import arriba.transport.TransportSender;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -23,11 +26,6 @@ import arriba.examples.quotes.RandomQuoteSupplier;
 import arriba.examples.subscriptions.InMemorySubscriptionService;
 import arriba.examples.subscriptions.SubscriptionService;
 import arriba.fix.fields.MessageType;
-import arriba.fix.inbound.handlers.AuthenticatingLogonHandler;
-import arriba.fix.inbound.handlers.DisconnectingLogoutHandler;
-import arriba.fix.inbound.handlers.HeartbeatGeneratingTestRequestHandler;
-import arriba.fix.inbound.handlers.MessageResendingResendRequestHandler;
-import arriba.fix.inbound.handlers.NoOpHeartbeatHandler;
 import arriba.fix.inbound.messages.NewOrderSingle;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
@@ -54,19 +52,20 @@ public class MarketMakerClient {
     private final SubscriptionService subscriptionService = new InMemorySubscriptionService();
     private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
 
-    public MarketMakerClient() {}
+    public MarketMakerClient() {
+    }
 
     public void start() {
         final DisruptorConfiguration inboundConfiguration = new DisruptorConfiguration(
                 Executors.newCachedThreadPool(),
                 new MultiThreadedClaimStrategy(256),
                 new BlockingWaitStrategy()
-                );
+        );
         final DisruptorConfiguration outboundConfiguration = new DisruptorConfiguration(
                 Executors.newCachedThreadPool(),
                 new MultiThreadedClaimStrategy(256),
                 new BlockingWaitStrategy()
-                );
+        );
 
         final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
@@ -76,23 +75,28 @@ public class MarketMakerClient {
                 inboundConfiguration,
                 outboundConfiguration,
                 repository
-                );
+        );
 
         final TransportSender<Channel, ChannelBuffer[]> inboundSender = wizard.getInboundSender();
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
+        final Handler<Logon> logonHandler = new ComposedHandler<>(
+                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder(), this.channels, repository),
+                new SessionMonitoringLogonHandler(wizard.getSessionMonitor())
+        );
+
         wizard
-        .registerMessageHandler(MessageType.HEARTBEAT, new NoOpHeartbeatHandler())
-        .registerMessageHandler(MessageType.TEST_REQUEST, new HeartbeatGeneratingTestRequestHandler(wizard.createOutboundBuilder(), outboundSender))
-        .registerMessageHandler(MessageType.RESEND_REQUEST, new MessageResendingResendRequestHandler(wizard.getSessionResolver(), wizard.getSerializedOutboundSender(), wizard.createOutboundBuilder(), wizard.getInboundDeserializer()))
-        .registerMessageHandler(MessageType.LOGON, new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder(), this.channels, repository, wizard.getSessionMonitor()))
-        .registerMessageHandler(MessageType.LOGOUT, new DisconnectingLogoutHandler(outboundSender, wizard.createOutboundBuilder(), wizard.getSessionDisconnector() , wizard.getLogoutTracker()))
-        .registerMessageHandler(MessageType.MARKET_DATA_REQUEST, new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))
-        .registerMessageHandler(MessageType.NEW_ORDER_SINGLE, new PrintingHandler<NewOrderSingle>())
+                .registerMessageHandler(MessageType.HEARTBEAT, new NoOpHeartbeatHandler())
+                .registerMessageHandler(MessageType.TEST_REQUEST, new HeartbeatGeneratingTestRequestHandler(wizard.createOutboundBuilder(), outboundSender))
+                .registerMessageHandler(MessageType.RESEND_REQUEST, new MessageResendingResendRequestHandler(wizard.getSessionResolver(), wizard.getSerializedOutboundSender(), wizard.createOutboundBuilder(), wizard.getInboundDeserializer()))
+                .registerMessageHandler(MessageType.LOGON, logonHandler)
+                .registerMessageHandler(MessageType.LOGOUT, new DisconnectingLogoutHandler(outboundSender, wizard.createOutboundBuilder(), wizard.getSessionDisconnector(), wizard.getLogoutTracker()))
+                .registerMessageHandler(MessageType.MARKET_DATA_REQUEST, new SubscriptionManagingMarketDataRequestHandler(this.subscriptionService))
+                .registerMessageHandler(MessageType.NEW_ORDER_SINGLE, new PrintingHandler<NewOrderSingle>())
 
-        .register(this.senderCompId).with(this.targetCompId)
+                .register(this.senderCompId).with(this.targetCompId)
 
-        .start();
+                .start();
 
         this.initializeQuotes(outboundSender, wizard.createOutboundBuilder());
 
@@ -100,7 +104,7 @@ public class MarketMakerClient {
                 new FixMessageFrameDecoder(),
                 new NewClientSessionHandler(this.channels, null),
                 new SerializedFixMessageHandler(inboundSender)
-                );
+        );
 
         server.bind(new InetSocketAddress("localhost", 8080));
     }
