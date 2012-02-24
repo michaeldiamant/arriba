@@ -1,4 +1,4 @@
-package arriba.integration.logon
+package arriba.integration.acceptor.logon
 
 import arriba.integration.quickfixj._
 import org.specs2.mutable.SpecificationWithJUnit
