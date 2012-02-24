@@ -10,11 +10,11 @@ import arriba.integration.LazyValue._
 import quickfix.field.{Password, Username, MsgType}
 import java.util.Date
 
-class LogonIT extends SpecificationWithJUnit {
+class AcceptorLogonIT extends SpecificationWithJUnit {
 
-  "Logon incoming to Arriba" should {
+  "Arriba acceptor processing logon" should {
 
-    "have Logon response" in {
+    "respond with logon message" in {
       implicit val wizard = new ClientWizard
       val session = FixSession("FIX.4.4", "INITIATOR", "ACCEPTOR", "user", "pw")
 
