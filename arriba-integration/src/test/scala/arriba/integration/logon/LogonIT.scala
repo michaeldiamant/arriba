@@ -14,41 +14,41 @@ class LogonIT extends SpecificationWithJUnit {
 
   "Logon incoming to Arriba" should {
 
-//    "have Logon response" in {
-//      implicit val wizard = new ClientWizard
-//      val session = FixSession("FIX.4.4", "INITIATOR", "ACCEPTOR", "user", "pw")
-//
-//      implicit val qFixInitiator = new QuickFixStub(Initiator)
-//      implicit val arribaAcceptor = new ArribaStub(Acceptor)
-//
-//      qFixInitiator addSession session
-//      arribaAcceptor addSession session.copy(senderCompId = session.targetCompId, targetCompId = session.senderCompId)
-//
-//      arribaAcceptor handle {
-//        case message: Logon => {
-//          new AuthenticatingLogonHandler(
-//            session.username,
-//            session.password,
-//            arribaAcceptor.wizard.getOutboundSender,
-//            arribaAcceptor.wizard.createOutboundBuilder,
-//            arribaAcceptor.channels,
-//            arribaAcceptor.repository,
-//            arribaAcceptor.wizard.getSessionMonitor
-//          ).handle(message)
-//        }
-//      }
-//
-//      qFixInitiator handle {
-//        case message: Message if message.getHeader.getString(MsgType.FIELD).equals(MsgType.LOGON) => {
-//          wizard.queue(
-//            message.getString(Username.FIELD) must_== session.username,
-//            message.getString(Password.FIELD) must_== session.password
-//          )
-//        }
-//      }
-//
-//      wizard start()
-//    }
+    "have Logon response" in {
+      implicit val wizard = new ClientWizard
+      val session = FixSession("FIX.4.4", "INITIATOR", "ACCEPTOR", "user", "pw")
+
+      implicit val qFixInitiator = new QuickFixStub(Initiator)
+      implicit val arribaAcceptor = new ArribaStub(Acceptor)
+
+      qFixInitiator addSession session
+      arribaAcceptor addSession session.copy(senderCompId = session.targetCompId, targetCompId = session.senderCompId)
+
+      arribaAcceptor handle {
+        case message: Logon => {
+          new AuthenticatingLogonHandler(
+            session.username,
+            session.password,
+            arribaAcceptor.wizard.getOutboundSender,
+            arribaAcceptor.wizard.createOutboundBuilder,
+            arribaAcceptor.channels,
+            arribaAcceptor.repository,
+            arribaAcceptor.wizard.getSessionMonitor
+          ).handle(message)
+        }
+      }
+
+      qFixInitiator handle {
+        case message: Message if message.getHeader.getString(MsgType.FIELD).equals(MsgType.LOGON) => {
+          wizard.queue(
+            message.getString(Username.FIELD) must_== session.username,
+            message.getString(Password.FIELD) must_== session.password
+          )
+        }
+      }
+
+      wizard start()
+    }
 
     "handle sequence number that is too high" in {
       implicit val wizard = new ClientWizard
