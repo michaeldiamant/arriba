@@ -1,17 +1,27 @@
 package arriba.disruptor.inbound;
 
+import arriba.transport.TransportIdentity;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import arriba.fix.inbound.messages.InboundFixMessage;
 import arriba.fix.outbound.OutboundFixMessage;
 
-public final class InboundEvent {
+public final class InboundEvent<T> {
 
     private ChannelBuffer[] serializedMessages;
     private InboundFixMessage[] messages;
     private OutboundFixMessage[] outboundMessages;
+    private TransportIdentity<T> identity;
 
     public InboundEvent() {}
+
+    public TransportIdentity<T> getIdentity() {
+        return identity;
+    }
+
+    public void setIdentity(TransportIdentity<T> identity) {
+        this.identity = identity;
+    }
 
     public ChannelBuffer[] getSerializedMessages() {
         return this.serializedMessages;

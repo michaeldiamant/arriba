@@ -8,6 +8,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import arriba.configuration.ArribaWizardType;
+import arriba.transport.TransportIdentity;
+import arriba.transport.TransportSender;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -66,7 +68,7 @@ public class MarketMakerClient {
                 new BlockingWaitStrategy()
                 );
 
-        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<String, Channel>(new NettyTransportFactory());
+        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
@@ -76,7 +78,7 @@ public class MarketMakerClient {
                 repository
                 );
 
-        final Sender<ChannelBuffer[]> inboundSender = wizard.getInboundSender();
+        final TransportSender<Channel, ChannelBuffer[]> inboundSender = wizard.getInboundSender();
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
@@ -96,7 +98,7 @@ public class MarketMakerClient {
 
         final ServerBootstrap server = FixServerBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NewClientSessionHandler(this.channels),
+                new NewClientSessionHandler(this.channels, null),
                 new SerializedFixMessageHandler(inboundSender)
                 );
 

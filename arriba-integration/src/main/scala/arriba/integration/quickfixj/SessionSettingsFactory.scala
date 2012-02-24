@@ -28,6 +28,7 @@ object SessionSettingsFactory {
         settings.setLong(id, "SocketConnectPort", 8080)
         settings.setString(id, "SocketConnectHost", "localhost")
         settings.setLong(id, "HeartBtInt", 30)
+        settings.setLong(id, "ReconnectInterval", 5)
       }
       case "acceptor" => {
         settings.setLong(id, "SocketAcceptPort", 8080)

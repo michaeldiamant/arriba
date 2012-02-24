@@ -7,6 +7,7 @@ import arriba.common.MapHandlerRepository;
 import arriba.common.Sender;
 import arriba.disruptor.DisruptorSender;
 import arriba.disruptor.DisruptorSessionDisconnector;
+import arriba.disruptor.DisruptorTransportSender;
 import arriba.disruptor.inbound.*;
 import arriba.disruptor.outbound.*;
 import arriba.fix.chunk.CachingFixChunkBuilderSupplier;
@@ -29,7 +30,9 @@ import arriba.fix.session.disconnect.SessionUnmonitoringDisconnectListener;
 import arriba.fix.session.messagejournal.InMemoryMessageJournal;
 import arriba.fix.session.messagejournal.MessageJournal;
 import arriba.fix.tagindexresolvers.CanonicalTagIndexResolverRepository;
+import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
+import arriba.transport.TransportSender;
 import cern.colt.map.OpenIntObjectHashMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -57,7 +60,7 @@ public final class ArribaWizard<T> {
     private final SessionNotifyingEventHandler sessionNotifyingEventHandler;
     private final Sender<OutboundFixMessage> outboundSender;
     private final Sender<byte[]> outboundBytesSender;
-    private final Sender<ChannelBuffer[]> inboundSender;
+    private final TransportSender<T, ChannelBuffer[]> inboundSender;
     private final SessionDisconnector sessionDisconnector;
     private final SessionMonitor sessionMonitor;
     private final ArribaWizardType type;
@@ -70,16 +73,16 @@ public final class ArribaWizard<T> {
         this.type = type;
         this.transportRepository = transportRepository;
 
-        this.disconnectingSessionIdHandler = new DisconnectingSessionIdHandler<T>(
+        this.disconnectingSessionIdHandler = new DisconnectingSessionIdHandler<>(
                 this.transportRepository,
                 Sets.<SessionDisconnectListener>newHashSet(new LogoutMarkClearingDisconnectListener(this.logoutTracker))
                 );
         this.sessionNotifyingEventHandler = new SessionNotifyingEventHandler(this.sessionResolver);
 
         this.inboundDisruptor = this.inboundDisruptor(inboundConfiguration);
-        this.inboundSender = new DisruptorSender<>(
+        this.inboundSender = new DisruptorTransportSender<>(
                 inboundDisruptor.getRingBuffer(),
-                new InboundDisruptorAdapter()
+                new InboundDisruptorAdapter<T>()
                 );
 
         this.outboundDisruptor = this.outboundDisruptor(outboundConfiguration);
@@ -126,7 +129,7 @@ public final class ArribaWizard<T> {
         return this.sessionMonitor;
     }
 
-    public Sender<ChannelBuffer[]> getInboundSender() {
+    public TransportSender<T, ChannelBuffer[]> getInboundSender() {
         return this.inboundSender;
     }
 
@@ -240,7 +243,7 @@ public final class ArribaWizard<T> {
     }
 
     private EventHandler<InboundEvent> sequenceNumberValidatingEventHandler() {
-        return new SequenceNumberValidatingEventHandler(this.sessionResolver, this.createOutboundBuilder());
+        return new SequenceNumberValidatingEventHandler(this.sessionResolver, this.createOutboundBuilder(), this.transportRepository);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
 import arriba.configuration.ArribaWizardType;
+import arriba.transport.TransportSender;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -55,7 +56,7 @@ public class MarketTakerClient {
                 new BlockingWaitStrategy()
                 );
 
-        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<String, Channel>(new NettyTransportFactory());
+        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
         final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
@@ -65,7 +66,7 @@ public class MarketTakerClient {
                 repository
                 );
 
-        final Sender<ChannelBuffer[]> inboundSender = wizard.getInboundSender();
+        final TransportSender<Channel, ChannelBuffer[]> inboundSender = wizard.getInboundSender();
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         wizard
@@ -82,7 +83,7 @@ public class MarketTakerClient {
 
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NettyConnectHandlerAdapter(new LogonOnConnectHandler<Channel>(this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder(), wizard.getSessionMonitor())),
+                new NettyConnectHandlerAdapter(new LogonOnConnectHandler<>(this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder(), wizard.getSessionMonitor())),
                 new SerializedFixMessageHandler(inboundSender)
                 );
 

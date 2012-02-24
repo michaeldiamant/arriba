@@ -1,24 +1,31 @@
 package arriba.transport.netty;
 
+import arriba.transport.TransportIdentity;
+import arriba.transport.TransportSender;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
 
 import arriba.common.Sender;
 
 public final class SerializedFixMessageHandler extends SimpleChannelHandler {
 
-    private final Sender<ChannelBuffer[]> sender;
+    private final TransportSender<Channel, ChannelBuffer[]> sender;
+    private TransportIdentity<Channel> identity = null;
 
-    public SerializedFixMessageHandler(final Sender<ChannelBuffer[]> sender) {
+    public SerializedFixMessageHandler(final TransportSender<Channel, ChannelBuffer[]> sender) {
         this.sender = sender;
+    }
+
+    
+    @Override
+    public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        this.identity = new TransportIdentity<Channel>(ctx.getChannel());
+        super.channelConnected(ctx, e);
     }
 
     @Override
     public void messageReceived(final ChannelHandlerContext ctx, final MessageEvent e) throws Exception {
-        this.sender.send((ChannelBuffer[]) e.getMessage());
+        this.sender.send(this.identity, (ChannelBuffer[]) e.getMessage());
     }
 
     @Override
