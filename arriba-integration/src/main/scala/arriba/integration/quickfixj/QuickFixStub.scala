@@ -24,8 +24,11 @@ import collection.mutable.{ListBuffer, ArrayBuffer}
 import arriba.integration.runner.ClientWizard
 import quickfix.mina.SessionConnector
 import quickfix._
-import org.jboss.netty.channel.{ChannelFuture, ChannelFutureListener, Channel}
 import com.weiglewilczek.slf4s.Logging
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
+import org.jboss.netty.bootstrap.ServerBootstrap
+import org.jboss.netty.channel._
+import group.DefaultChannelGroup
 
 case class FixSession(beginString: String, senderCompId: String, targetCompId: String, username: String, password: String)
 
@@ -159,28 +162,38 @@ class ArribaStub(val clientType: ClientType)
   }
 
   def stop() {
-    val disconnectFuture = channel.disconnect()
-    if (!disconnectFuture.await(2, TimeUnit.SECONDS)) {
-       logger.warn("Unable to disconnect channel.")
-    }
+    group.unbind().awaitUninterruptibly()
+    channelFactory.releaseExternalResources()
 
     wizard.stop()
   }
 
   var channel: Channel = null
   val channels = new CopyOnWriteArrayList[Channel]()
+  var channelFactory: ChannelFactory = null
+  var group = new DefaultChannelGroup("myid")
+
   def start() {
 
     wizard.start()
 
     clientType match {
       case Acceptor => {
-        val acceptor = FixServerBootstrap.create(
-          new FixMessageFrameDecoder(),
-          new NewClientSessionHandler(channels),
-          new SerializedFixMessageHandler(wizard.getInboundSender)
-        )
-        channel = acceptor.bind(new InetSocketAddress("localhost", 8080));
+        channelFactory = new NioServerSocketChannelFactory(Executors.newCachedThreadPool, Executors.newCachedThreadPool)
+        val bootstrap = new ServerBootstrap(channelFactory)
+        bootstrap.setPipelineFactory(new ChannelPipelineFactory {
+          def getPipeline: ChannelPipeline = {
+            return Channels.pipeline(new FixMessageFrameDecoder(),
+              new NewClientSessionHandler(channels, group),
+              new SerializedFixMessageHandler(wizard.getInboundSender))
+          }
+        })
+        bootstrap.setOption("child.tcpNoDelay", true)
+        bootstrap.setOption("child.keepAlive", true)
+
+
+        channel = bootstrap.bind(new InetSocketAddress("localhost", 8080));
+        group.add(channel)
       }
       case Initiator => {
         val session = sessions.head

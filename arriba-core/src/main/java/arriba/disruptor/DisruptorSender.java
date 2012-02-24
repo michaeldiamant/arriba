@@ -6,19 +6,19 @@ import com.lmax.disruptor.RingBuffer;
 
 public final class DisruptorSender<M, E> implements Sender<M> {
 
-    private final RingBuffer<E> disruptor;
+    private final RingBuffer<E> buffer;
     private final MessageToDisruptorAdapter<M, E> adapter;
 
-    public DisruptorSender(final RingBuffer<E> disruptor,
-            final MessageToDisruptorAdapter<M, E> adapter) {
-        this.disruptor = disruptor;
+    public DisruptorSender(final RingBuffer<E> buffer,
+                           final MessageToDisruptorAdapter<M, E> adapter) {
+        this.buffer = buffer;
         this.adapter = adapter;
     }
 
     public void send(final M message) {
-        final long sequence = this.disruptor.next();
-        final E event = this.disruptor.get(sequence);
+        final long sequence = this.buffer.next();
+        final E event = this.buffer.get(sequence);
         this.adapter.adapt(message, event);
-        this.disruptor.publish(sequence);
+        this.buffer.publish(sequence);
     }
 }

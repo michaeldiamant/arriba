@@ -15,7 +15,6 @@ public final class FixServerBootstrap {
     public static ServerBootstrap create(final ChannelHandler... channelHandlers) {
         final ChannelFactory factory =
             new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool());
-
         final ServerBootstrap bootstrap = new ServerBootstrap(factory);
 
         bootstrap.setPipelineFactory(new ChannelPipelineFactory() {

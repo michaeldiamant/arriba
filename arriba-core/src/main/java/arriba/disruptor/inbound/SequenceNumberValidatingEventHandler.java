@@ -9,20 +9,26 @@ import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionResolver;
 
+import arriba.transport.Transport;
+import arriba.transport.TransportRepository;
 import com.lmax.disruptor.EventHandler;
 
-public final class SequenceNumberValidatingEventHandler implements EventHandler<InboundEvent> {
+public final class SequenceNumberValidatingEventHandler<T> implements EventHandler<InboundEvent> {
 
     private final SessionResolver resolver;
     private final RichOutboundFixMessageBuilder builder;
+    private final TransportRepository<String, T> repository;
     private final InboundFixMessage[] validatedMessages = new InboundFixMessage[100]; // TODO Set reasonable default.
     private final OutboundFixMessage[] outboundMessages = new OutboundFixMessage[100];
 
     private int validatedMessagesIndex = 0;
 
-    public SequenceNumberValidatingEventHandler(final SessionResolver resolver, final RichOutboundFixMessageBuilder builder) {
+    public SequenceNumberValidatingEventHandler(final SessionResolver resolver,
+                                                final RichOutboundFixMessageBuilder builder,
+                                                final TransportRepository<String, T> repository) {
         this.resolver = resolver;
         this.builder = builder;
+        this.repository = repository;
     }
 
     @Override
@@ -33,6 +39,12 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
             final Session session = this.resolver.resolve(message.getSessionId());
             if (null == session) {
                 throw new IllegalArgumentException("No session found for " + message.getSessionId());
+            }
+
+            if (MessageType.LOGON.getValue().equals(message.getMessageType())) {
+                if (null == this.repository.find(message.getTargetCompId())) {
+                    repository.add(message.getSenderCompId(), event.getIdentity());
+                }
             }
 
             if (shouldForwardMessage(session, message)) {
@@ -63,7 +75,7 @@ public final class SequenceNumberValidatingEventHandler implements EventHandler<
                     .addStandardHeader(MessageType.LOGOUT, message)
                     .addField(Tags.TEXT,
                             "Expected sequence number " + session.getExpectedInboundSequenceNumber() + ", but received " + sequenceNumber + ".")
-                            .build();
+                    .build();
             this.outboundMessages[this.validatedMessagesIndex] = logout;
         } else {
             session.queueMessage(message);

@@ -1,12 +1,16 @@
 package arriba.disruptor.inbound;
 
+import arriba.disruptor.TransportMessageToDisruptorAdapter;
+import arriba.transport.TransportIdentity;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 import arriba.disruptor.MessageToDisruptorAdapter;
 
-public final class InboundDisruptorAdapter implements MessageToDisruptorAdapter<ChannelBuffer[], InboundEvent>{
+public final class InboundDisruptorAdapter<T> implements TransportMessageToDisruptorAdapter<T, ChannelBuffer[], InboundEvent> {
 
-    public void adapt(final ChannelBuffer[] serializedMessages, final InboundEvent event) {
+    @Override
+    public void adapt(TransportIdentity<T> identity, ChannelBuffer[] serializedMessages, InboundEvent event) {
+        event.setIdentity(identity);
         event.setSerializedMessages(serializedMessages);
     }
 }
