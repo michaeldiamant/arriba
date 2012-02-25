@@ -8,11 +8,11 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.SimpleChannelHandler;
 import org.jboss.netty.channel.group.ChannelGroup;
 
-public class NewClientSessionHandler extends SimpleChannelHandler {
+public class GroupAddingChannelHandler extends SimpleChannelHandler {
 
     private final ChannelGroup group;
     
-    public NewClientSessionHandler(ChannelGroup group) {
+    public GroupAddingChannelHandler(ChannelGroup group) {
         this.group = group;
     }
 
