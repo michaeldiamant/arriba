@@ -8,6 +8,7 @@ import arriba.fix.fields.EncryptMethod;
 import arriba.fix.fields.MessageType;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
+import arriba.fix.session.SessionId;
 import arriba.transport.TransportIdentity;
 import arriba.transport.TransportRepository;
 
@@ -19,7 +20,7 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
     private final String username;
     private final String password;
     private final Sender<OutboundFixMessage> fixMessageSender;
-    private final TransportRepository<String, T> transportRepository;
+    private final TransportRepository<SessionId, T> transportRepository;
     private final RichOutboundFixMessageBuilder builder;
 
     public LogonOnConnectHandler(final String senderCompId,
@@ -28,7 +29,7 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
             final String username,
             final String password,
             final Sender<OutboundFixMessage> fixMessageSender,
-            final TransportRepository<String, T> transportRepository,
+            final TransportRepository<SessionId, T> transportRepository,
             final RichOutboundFixMessageBuilder builder) {
         this.senderCompId = senderCompId;
         this.targetCompId = targetCompId;
@@ -49,10 +50,9 @@ public class LogonOnConnectHandler<T> implements TransportConnectHandler<T> {
         .addField(Tags.ENCRYPT_METHOD, EncryptMethod.NONE.getValue())
         .addField(Tags.HEARTBEAT_INTERVAL, Integer.toString(this.heartbeatIntervalInMs / 1000))
         .addField(Tags.USERNAME, this.username)
-        .addField(Tags.PASSWORD, this.password)
-        .addField(Tags.RESET_SEQUENCE_NUMBER_FLAG, "Y");
+        .addField(Tags.PASSWORD, this.password);
 
-        this.transportRepository.add(this.targetCompId, identity);
+        this.transportRepository.add(new SessionId(this.senderCompId, this.targetCompId), identity);
 
         this.fixMessageSender.send(this.builder.build());
     }
