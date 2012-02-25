@@ -175,7 +175,7 @@ class ArribaStub(val clientType: ClientType)
     clientType match {
       case Acceptor => {
         val bootstrap = FixServerBootstrap.create(new FixMessageFrameDecoder(),
-          new NewClientSessionHandler(group),
+          new GroupAddingChannelHandler(group),
           new SerializedFixMessageHandler(wizard.getInboundSender)
         )
 

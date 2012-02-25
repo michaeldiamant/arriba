@@ -34,7 +34,7 @@ import arriba.transport.TransportRepository;
 import arriba.transport.netty.FixMessageFrameDecoder;
 import arriba.transport.netty.NettyTransportFactory;
 import arriba.transport.netty.NettyTransportRepository;
-import arriba.transport.netty.NewClientSessionHandler;
+import arriba.transport.netty.GroupAddingChannelHandler;
 import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.bootstraps.FixServerBootstrap;
 
@@ -102,7 +102,7 @@ public class MarketMakerClient {
 
         final ServerBootstrap server = FixServerBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NewClientSessionHandler(null),
+                new GroupAddingChannelHandler(null),
                 new SerializedFixMessageHandler(inboundSender)
         );
 
