@@ -154,4 +154,9 @@ public class Session {
 
         return this.sessionId.equals(((Session) obj).sessionId);
     }
+
+    @Override
+    public String toString() {
+        return sessionId.toString();
+    }
 }
