@@ -10,6 +10,8 @@ import arriba.fix.inbound.handlers.*;
 import arriba.fix.inbound.messages.Logon;
 import arriba.fix.session.SessionId;
 import arriba.transport.TransportSender;
+import arriba.transport.handlers.SessionUnmonitoringDisconnectHandler;
+import arriba.transport.netty.*;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -24,11 +26,6 @@ import arriba.fix.outbound.OutboundFixMessage;
 import arriba.transport.InMemoryTransportRepository;
 import arriba.transport.TransportRepository;
 import arriba.transport.handlers.LogonOnConnectHandler;
-import arriba.transport.netty.FixMessageFrameDecoder;
-import arriba.transport.netty.NettyConnectHandlerAdapter;
-import arriba.transport.netty.NettyTransportFactory;
-import arriba.transport.netty.NettyTransportRepository;
-import arriba.transport.netty.SerializedFixMessageHandler;
 import arriba.transport.netty.bootstraps.FixClientBootstrap;
 
 import com.google.common.collect.Sets;
@@ -91,6 +88,7 @@ public class MarketTakerClient {
         final ClientBootstrap client = FixClientBootstrap.create(
                 new FixMessageFrameDecoder(),
                 new NettyConnectHandlerAdapter(new LogonOnConnectHandler<>(this.senderCompId, this.targetCompId, this.heartbeatIntervalInMs, this.username, this.password, outboundSender, repository, wizard.createOutboundBuilder())),
+                new NettyDisconnectHandlerAdapter(new SessionUnmonitoringDisconnectHandler<>(wizard.getSessionMonitor(), repository)),
                 new SerializedFixMessageHandler(inboundSender)
         );
 
