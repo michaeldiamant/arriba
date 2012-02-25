@@ -2,10 +2,8 @@ package arriba.transport.netty;
 
 import arriba.transport.TransportIdentity;
 import arriba.transport.TransportSender;
-import org.jboss.netty.channel.*;
 import org.jboss.netty.buffer.ChannelBuffer;
-
-import arriba.common.Sender;
+import org.jboss.netty.channel.*;
 
 public final class SerializedFixMessageHandler extends SimpleChannelHandler {
 

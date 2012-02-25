@@ -8,8 +8,6 @@ import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.Session;
 import arriba.fix.session.SessionResolver;
-
-import arriba.transport.Transport;
 import arriba.transport.TransportRepository;
 import com.lmax.disruptor.EventHandler;
 
