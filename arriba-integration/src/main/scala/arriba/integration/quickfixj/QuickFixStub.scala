@@ -141,7 +141,7 @@ class ArribaStub(val clientType: ClientType)
     case Initiator => ArribaWizardType.INITIATOR
   }
 
-  val wizard = new ArribaWizard(wizardType, inboundConfiguration, outboundConfiguration, repository)
+  lazy val wizard = new ArribaWizard(wizardType, inboundConfiguration, outboundConfiguration, repository)
 
   val headerBuilder = new ArrayFixChunkBuilderSupplier(new CanonicalTagIndexResolverRepository).getHeaderBuilder
   val factory = new InboundFixMessageFactory
