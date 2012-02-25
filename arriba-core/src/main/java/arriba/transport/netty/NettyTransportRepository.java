@@ -43,4 +43,9 @@ public final class NettyTransportRepository<ID> implements TransportRepository<I
     public Transport<Channel> find(final ID id) {
         return this.backingRepository.find(id);
     }
+
+    @Override
+    public ID find(TransportIdentity<Channel> identity) {
+        return this.backingRepository.find(identity);
+    }
 }
