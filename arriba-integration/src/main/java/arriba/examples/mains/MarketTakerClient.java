@@ -8,6 +8,7 @@ import arriba.common.Handler;
 import arriba.configuration.ArribaWizardType;
 import arriba.fix.inbound.handlers.*;
 import arriba.fix.inbound.messages.Logon;
+import arriba.fix.session.SessionId;
 import arriba.transport.TransportSender;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -57,8 +58,8 @@ public class MarketTakerClient {
                 new BlockingWaitStrategy()
         );
 
-        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
-        final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
+        final TransportRepository<SessionId, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
+        final TransportRepository<SessionId, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
                 ArribaWizardType.INITIATOR,

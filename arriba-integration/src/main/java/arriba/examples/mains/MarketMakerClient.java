@@ -12,6 +12,7 @@ import arriba.common.Handler;
 import arriba.configuration.ArribaWizardType;
 import arriba.fix.inbound.handlers.*;
 import arriba.fix.inbound.messages.Logon;
+import arriba.fix.session.SessionId;
 import arriba.transport.TransportSender;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -50,7 +51,6 @@ public class MarketMakerClient {
     private final String expectedPassword = "liquidity";
     private final ScheduledExecutorService quotesExecutorService = Executors.newSingleThreadScheduledExecutor();
     private final SubscriptionService subscriptionService = new InMemorySubscriptionService();
-    private final List<Channel> channels = new CopyOnWriteArrayList<Channel>();
 
     public MarketMakerClient() {
     }
@@ -67,8 +67,8 @@ public class MarketMakerClient {
                 new BlockingWaitStrategy()
         );
 
-        final TransportRepository<String, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
-        final TransportRepository<String, Channel> repository = new NettyTransportRepository<>(backingRepository);
+        final TransportRepository<SessionId, Channel> backingRepository = new InMemoryTransportRepository<>(new NettyTransportFactory());
+        final TransportRepository<SessionId, Channel> repository = new NettyTransportRepository<>(backingRepository);
 
         final ArribaWizard<Channel> wizard = new ArribaWizard<>(
                 ArribaWizardType.ACCEPTOR,

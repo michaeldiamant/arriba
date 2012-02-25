@@ -10,10 +10,10 @@ import arriba.transport.TransportRepository;
 
 public final class DisconnectingSessionIdHandler<T> implements Handler<SessionId>{
 
-    private final TransportRepository<String, T> transportRepository;
+    private final TransportRepository<SessionId, T> transportRepository;
     private final Set<SessionDisconnectListener> disconnectListeners;
 
-    public DisconnectingSessionIdHandler(final TransportRepository<String, T> transportRepository,
+    public DisconnectingSessionIdHandler(final TransportRepository<SessionId, T> transportRepository,
             final Set<SessionDisconnectListener> disconnectListeners) {
         this.transportRepository = transportRepository;
         this.disconnectListeners = disconnectListeners;
@@ -25,7 +25,7 @@ public final class DisconnectingSessionIdHandler<T> implements Handler<SessionId
             listener.onDisconnect(sessionId);
         }
 
-        final Transport<T> transport = this.transportRepository.find(sessionId.getTargetCompId());
+        final Transport<T> transport = this.transportRepository.find(sessionId);
         if (null != transport) {
             transport.close();
         }

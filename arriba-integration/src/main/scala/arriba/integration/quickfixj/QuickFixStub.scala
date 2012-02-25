@@ -26,6 +26,7 @@ import quickfix._
 import com.weiglewilczek.slf4s.Logging
 import org.jboss.netty.channel._
 import group.DefaultChannelGroup
+import arriba.fix.session.SessionId
 
 case class FixSession(beginString: String, senderCompId: String, targetCompId: String, username: String, password: String)
 
@@ -133,7 +134,7 @@ class ArribaStub(val clientType: ClientType)
     new BlockingWaitStrategy
   )
 
-  private val backingRepository = new InMemoryTransportRepository[String, Channel](new NettyTransportFactory())
+  private val backingRepository = new InMemoryTransportRepository[SessionId, Channel](new NettyTransportFactory())
   val repository = new NettyTransportRepository(backingRepository);
 
   val wizardType = clientType match {

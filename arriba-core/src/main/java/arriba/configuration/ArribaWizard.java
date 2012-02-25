@@ -45,7 +45,7 @@ import java.util.Set;
 
 public final class ArribaWizard<T> {
 
-    private final TransportRepository<String, T> transportRepository;
+    private final TransportRepository<SessionId, T> transportRepository;
     private final Map<SessionId, Session> sessionIdToSession = Maps.newHashMap();
     private final Map<String, Handler<?>> messageTypeToHandler = Maps.newHashMap();
     private final Set<SessionId> sessionIds = Sets.newHashSet();
@@ -69,7 +69,7 @@ public final class ArribaWizard<T> {
     private final Disruptor<OutboundEvent> outboundDisruptor;
 
     public ArribaWizard(final ArribaWizardType type, final DisruptorConfiguration inboundConfiguration, final DisruptorConfiguration outboundConfiguration,
-            final TransportRepository<String, T> transportRepository) {
+            final TransportRepository<SessionId, T> transportRepository) {
         this.type = type;
         this.transportRepository = transportRepository;
 

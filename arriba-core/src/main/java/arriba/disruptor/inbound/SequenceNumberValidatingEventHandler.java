@@ -7,6 +7,7 @@ import arriba.fix.inbound.messages.SequenceReset;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
 import arriba.fix.session.Session;
+import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionResolver;
 import arriba.transport.TransportRepository;
 import com.lmax.disruptor.EventHandler;
@@ -15,7 +16,7 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
 
     private final SessionResolver resolver;
     private final RichOutboundFixMessageBuilder builder;
-    private final TransportRepository<String, T> repository;
+    private final TransportRepository<SessionId, T> repository;
     private final InboundFixMessage[] validatedMessages = new InboundFixMessage[100]; // TODO Set reasonable default.
     private final OutboundFixMessage[] outboundMessages = new OutboundFixMessage[100];
 
@@ -23,7 +24,7 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
 
     public SequenceNumberValidatingEventHandler(final SessionResolver resolver,
                                                 final RichOutboundFixMessageBuilder builder,
-                                                final TransportRepository<String, T> repository) {
+                                                final TransportRepository<SessionId, T> repository) {
         this.resolver = resolver;
         this.builder = builder;
         this.repository = repository;
@@ -34,14 +35,15 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
         final InboundFixMessage[] messages = event.getMessages();
         for (int messageIndex = 0; messageIndex < messages.length; messageIndex++) {
             final InboundFixMessage message = messages[messageIndex];
-            final Session session = this.resolver.resolve(message.getSessionId());
+            final SessionId sessionId = message.getSessionId();
+            final Session session = this.resolver.resolve(sessionId );
             if (null == session) {
                 throw new IllegalArgumentException("No session found for " + message.getSessionId());
             }
 
             if (MessageType.LOGON.getValue().equals(message.getMessageType())) {
-                if (null == this.repository.find(message.getTargetCompId())) {
-                    repository.add(message.getSenderCompId(), event.getIdentity());
+                if (null == this.repository.find(sessionId)) {
+                    repository.add(sessionId, event.getIdentity());
                 }
             }
 
