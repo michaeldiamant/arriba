@@ -11,8 +11,12 @@ import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionResolver;
 import arriba.transport.TransportRepository;
 import com.lmax.disruptor.EventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class SequenceNumberValidatingEventHandler<T> implements EventHandler<InboundEvent> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SequenceNumberValidatingEventHandler.class);
 
     private final SessionResolver resolver;
     private final RichOutboundFixMessageBuilder builder;
@@ -38,7 +42,7 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
             final SessionId sessionId = message.getSessionId();
             final Session session = this.resolver.resolve(sessionId );
             if (null == session) {
-                throw new IllegalArgumentException("No session found for " + message.getSessionId());
+                throw new IllegalArgumentException("No session found for " + sessionId);
             }
 
             if (MessageType.LOGON.getValue().equals(message.getMessageType())) {
@@ -49,10 +53,13 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
 
             if (shouldForwardMessage(session, message)) {
                 this.processMsg(session, message);
-            }
 
-            if (session.isAwaitingResend() && session.isResendComplete()) {
-                this.processQueuedMessages(session);
+                if (session.isAwaitingResend() && session.isResendComplete()) {
+                    this.processQueuedMessages(session);
+                }
+            } else {
+                // TODO Modify shouldForwardMessage() to return reason for not forwarding message.
+                LOGGER.warn("Dropping message on the floor:  {} from session {}.", message, session);
             }
         }
 
@@ -69,14 +76,21 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
         if (0 == compareResult) {
             updateSessionState(session, message);
 
-            this.validatedMessages[this.validatedMessagesIndex] = message;
+            this.validatedMessages[this.validatedMessagesIndex++] = message;
         } else if (compareResult < 0) {
-            final OutboundFixMessage logout = this.builder
-                    .addStandardHeader(MessageType.LOGOUT, message)
-                    .addField(Tags.TEXT,
-                            "Expected sequence number " + session.getExpectedInboundSequenceNumber() + ", but received " + sequenceNumber + ".")
-                    .build();
-            this.outboundMessages[this.validatedMessagesIndex] = logout;
+            // Initiator sent message with lower than expected sequence number
+            if (MessageType.LOGOUT.getValue().equals(message.getMessageType())) {
+              LOGGER.error("Previous outbound message had lower than expected sequence number.  " +
+                      "Will not process message:  {} from session {}", message, session);
+                // TODO Consider invoking TransportDisconnectHandler to clean up session.
+            } else {
+                final OutboundFixMessage logout = this.builder
+                        .addStandardHeader(MessageType.LOGOUT, message)
+                        .addField(Tags.TEXT,
+                                "Expected sequence number " + session.getExpectedInboundSequenceNumber() + ", but received " + sequenceNumber + ".")
+                        .build();
+                this.outboundMessages[this.validatedMessagesIndex++] = logout;
+            }
         } else {
             session.queueMessage(message);
             if (!session.isAwaitingResend()) {
@@ -85,10 +99,9 @@ public final class SequenceNumberValidatingEventHandler<T> implements EventHandl
                         .addField(Tags.END_SEQUENCE_NUMBER, Integer.toString(getSequenceNumber(message) - 1))
                         .build();
 
-                this.outboundMessages[this.validatedMessagesIndex] = resendRequest;
+                this.outboundMessages[this.validatedMessagesIndex++] = resendRequest;
             }
         }
-        ++this.validatedMessagesIndex;
     }
 
     private void setEventMessages(final InboundEvent event) {
