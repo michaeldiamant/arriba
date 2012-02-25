@@ -17,18 +17,15 @@ import arriba.common.Handler
 import arriba.transport.netty.bootstraps.FixServerBootstrap
 import arriba.transport.netty.bootstraps.FixClientBootstrap
 import java.net.InetSocketAddress
-import java.util.concurrent.{CopyOnWriteArrayList, CountDownLatch, TimeUnit, Executors}
+import java.util.concurrent.{CountDownLatch, Executors}
 import arriba.transport.netty._
 import arriba.transport.handlers.LogonOnConnectHandler
 import collection.mutable.{ListBuffer, ArrayBuffer}
 import arriba.integration.runner.ClientWizard
-import quickfix.mina.SessionConnector
 import quickfix._
 import com.weiglewilczek.slf4s.Logging
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory
 import org.jboss.netty.channel._
 import group.DefaultChannelGroup
-import org.jboss.netty.bootstrap.{Bootstrap, ServerBootstrap}
 
 case class FixSession(beginString: String, senderCompId: String, targetCompId: String, username: String, password: String)
 
@@ -169,7 +166,6 @@ class ArribaStub(val clientType: ClientType)
   }
 
   var channelFactory: Option[ChannelFactory] = None
-  val channels = new CopyOnWriteArrayList[Channel]()
   var group = new DefaultChannelGroup("myid")
 
   def start() {
@@ -179,7 +175,7 @@ class ArribaStub(val clientType: ClientType)
     clientType match {
       case Acceptor => {
         val bootstrap = FixServerBootstrap.create(new FixMessageFrameDecoder(),
-          new NewClientSessionHandler(channels, group),
+          new NewClientSessionHandler(group),
           new SerializedFixMessageHandler(wizard.getInboundSender)
         )
 
