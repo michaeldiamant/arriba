@@ -7,6 +7,7 @@ import arriba.common.Handler;
 import arriba.fix.outbound.DateSupplier;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.session.Session;
+import arriba.fix.session.SessionId;
 import arriba.fix.session.SessionIds;
 import arriba.fix.session.SessionResolver;
 import arriba.transport.Transport;
@@ -16,10 +17,10 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransportWritingFixMessageHandler.class);
 
-    private final TransportRepository<String, T> transportRepository;
+    private final TransportRepository<SessionId, T> transportRepository;
     private final SessionResolver sessionResolver;
 
-    public TransportWritingFixMessageHandler(final TransportRepository<String, T> transportRepository, final SessionResolver sessionResolver) {
+    public TransportWritingFixMessageHandler(final TransportRepository<SessionId, T> transportRepository, final SessionResolver sessionResolver) {
         this.transportRepository = transportRepository;
         this.sessionResolver = sessionResolver;
     }
@@ -27,13 +28,14 @@ public final class TransportWritingFixMessageHandler<T> implements Handler<Outbo
     @Override
     public void handle(final OutboundEvent event) {
         final OutboundFixMessage message = event.getFixMessage();
-        final Transport<T> transport = this.transportRepository.find(message.getTargetCompId());
+        final SessionId sessionId = SessionIds.newSessionId(message);
+        final Transport<T> transport = this.transportRepository.find(sessionId);
         if (null == transport) {
             throw new IllegalArgumentException("Cannot find transport for target comp ID " + message.getTargetCompId() + ".");
         }
 
         // TODO Can SessionId be cached?
-        final Session session = this.sessionResolver.resolve(SessionIds.newSessionId(message));
+        final Session session = this.sessionResolver.resolve(sessionId);
 
         final byte[] serializedMessage;
         if (event.isResend()) {
