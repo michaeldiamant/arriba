@@ -81,7 +81,7 @@ public class MarketMakerClient {
         final Sender<OutboundFixMessage> outboundSender = wizard.getOutboundSender();
 
         final Handler<Logon> logonHandler = new ComposedHandler<>(
-                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder(), this.channels, repository),
+                new AuthenticatingLogonHandler(this.expectedUsername, this.expectedPassword, outboundSender, wizard.createOutboundBuilder()),
                 new SessionMonitoringLogonHandler(wizard.getSessionMonitor())
         );
 
@@ -102,7 +102,7 @@ public class MarketMakerClient {
 
         final ServerBootstrap server = FixServerBootstrap.create(
                 new FixMessageFrameDecoder(),
-                new NewClientSessionHandler(this.channels, null),
+                new NewClientSessionHandler(null),
                 new SerializedFixMessageHandler(inboundSender)
         );
 

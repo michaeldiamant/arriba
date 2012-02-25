@@ -32,9 +32,7 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
               session.username,
               session.password,
               arribaAcceptor.wizard.getOutboundSender,
-              arribaAcceptor.wizard.createOutboundBuilder,
-              arribaAcceptor.channels,
-              arribaAcceptor.repository
+              arribaAcceptor.wizard.createOutboundBuilder
             ),
             new SessionMonitoringLogonHandler(arribaAcceptor.wizard.getSessionMonitor)
           ).handle(message)
@@ -70,9 +68,7 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
               session.username,
               session.password,
               firstArribaAcceptor.wizard.getOutboundSender,
-              firstArribaAcceptor.wizard.createOutboundBuilder,
-              firstArribaAcceptor.channels,
-              firstArribaAcceptor.repository
+              firstArribaAcceptor.wizard.createOutboundBuilder
             ),
             new SessionMonitoringLogonHandler(firstArribaAcceptor.wizard.getSessionMonitor)
           ).handle(message)

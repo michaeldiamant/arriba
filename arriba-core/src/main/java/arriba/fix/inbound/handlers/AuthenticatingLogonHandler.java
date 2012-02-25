@@ -1,9 +1,5 @@
 package arriba.fix.inbound.handlers;
 
-import java.util.List;
-
-import org.jboss.netty.channel.Channel;
-
 import arriba.common.Handler;
 import arriba.common.Sender;
 import arriba.fix.Tags;
@@ -11,35 +7,23 @@ import arriba.fix.fields.MessageType;
 import arriba.fix.inbound.messages.Logon;
 import arriba.fix.outbound.OutboundFixMessage;
 import arriba.fix.outbound.RichOutboundFixMessageBuilder;
-import arriba.fix.session.SessionId;
-import arriba.fix.session.SessionMonitor;
-import arriba.transport.TransportIdentity;
-import arriba.transport.TransportRepository;
 
 public final class AuthenticatingLogonHandler implements Handler<Logon> {
-
-    // FIXME Transport repository should not explicitly reference Channel.
 
     private final String expectedUsername;
     private final String expectedPassword;
     private final Sender<OutboundFixMessage> fixMessageSender;
-    private final List<Channel> channels;
-    private final TransportRepository<String, Channel> transportRepository;
     private final RichOutboundFixMessageBuilder builder;
 
 
     public AuthenticatingLogonHandler(final String expectedUsername,
             final String expectedPassword,
             final Sender<OutboundFixMessage> fixMessageSender,
-            final RichOutboundFixMessageBuilder builder,
-            final List<Channel> channels,
-            final TransportRepository<String, Channel> transportRepository) {
+            final RichOutboundFixMessageBuilder builder) {
         this.expectedUsername = expectedUsername;
         this.expectedPassword = expectedPassword;
         this.fixMessageSender = fixMessageSender;
         this.builder = builder;
-        this.channels = channels;
-        this.transportRepository = transportRepository;
     }
 
     @Override
@@ -63,12 +47,6 @@ public final class AuthenticatingLogonHandler implements Handler<Logon> {
         if (message.hasBodyValue(Tags.RESET_SEQUENCE_NUMBER_FLAG)) {
             this.builder.addField(Tags.RESET_SEQUENCE_NUMBER_FLAG, message.getResetSequenceNumberFlag());
         }
-
-        // TODO Need to figure out right way to negotiate channel registration server-side.
-        // Assuming first channel entry is the 'right' one.
-
-        final Channel channelToAdd = this.channels.remove(0);
-        this.transportRepository.add(message.getSenderCompId(), new TransportIdentity<>(channelToAdd));
 
         this.fixMessageSender.send(this.builder.build());
     }
