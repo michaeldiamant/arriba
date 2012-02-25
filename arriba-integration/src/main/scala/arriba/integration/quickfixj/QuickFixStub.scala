@@ -19,7 +19,6 @@ import arriba.transport.netty.bootstraps.FixClientBootstrap
 import java.net.InetSocketAddress
 import java.util.concurrent.{CountDownLatch, Executors}
 import arriba.transport.netty._
-import arriba.transport.handlers.LogonOnConnectHandler
 import collection.mutable.{ListBuffer, ArrayBuffer}
 import arriba.integration.runner.ClientWizard
 import quickfix._
@@ -27,6 +26,7 @@ import com.weiglewilczek.slf4s.Logging
 import org.jboss.netty.channel._
 import group.DefaultChannelGroup
 import arriba.fix.session.SessionId
+import arriba.transport.handlers.{SessionUnmonitoringDisconnectHandler, LogonOnConnectHandler}
 
 case class FixSession(beginString: String, senderCompId: String, targetCompId: String, username: String, password: String)
 
@@ -176,6 +176,7 @@ class ArribaStub(val clientType: ClientType)
     clientType match {
       case Acceptor => {
         val bootstrap = FixServerBootstrap.create(new FixMessageFrameDecoder(),
+          new NettyDisconnectHandlerAdapter(new SessionUnmonitoringDisconnectHandler(wizard.getSessionMonitor, repository)),
           new GroupAddingChannelHandler(group),
           new SerializedFixMessageHandler(wizard.getInboundSender)
         )
@@ -198,6 +199,7 @@ class ArribaStub(val clientType: ClientType)
             wizard.getOutboundSender,
             repository,
             wizard.createOutboundBuilder())),
+          new NettyDisconnectHandlerAdapter(new SessionUnmonitoringDisconnectHandler(wizard.getSessionMonitor, repository)),
           new SerializedFixMessageHandler(wizard.getInboundSender)
         );
 
