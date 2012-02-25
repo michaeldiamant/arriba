@@ -83,18 +83,15 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
 
       wizard += (latch => {
         () => {
-          println(new Date() + " stopping first acceptor")
           firstArribaAcceptor stop()
-          println(new Date() + " stopped first acceptor")
-          Thread.sleep(5000)
+
+          Thread.sleep(500)
+
           secondArribaAcceptor = new ArribaStub(Acceptor)
           secondArribaAcceptor addSession session.copy(senderCompId = session.targetCompId, targetCompId = session.senderCompId)
 
           secondArribaAcceptor start()
 
-          Thread.sleep(2000)
-
-          println(new Date() + " starting second acceptor")
           latch.countDown()
         }
       })
@@ -102,7 +99,7 @@ class AcceptorLogonIT extends SpecificationWithJUnit {
       wizard += (latch => {
         () => {
           println("sleepin")
-          Thread.sleep(12000)
+          Thread.sleep(1000)
           println("done sleepin")
           latch.countDown()
         }
